@@ -1,7 +1,7 @@
 # this file contains the integral kernel functions that are used for applying the
 # forward and adjoint operators
 import numpy as np
-from params import beta0,k,kx,ky,lamda,t,dt,Nt
+from params import beta0,k,kx,lamda,t,dt,Nt
 from scipy.signal import fftconvolve
 
 #---------------------convolution and cross-correlation operators---------------
@@ -11,7 +11,7 @@ def conv(a,b):
 def xcor(a,b):
     return dt*fftconvolve(np.conjugate(np.flipud(a)),b,mode='full',axes=0)[(Nt-1):2*Nt,:,:]
 
-#------------------------Functions relevant to kernels--------------------------
+#------------------------Functions in kernel------------------------------------
 def Rg():
     # Ice surface relaxation function for grounded ice
     n = 2*np.pi*k           # used to convert to SciPy's Fourier Transform definition
@@ -41,7 +41,6 @@ def ker_w():
     uh0,ub0 = 0,0
     K_0 = np.exp(-(1j*(2*np.pi*kx)*uh0+lamda*Rg_)*t)
     K = K_0*Tw_
-    ##K +=  + 1j*(2*np.pi*kx)*Tb_*tau*conv(K_h,K_s) #future if we include bed slope
 
     return K
 

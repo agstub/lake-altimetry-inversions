@@ -1,38 +1,18 @@
 # All model parameters and options are set here.
 
-import sys,argparse
-
-parser = argparse.ArgumentParser(\
-    description='Set parameters for subglacial lake problem.')
-parser.add_argument('-C', type=float, default=5.0e4, metavar='drag_coeff',
-                    help='Basal drag coefficient (Pa s/m)')
-parser.add_argument('-H', type=float, default=1008.0, metavar='thickness',
-                    help='Ice thickness (m)')
-parser.add_argument('-L', type=float, default=80.0, metavar='domain length',
-                    help='Length of domain (km)')
-parser.add_argument('-pd', type=float, default=4, metavar='period',
-                    help='Filling/draining oscillation period (yr)')
-parser.add_argument('-plotting', type=str, default='on', metavar='on/off',
-                    help='Turn real-time plotting \'on\' or \'off\' ')
-parser.add_argument('-print_info', type=str, default='off', metavar='on/off',
-                    help='Turn \'on\' to print Newton convergence info ')
-parser.add_argument('-save_vtk', type=str, default='on', metavar='on/off',
-                    help='Turn \'on\' to save Stokes vtk files ')
-args, unknown = parser.parse_known_args()
-
 import numpy as np
 #-------------------------------------------------------------------------------
 #-----------------------------MODEL OPTIONS-------------------------------------
 
 # Turn 'on' or 'off' real-time plotting that saves a png figure called 'surfs' at
 # each time step of the free surface geometry.
-realtime_plot = args.plotting
+realtime_plot = 'on'
 
 # Turn 'on' or 'off' Newton convergence information:
-print_convergence = args.print_info
+print_convergence = 'off'
 
 # save vtk files for stokes solution if 'on':
-save_vtk = args.save_vtk
+save_vtk = 'on'
 
 #-------------------------------------------------------------------------------
 #-----------------------------MODEL PARAMETERS----------------------------------
@@ -51,7 +31,7 @@ B = (2**((n-1.0)/(2*n)))*B0        # coefficient in weak form (Pa s^{1/n})
 rho_i = 917.0                      # density of ice (kg/m^3)
 rho_w = 1000.0                     # density of water (kg/m^3)
 g = 9.81                           # gravitational acceleration (m/s^2)
-C = args.C                         # sliding law friction coefficient (Pa s/m)
+C = 5.0e4                          # sliding law friction coefficient (Pa s/m)^1/n
 alpha = 0.0001
 
 # numerical parameters
@@ -66,8 +46,8 @@ tol = 1.0e-3                       # numerical tolerance for boundary geometry:
                                    # s(x,t) - b(x) <= tol on ice-bed boundary.
 
 # geometry/mesh parameters
-Hght = args.H                      # (initial) height of the domain (m)
-Lngth = args.L*1000.0              # length of the domain (m)
+Hght = 1008                      # (initial) height of the domain (m)
+Lngth = 80*1000.0              # length of the domain (m)
 
 
 Ny = int(Hght/250.0)               # number of elements in vertical direction
@@ -76,12 +56,14 @@ Nx = int(Lngth/250.0)              # number of elements in horizontal direction
 dy = Hght/Ny
 
 # time-stepping parameters
-t_period = args.pd*3.154e7         # oscillation period (secs; yr*sec_per_year)
+t_period = 4*3.154e7         # oscillation period (secs; yr*sec_per_year)
 t0 = 0.025*t_period
-t_final = t0+1.5*t_period            # final time
+t_final = t0+0.075*t_period            # final time
 nt_per_cycle = 1000                # number of timesteps per oscillation
 nt = int(t_final/t_period*nt_per_cycle) # number of time steps
 dt = t_final/nt                    # timestep size
+
+i0 = int(t0/dt)-1
 
 # spatial coordinate for plotting and interpolation
 

@@ -94,15 +94,15 @@ def stokes_solve(mesh,lake_vol_0,s_mean,F_h,F_s,t):
         # solve for (u,p,pw).
         solve(Fw == 0, w, bcs=[],solver_parameters={"newton_solver":{"relative_tolerance": 1e-14,"maximum_iterations":50}},form_compiler_parameters={"quadrature_degree":quad_degree,"optimize":True,"eliminate_zeros":False})
 
-        beta_mean = assemble(beta(w.sub(0))*ds(3))/assemble(Constant(1)*ds(3))
-        eta_mean = assemble(eta(w.sub(0))*dx)/assemble(Constant(1)*dx)
+        beta_i = assemble(beta(w.sub(0))*ds(3))/assemble(Constant(1)*ds(3))
+        eta_i = assemble(eta(w.sub(0))*dx)/assemble(Constant(1)*dx)
 
-        print('mean drag = '+"{:.2E}".format(beta_mean)+' Pa s/m')
-        print('mean viscosity = '+"{:.2E}".format(eta_mean)+' Pa s')
+        print('mean drag = '+"{:.2E}".format(beta_i)+' Pa s/m')
+        print('mean viscosity = '+"{:.2E}".format(eta_i)+' Pa s')
 
 
         # return solution w
-        return w
+        return w,beta_i,eta_i
 
 def get_zero(mesh):
         # get zero element of function space.

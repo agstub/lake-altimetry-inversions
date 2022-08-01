@@ -5,7 +5,7 @@
 # (2) compute the grounding line positions.
 #------------------------------------------------------------------------------
 
-from params import tol,Lngth,Hght,realtime_plot,X_fine,Nx,dt
+from params import tol,Lngth,Hght,realtime_plot,X_fine,Nx,dt,dy
 from dolfin import *
 import matplotlib.pyplot as plt
 import matplotlib as mpl
@@ -22,28 +22,28 @@ def mesh_routine(w,mesh,dt):
     # computed and returned.
 
     # first, compute slopes of free surfaces:
-    # Returns: (1) FEniCS functions baseslope and surfslope, AND...
-    #          (2) Python functions (F_h, F_s) of the surface elevations.
+    # Returns: (1) FEniCS functions sx_fn and hx_fn, AND...
+    #          (2) Python functions (h_int, s_int) of the surface elevations.
 
-    baseslope,F_s = get_baseslope(w,mesh)
-    surfslope, F_h = get_surfslope(w,mesh)
+    sx_fn,s_int = get_sx_fn(w,mesh)
+    hx_fn, h_int = get_hx_fn(w,mesh)
 
     # next, move the mesh
-    move_mesh(mesh,baseslope,surfslope,dt,F_s,F_h,w)
+    move_mesh(mesh,sx_fn,hx_fn,dt,s_int,h_int,w)
 
     # plot surfaces in real time if realtime_plot = "on"
-    plot_surfaces(F_h,F_s)
+    plot_surfaces(h_int,s_int)
 
     # compute mean elevation of ice-water and ice-air surfaces
-    s_mean = np.mean(F_s(X_fine)[F_s(X_fine)-tol>bed(X_fine)])
-    h_mean = np.mean(F_h(X_fine)[F_s(X_fine)-tol>bed(X_fine)])
+    s_mean = np.mean(s_int(X_fine)[s_int(X_fine)-tol>bed(X_fine)])
+    h_mean = np.mean(h_int(X_fine)[s_int(X_fine)-tol>bed(X_fine)])
 
 
-    return mesh,F_s,F_h,s_mean,h_mean
+    return mesh,s_int,h_int,sx_fn
 
 #------------------------------------------------------------------------------
 
-def move_mesh(mesh,baseslope,surfslope,dt,F_s,F_h,w):
+def move_mesh(mesh,sx_fn,hx_fn,dt,s_int,h_int,w):
     # this function computes the surface displacements and moves the mesh.
 
     M = mesh.coordinates()                           # Get mesh coordinates.
@@ -51,8 +51,8 @@ def move_mesh(mesh,baseslope,surfslope,dt,F_s,F_h,w):
     w0 = w.sub(0).sub(1).compute_vertex_values(mesh) # Get vertical velocity at nodes.
     u0 = w.sub(0).sub(0).compute_vertex_values(mesh) # Get horizontal velocity at nodes.
 
-    sx = baseslope.compute_vertex_values(mesh)       # Get lower surface slope at nodes.
-    hx = surfslope.compute_vertex_values(mesh)       # Get upper surface slope at nodes.
+    sx = sx_fn.compute_vertex_values(mesh)       # Get lower surface slope at nodes.
+    hx = hx_fn.compute_vertex_values(mesh)       # Get upper surface slope at nodes.
 
     # Compute vertical displacements via the kinematic equation:
     # dZ/dt = w - u * dZ/dx
@@ -76,7 +76,7 @@ def move_mesh(mesh,baseslope,surfslope,dt,F_s,F_h,w):
 
     for i in vertices_on_boundary:
         # BOTTOM surface: ice-water interface
-        if np.abs(M[i,1]-F_s(M[i,0]))<tol:
+        if np.abs(M[i,1]-s_int(M[i,0]))<tol:
 
             M[i,1] += dt*disp0[i]
 
@@ -85,7 +85,7 @@ def move_mesh(mesh,baseslope,surfslope,dt,F_s,F_h,w):
                 M[i,1] = bed(M[i,0])
 
         #TOP surface: ice-air interface
-        elif np.abs(M[i,1]-F_h(M[i,0]))<tol:
+        elif np.abs(M[i,1]-h_int(M[i,0]))<tol:
             M[i,1] += dt*disp1[i]
 
 
@@ -94,7 +94,7 @@ def move_mesh(mesh,baseslope,surfslope,dt,F_s,F_h,w):
 
 #------------------------------------------------------------------------------
 
-def get_baseslope(w,mesh):
+def get_sx_fn(w,mesh):
     # This function computes the slope of the lower surface and returns it as a FEniCS function.
     # The interpolated surface elevation is also returned as a python function.
 
@@ -119,26 +119,26 @@ def get_baseslope(w,mesh):
     X = np.insert(X,0,0)
 
     # Use SciPy to interpolate the lower surface
-    F_s = interp1d(X,Y,kind='cubic',fill_value='extrapolate',bounds_error=False)
+    s_int = interp1d(X,Y,kind='cubic',fill_value='extrapolate',bounds_error=False)
 
     # Define a FEniCS expression for the lower surface elevation
     class base_expr(UserExpression):
         def eval(self,value,x):
-            value[0] = F_s(x[0])
+            value[0] = s_int(x[0])
 
     # Compute the slope of the lower surface in FEniCS
     V = FunctionSpace(mesh,'CG',1)
     base = base_expr(element=V.ufl_element(),domain=mesh)
 
     base_x = Dx(base,0)
-    baseslope = Function(V)
-    baseslope.assign(project(base_x,V))
+    sx_fn = Function(V)
+    sx_fn.assign(project(base_x,V))
 
-    return baseslope, F_s
+    return sx_fn, s_int
 
 #------------------------------------------------------------------------------
 
-def get_surfslope(w,mesh):
+def get_hx_fn(w,mesh):
     # This function computes the upper surface slope and returns at as a FEniCS function.
     # The interpolated surface elevation is also returned.
 
@@ -164,32 +164,32 @@ def get_surfslope(w,mesh):
     X = np.insert(X,0,0)
 
     # Interpolate the boundary points:
-    F_h = interp1d(X,Y,kind='cubic',fill_value='extrapolate',bounds_error=False)
+    h_int = interp1d(X,Y,kind='cubic',fill_value='extrapolate',bounds_error=False)
 
     # Define a FEniCS expression for the upper surface elevation
     class surf_expr(UserExpression):
         def eval(self,value,x):
-            value[0] = F_h(x[0])
+            value[0] = h_int(x[0])
 
     # Compute slope of upper surface
     V = FunctionSpace(mesh,'CG',1)
     surf = surf_expr(element=V.ufl_element(),domain=mesh)
 
     surf_x = Dx(surf,0)
-    surfslope = Function(V)
-    surfslope.assign(project(surf_x,V))
+    hx_fn = Function(V)
+    hx_fn.assign(project(surf_x,V))
 
-    return surfslope,F_h
+    return hx_fn,h_int
 
 #------------------------------------------------------------------------------
 
-def plot_surfaces(F_h,F_s):
+def plot_surfaces(h_int,s_int):
     # Plotting in real time if realtime_plot is turned 'on' in the params.py file:
     # Saves a .png figure called 'surfaces' of the free surface geometry!
     if realtime_plot == 'on':
         X = X_fine
-        Gamma_h = F_h(X)
-        Gamma_s = F_s(X)
+        Gamma_h = h_int(X)
+        Gamma_s = s_int(X)
 
         plt.figure(figsize=(8,5))
 
@@ -222,3 +222,23 @@ def plot_surfaces(F_h,F_s):
         plt.close()
 
 #------------------------------------------------------------------------------
+
+# get upper surface elevation, lower surface elevation, basal vertical velocity,
+# and mesh coordinates
+def get_wb(w,mesh,sx_fn):
+
+    M = mesh.coordinates()
+
+    w_vv = w.sub(0).sub(1).compute_vertex_values(mesh)
+    u_vv = w.sub(0).sub(0).compute_vertex_values(mesh)
+    sx_vv = sx_fn.compute_vertex_values(mesh)       # Get lower surface slope at nodes.
+
+    wb_vv = (w_vv-u_vv*sx_vv)/np.sqrt(1+sx_vv**2)
+
+    X = M[:,0][np.abs(M[:,1])<0.25*dy]
+
+    wb = wb_vv[np.abs(M[:,1])<0.25*dy]*3.154e7   # save in meters per year
+
+    wb_int = interp1d(X,wb,kind='cubic',fill_value='extrapolate',bounds_error=False)
+
+    return wb_int
