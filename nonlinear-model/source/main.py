@@ -15,14 +15,13 @@ from meshfcns import mesh_routine,get_wb
 import scipy.integrate as scpint
 import os
 from params import (rho_i,g,tol,t_final,Lngth,Hght,nt,dt,rho_w,dy,alpha,
-                    print_convergence,X_fine,nx,Nx,Ny,t_period,C,save_vtk,i0)
+                    print_convergence,X_fine,nx,Nx,Ny,save_vtk,i0)
 
 #--------------------Initial conditions-----------------------------------------
 # compute initial mean elevation of ice-water interface and initial lake volume.
 s_mean0 = np.mean(interface(X_fine)[interface(X_fine)-bed(X_fine)>tol])
 lake_vol_0 = scpint.quad(lambda x: interface(x)-bed(x),0,Lngth,full_output=1)[0]
 #-------------------------------------------------------------------------------
-
 
 resultsname = 'results'
 
@@ -49,21 +48,21 @@ M[:,1][np.abs(M[:,1]-Hght)<0.9*dy] = Hght - M[:,0][np.abs(M[:,1]-Hght)<0.9*dy]*n
 
 
 
-# define arrays for saving surfaces, lake volume, water pressure, and
-# grounding line positions over time.
-s = np.zeros((nx,nt))       # basal surface
-h = np.zeros((nx,nt))       # upper surface
-h_a = np.zeros((nx,nt))     # elevation anomaly
-wb = np.zeros((nx,nt))       # upper surface
-lake_vol = np.zeros(nt)           # lake volume
+# define arrays for saving surfaces, lake volume, basal vertical velocity, viscosity,
+# horizontal surface velocity, and basal drag over time.
+s = np.zeros((nx,nt))       # basal surface elevation
+h = np.zeros((nx,nt))       # upper surface elevation
+wb = np.zeros((nx,nt))      # basal surface normal (i.e. ~vertical) velocity
+lake_vol = np.zeros(nt)     # lake volume
 
-eta_mean  = np.zeros(nt)          # mean viscosity
-beta_mean  = np.zeros(nt)         # mean basal drag
+eta_mean  = np.zeros(nt)    # mean viscosity
+beta_mean  = np.zeros(nt)   # mean basal drag
+u_mean = np.zeros(nt)       # mean horizontal surface velocity
 
 t = 0                             # time
 
 # begin time stepping
-for i in range(10):
+for i in range(nt):
 
     print('-----------------------------------------------')
     print('Timestep '+str(i+1)+' out of '+str(nt))
@@ -73,31 +72,26 @@ for i in range(10):
         s_mean_i = s_mean0                    # Mean ice-water elevation.
         w = get_zero(mesh)
         mesh,s_int,h_int,sx_fn = mesh_routine(w,mesh,dt)
-        h_int = lambda x: Hght                  # Ice-air surface function
-        s_int = lambda x: interface(x)          # Lower surface function
+        h_int = lambda x: Hght-x*np.arctan(alpha) # Ice-air surface function
+        s_int = lambda x: interface(x)            # Lower surface function
 
-    # solve the Stoke problem, returns solution "w"
+    # solve the Stoke problem, returns solution "w", along with the mean basal drag "beta",
+    # the mean viscosity "eta", and the mean horizontal surface velocity "u"
+    w,beta_i,eta_i,u_i = stokes_solve(mesh,lake_vol_0,s_mean_i,h_int,s_int,t)
 
-    w,beta_i,eta_i = stokes_solve(mesh,lake_vol_0,s_mean_i,h_int,s_int,t)
-
-    # solve the surface kinematic equations, move the mesh, and compute the
-    # grounding line positions.
-
+    # solve the surface kinematic equations and move the mesh.
     mesh,s_int,h_int,sx_fn = mesh_routine(w,mesh,dt)
 
+    # extract the basal vertical velocity "wb" from the solution
     wb_int = get_wb(w,mesh,sx_fn)
-
-    #print('sigma_e = '+str(rho_i*g*(H_out-H_mean) +rho_w*g*(s_out-s_mean_i)))
-    #print('rho_w/rho_i * (s - s_mean) = '+str((rho_w/rho_i)*(s_out-s_mean_i)))
 
     # save quantities of interest
     s[:,i] = s_int(X_fine)
     h[:,i] = h_int(X_fine)
-
-    h_a[:,i] = h[:,i]-h[:,i0]
-    wb[:,i] = wb_int(X_fine)-wb[:,i0]
+    wb[:,i] = wb_int(X_fine)
     eta_mean[i] = eta_i
     beta_mean[i] = beta_i
+    u_mean[i] = u_i
 
     # compute lake volume: integral of lower surface minus the bed elevation
     lake_vol[i] = scpint.quad(lambda x: s_int(x)-bed(x),0,Lngth,full_output=1)[0]
@@ -115,36 +109,15 @@ for i in range(10):
     # update time
     t += dt
 
-    # plt.figure(figsize=(8,6))
-    # plt.plot(X_fine/1e3,wb[:,i],linewidth=3)
-    # plt.xlabel(r'$x$ (km)',fontsize=20)
-    # plt.xticks(fontsize=16)
-    # plt.yticks(fontsize=16)
-    # plt.ylim(-100,100)
-    # plt.tight_layout()
-    # plt.savefig('temp/'+str(i))
-    # plt.close()
-
-
 # save quantities of interest.
 t_arr = np.linspace(0,t_final,num=nt)
 
-h_a = h_a[:,i0:None]
-wb = wb[:,i0:None]
-
-eta_mean = eta_mean[i0:None]
-beta_mean = beta_mean[i0:None]
-beta_mean = beta_mean[i0:None]
-
-
-
 np.savetxt(resultsname+'/s',s)
 np.savetxt(resultsname+'/h',h)
-
-np.savetxt(resultsname+'/h_a',h_a.T)
-np.savetxt(resultsname+'/wb',wb.T)
+np.savetxt(resultsname+'/wb',wb)
 np.savetxt(resultsname+'/eta_mean',eta_mean)
 np.savetxt(resultsname+'/beta_mean',beta_mean)
+np.savetxt(resultsname+'/u_mean',u_mean)
 np.savetxt(resultsname+'/x',X_fine)           # x = spatial coordinate
 np.savetxt(resultsname+'/t',t_arr)            # t = time coordinate
 np.savetxt(resultsname+'/lake_vol',lake_vol)

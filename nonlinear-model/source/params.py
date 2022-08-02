@@ -31,7 +31,8 @@ B = (2**((n-1.0)/(2*n)))*B0        # coefficient in weak form (Pa s^{1/n})
 rho_i = 917.0                      # density of ice (kg/m^3)
 rho_w = 1000.0                     # density of water (kg/m^3)
 g = 9.81                           # gravitational acceleration (m/s^2)
-C = 5.0e4                          # sliding law friction coefficient (Pa s/m)^1/n
+#C = 5.0e4                         # sliding law friction coefficient (Pa s/m)^1/n
+C = 1e5
 alpha = 0.0001
 
 # numerical parameters
@@ -41,7 +42,7 @@ eps_v = (2*1e13/B)**(1/(rm2/2.0))  # flow law regularization parameter
 
 quad_degree = 16                   # quadrature degree for weak forms
 
-tol = 1.0e-3                       # numerical tolerance for boundary geometry:
+tol = 1.0e-2                       # numerical tolerance for boundary geometry:
                                    # s(x,t) - b(x) > tol on ice-water boundary,
                                    # s(x,t) - b(x) <= tol on ice-bed boundary.
 
@@ -50,15 +51,15 @@ Hght = 1008                      # (initial) height of the domain (m)
 Lngth = 80*1000.0              # length of the domain (m)
 
 
-Ny = int(Hght/250.0)               # number of elements in vertical direction
-Nx = int(Lngth/250.0)              # number of elements in horizontal direction
+Ny = int(Hght/500.0)               # number of elements in vertical direction
+Nx = int(Lngth/500.0)              # number of elements in horizontal direction
 
 dy = Hght/Ny
 
 # time-stepping parameters
 t_period = 4*3.154e7         # oscillation period (secs; yr*sec_per_year)
-t0 = 0.025*t_period
-t_final = t0+0.075*t_period            # final time
+t0 = 0.1*t_period
+t_final = t0+1.5*t_period            # final time
 nt_per_cycle = 1000                # number of timesteps per oscillation
 nt = int(t_final/t_period*nt_per_cycle) # number of time steps
 dt = t_final/nt                    # timestep size

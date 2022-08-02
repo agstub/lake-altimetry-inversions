@@ -7,10 +7,9 @@ from hydrology import Vdot
 import numpy as np
 from dolfin import *
 
-def dPi(u,nu,t):
+def dPi(un,t):
         # derivative of penalty functional for enforcing impenetrability
         # on the ice-bed boundary.
-        un = dot(u,nu)
         return un+abs(un)
 
 def Pi(u,nu):
@@ -35,16 +34,19 @@ def weak_form(u,p,pw,v,q,qw,f,g_lake,g_in,g_out,ds,nu,T,lake_vol_0,t):
     L1 = Constant(assemble(1*ds(4)))
 
     # Nonlinear residual
+    un = dot(u,nu)
+    vn = dot(v,nu)
+
     Fw =  2*eta(u)*inner(sym(grad(u)),sym(grad(v)))*dx + (- div(v)*p + q*div(u))*dx - inner(f, v)*dx\
-         + (g_lake+pw+Constant(rho_w*g*dt)*(dot(u,nu)+Constant(Vdot(lake_vol_0,t)/L1)))*inner(nu, v)*ds(4)\
-         + qw*(inner(u,nu)+Constant(Vdot(lake_vol_0,t))/(L0))*ds(4)\
-         + (g_lake+pw+Constant(rho_w*g*dt)*(dot(u,nu)+Constant(Vdot(lake_vol_0,t)/L1)))*inner(nu, v)*ds(5)\
-         + qw*(inner(u,nu)+Constant(Vdot(lake_vol_0,t))/(L0) )*ds(5)\
-         + Constant(1e-4/eps_p)*dPi(u,nu,t)*dot(v,nu)*ds(5)\
-         + Constant(1/eps_p)*dot(u,nu)*dot(v,nu)*ds(3)\
+         + (g_lake+pw+Constant(rho_w*g*dt)*(un+Constant(Vdot(lake_vol_0,t)/L1)))*vn*ds(4)\
+         + qw*(un+Constant(Vdot(lake_vol_0,t))/(L0))*ds(4)\
+         + (g_lake+pw+Constant(rho_w*g*dt)*(un+Constant(Vdot(lake_vol_0,t)/L1)))*vn*ds(5)\
+         + qw*(un+Constant(Vdot(lake_vol_0,t))/(L0) )*ds(5)\
+         + Constant(1e-4/eps_p)*dPi(un,t)*vn*ds(5)\
+         + Constant(1/eps_p)*un*vn*ds(3)\
          + beta(dot(T,u))*inner(dot(T,u),dot(T,v))*ds(3)\
          - inner( dot(T, dot(sigma(u,p),nu)),dot(T,v) )*ds(1) - inner( dot(T, dot(sigma(u,p),nu)),dot(T,v) )*ds(2)\
-         + g_out*inner(nu,v)*ds(2) + g_in*inner(nu,v)*ds(1)
+         + g_out*vn*ds(2) + g_in*vn*ds(1)
     return Fw
 
 
@@ -87,7 +89,6 @@ def stokes_solve(mesh,lake_vol_0,s_mean,F_h,F_s,t):
         cell_markers = MeshFunction('size_t', mesh,dim=2)
         dx = Measure('dx', domain=mesh, subdomain_data=cell_markers)
 
-
         # define weak form
         Fw = weak_form(u,p,pw,v,q,qw,f,g_lake,g_in,g_out,ds,nu,T,lake_vol_0,t)
 
@@ -96,13 +97,13 @@ def stokes_solve(mesh,lake_vol_0,s_mean,F_h,F_s,t):
 
         beta_i = assemble(beta(w.sub(0))*ds(3))/assemble(Constant(1)*ds(3))
         eta_i = assemble(eta(w.sub(0))*dx)/assemble(Constant(1)*dx)
+        u_i = assemble(w.sub(0).sub(0)*ds(6))/assemble(Constant(1)*ds(6))*3.154e7
 
-        print('mean drag = '+"{:.2E}".format(beta_i)+' Pa s/m')
-        print('mean viscosity = '+"{:.2E}".format(eta_i)+' Pa s')
-
+        # print('mean u [m/yr] = '+str(u_i))
+        # print('mean drag [Pa s/m] = '+"{:.2e}".format(beta_i))
 
         # return solution w
-        return w,beta_i,eta_i
+        return w,beta_i,eta_i,u_i
 
 def get_zero(mesh):
         # get zero element of function space.

@@ -20,6 +20,13 @@ class ShoreBoundary(SubDomain):
     def inside(self, x, on_boundary):
         return (on_boundary and (x[1]<0.5*Hght) )
 
+class TopBoundary(SubDomain):
+    # Shore boundary.
+    # This boundary is marked first and all of the irrelevant portions are
+    # overwritten by the other boundary markers.
+    def inside(self, x, on_boundary):
+        return (on_boundary and (x[1]>0.5*Hght) )
+
 class WaterBoundary(SubDomain):
     # Ice-water boundary.
     # Lifting of ice from the bed *is not* allowed on this boundary.
@@ -65,6 +72,10 @@ def mark_boundary(mesh):
     bdryShore = ShoreBoundary()
     bdryShore.mark(boundary_markers, 5)
 
+    # Mark upper surface (only needed for post-processing)
+    bdryTop = TopBoundary()
+    bdryTop.mark(boundary_markers, 6)
+
     # Mark ice-water boundary
     bdryWater = WaterBoundary()
     bdryWater.mark(boundary_markers, 4)
@@ -81,6 +92,8 @@ def mark_boundary(mesh):
     bdryRight = RightBoundary()
     bdryRight.mark(boundary_markers, 2)
 
+    # # uncomment to check if bounadires are marked correctly
+    # # (by viewing markers.pvd in paraview):
     # markers = File('markers.pvd')
     # markers << boundary_markers
 

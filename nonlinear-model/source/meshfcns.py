@@ -2,7 +2,7 @@
 # These functions are used to:
 # (1) update the mesh at each timestep by solving the
 #     surface kinematic equations, AND...
-# (2) compute the grounding line positions.
+# (2) compute the basal surface normal velocity
 #------------------------------------------------------------------------------
 
 from params import tol,Lngth,Hght,realtime_plot,X_fine,Nx,dt,dy
@@ -29,10 +29,11 @@ def mesh_routine(w,mesh,dt):
     hx_fn, h_int = get_hx_fn(w,mesh)
 
     # next, move the mesh
+    #move_mesh(w,mesh)
     move_mesh(mesh,sx_fn,hx_fn,dt,s_int,h_int,w)
 
     # plot surfaces in real time if realtime_plot = "on"
-    plot_surfaces(h_int,s_int)
+    #plot_surfaces(h_int,s_int)
 
     # compute mean elevation of ice-water and ice-air surfaces
     s_mean = np.mean(s_int(X_fine)[s_int(X_fine)-tol>bed(X_fine)])
@@ -41,8 +42,60 @@ def mesh_routine(w,mesh,dt):
 
     return mesh,s_int,h_int,sx_fn
 
-#------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# def move_mesh(w,mesh):
+#     # this function computes the surface displacements and moves the mesh
+#     # by solving Laplace's equation for a smooth displacement function
+#     # defined for all mesh vertices
+#
+#     V = FunctionSpace(mesh, 'CG', 1)
+#
+#     # define surface elevation functions
+#
+#
+#     z_expr = Expression('x[1]',degree=2)
+#     z_fcn = Function(V)
+#     z_fcn.assign(interpolate(z_expr,V))
+#
+#     z_x = Function(V)
+#     z_x.assign(project(Dx(z_fcn,0),V))
+#
+#     # displacement at upper and lower boundaries
+#     disp_expr = w.sub(0).sub(1) - w.sub(0).sub(0)*z_x
+#
+#
+#     disp_bdry = project(dt*disp_expr,V)
+#
+#     boundary_markers = mark_boundary(mesh)
+#
+#     # define displacement boundary conditions on upper and lower surfaces
+#     bc1 = DirichletBC(V,disp_bdry,boundary_markers,6)            # top boundary
+#     bc2 = DirichletBC(V,disp_bdry,boundary_markers,4)            # ice-water boundary
+#     bc4 = DirichletBC(V,disp_bdry,boundary_markers,5)            # shore boundary
+#     bc3 = DirichletBC(V,Constant(0),boundary_markers,3)          # ice-bed boundary
+#
+#     bcs = [bc1,bc2,bc3,bc4]
+#
+#     # solve Laplace's equation for a smooth displacement field on all vertices,
+#     # given the boundary displacement disp_bdry
+#     disp = Function(V)
+#     v = TestFunction(V)
+#     F = inner(grad(disp), grad(v))*dx
+#     solve(F == 0, disp, bcs=bcs)
+#
+#     # get the displacement at the nodes
+#     disp_vv = disp.compute_vertex_values(mesh)
+#
+#     # get mesh coordinates
+#     M = mesh.coordinates()
+#
+#     # displacement the mesh vertices with the displacement function
+#     M[:,1] += disp_vv
+#     M[:,1][M[:,1]<bed(M[:,0])] = bed(M[:,0])[M[:,1]<bed(M[:,0])]
+#
+#     return mesh
 
+#-------------------------------------------------------------------------------
 def move_mesh(mesh,sx_fn,hx_fn,dt,s_int,h_int,w):
     # this function computes the surface displacements and moves the mesh.
 
