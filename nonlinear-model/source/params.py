@@ -52,7 +52,7 @@ Lngth = 80*1000.0              # length of the domain (m)
 
 
 Ny = int(Hght/500.0)               # number of elements in vertical direction
-Nx = int(Lngth/500.0)              # number of elements in horizontal direction
+Nx = int(Lngth/100.0)              # number of elements in horizontal direction
 
 dy = Hght/Ny
 

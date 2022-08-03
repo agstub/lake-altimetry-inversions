@@ -38,7 +38,7 @@ class BedBoundary(SubDomain):
     # by BasinBoundary.
     # Lifting of ice from the bed *is not* allowed on this boundary.
     def inside(self, x, on_boundary):
-        return (on_boundary and (x[1]<0.5*Hght) and ((x[1]-bed(x[0]))<=tol ) )
+        return (on_boundary and (x[1]<0.5*Hght) and ((x[1]-bed(x[0]))<=1e-3*tol ) )
 
 class LeftBoundary(SubDomain):
     # Left boundary

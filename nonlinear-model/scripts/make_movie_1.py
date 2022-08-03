@@ -64,7 +64,7 @@ for i in range(nt):
     # Plot bed surface
     plt.plot(X/1000-0.5*Lngth/1000,bed(X),color='k',linewidth=1,label=r'$\beta$')
 
-    plt.plot(X[(s[:,i]-bed(X)>tol)]/1000-0.5*Lngth/1000,s[:,i][(s[:,i]-bed(X)>tol)],'o',color='crimson',markersize=1,label=r'$s>\beta$')
+    plt.plot(X[(s[:,i]-bed(X)>1e-3*tol)]/1000-0.5*Lngth/1000,s[:,i][(s[:,i]-bed(X)>1e-3*tol)],'o',color='crimson',markersize=1,label=r'$s>\beta$')
 
     plt.annotate(r'air',xy=(-35,20),fontsize=16)
     plt.annotate(r'ice',xy=(-35,8),fontsize=16)

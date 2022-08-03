@@ -33,7 +33,7 @@ def mesh_routine(w,mesh,dt):
     move_mesh(mesh,sx_fn,hx_fn,dt,s_int,h_int,w)
 
     # plot surfaces in real time if realtime_plot = "on"
-    #plot_surfaces(h_int,s_int)
+    plot_surfaces(h_int,s_int)
 
     # compute mean elevation of ice-water and ice-air surfaces
     s_mean = np.mean(s_int(X_fine)[s_int(X_fine)-tol>bed(X_fine)])
@@ -259,7 +259,7 @@ def plot_surfaces(h_int,s_int):
         plt.plot(X/1000-0.5*Lngth/1000,bed(X),color='k',linewidth=1,label=r'$\beta$')
 
         # Plot ice-water surface
-        plt.plot(X[Gamma_s[:]-bed(X)>tol]/1000-0.5*Lngth/1000,Gamma_s[:][Gamma_s[:]-bed(X)>tol],'o',color='crimson',markersize=1,label=r'$s>\beta$')
+        plt.plot(X[Gamma_s[:]-bed(X)>tol]/1000-0.5*Lngth/1000,Gamma_s[:][Gamma_s[:]-bed(X)>1e-3*tol],'o',color='crimson',markersize=1,label=r'$s>\beta$')
 
 
         # Label axes and save png:

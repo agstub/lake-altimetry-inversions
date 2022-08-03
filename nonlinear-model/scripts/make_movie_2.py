@@ -12,7 +12,6 @@ sys.path.insert(0, './source')
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
-from params import nt,t0,dt,Lngth
 import os
 
 
@@ -22,60 +21,54 @@ if os.path.isdir('pngs_2')==False:
 # Load relevant files
 resultsname = 'results'
 
-wb = np.loadtxt(resultsname+'/wb')             # Lower surface
-h = np.loadtxt(resultsname+'/h')             # Upper surface
+wb = np.load('data/wb.npy')             # Lower surface
+h = np.load('data/h.npy')             # Upper surface
+dV = np.load('data/dV.npy')             # Upper surface
 
 
 # Create array for plotting
-x = np.loadtxt(resultsname+'/x')                          # x-coordinate array
-t = np.loadtxt(resultsname+'/t')
-lake_vol = np.loadtxt(resultsname+'/lake_vol')
+x = np.load('data/x.npy')                          # x-coordinate array
+t = np.load('data/t.npy')
 
-i0 = int(t0/dt)
+for i in range(np.size(t)):
+    print('image '+str(i)+' out of '+str(np.size(t)))
 
-wb = wb-np.outer(wb[:,i0],np.ones(np.size(t)))
-h = h-np.outer(h[:,i0],np.ones(np.size(t)))
+    plt.figure(figsize=(12,6))
 
-wb = wb[:,i0:None]
-h = h[:,i0:None]
-
-V = (lake_vol[i0:None]-lake_vol[i0])/lake_vol[i0]
-
-x0 = (x-0.5*Lngth)/1e3
-t0 = t/3.154e7
-
-for i in range(nt-i0):
-    print('image '+str(i)+' out of '+str(nt-i0))
-
-    plt.figure(figsize=(8,10))
-
-    plt.subplot(311)
-    plt.plot(t0[0:i],V[0:i],color='royalblue',linewidth=3)
-    plt.ylabel(r'$\Delta V$',fontsize=16)
-    plt.xlim(0,t0[-1])
-    plt.ylim(-1,1)
-    plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.2f'))
+    plt.subplot(121)
+    plt.plot(t[0:i],dV[0:i]*100,color='royalblue',linewidth=3)
+    plt.plot([t[i]],[dV[i]*100],color='crimson',marker='o',markersize=15)
+    plt.ylabel(r'$\Delta V$ (%)',fontsize=20)
+    plt.xlim(0,t[-1])
+    plt.ylim(-100,100)
+    #plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.2f'))
     plt.xlabel(r'$t$ (yr)',fontsize=20)
     plt.xticks(fontsize=16)
     plt.yticks(fontsize=16)
 
 
-    plt.subplot(312)
-    plt.plot(x0,h[:,i],color='royalblue',linewidth=3)
-    plt.ylabel(r'$h$ (m)',fontsize=16)
+    plt.subplot(222)
+    plt.plot(x,h[i,:],color='royalblue',linewidth=3)
+    plt.ylabel(r'$h$ (m)',fontsize=20)
     plt.yticks(fontsize=16)
     plt.gca().xaxis.set_ticklabels([])
     plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.2f'))
+    plt.gca().yaxis.tick_right()
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.gca().yaxis.set_label_position("right")
     plt.ylim(-2,2)
 
 
-    plt.subplot(313)
-    plt.plot(x0,wb[:,i],color='royalblue',linewidth=3)
-    plt.ylabel(r'$w_b$ (m/yr)',fontsize=16)
-    plt.ylim(-10,10)
+    plt.subplot(224)
+    plt.plot(x,wb[i,:],color='royalblue',linewidth=3)
+    plt.ylabel(r'$w_b$ (m/yr)',fontsize=20)
+    plt.ylim(-15,5)
     plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.2f'))
     # Label axes and save png:
     plt.xlabel(r'$x$ (km)',fontsize=20)
+    plt.gca().yaxis.tick_right()
+    plt.gca().yaxis.set_label_position("right")
     plt.xticks(fontsize=16)
     plt.yticks(fontsize=16)
     plt.tight_layout()
