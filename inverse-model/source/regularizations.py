@@ -5,12 +5,12 @@
 
 
 from params import k,x,y,dt
-from scipy.fft import ifft2,fft2
+from kernel_fcns import ifftd,fftd
 import numpy as np
 
 def lap(f):
     # negative Laplacian computed via Fourier transform
-    return ifft2((k**2)*fft2(f)).real
+    return ifftd((k**2)*fftd(f)).real
 
 
 def reg(f,reg_type):

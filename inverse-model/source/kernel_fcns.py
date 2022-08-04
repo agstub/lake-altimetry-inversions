@@ -1,22 +1,47 @@
 # this file contains the integral kernel functions that are used for applying the
 # forward and adjoint operators
 import numpy as np
-from params import beta0,k,kx,lamda,t,dt,Nt
+from params import beta0,k,kx,lamda,t,dt,Nt,uh0,dim
 from scipy.signal import fftconvolve
+from scipy.fft import ifft2,fft2,fft,ifft
 
 #---------------------convolution and cross-correlation operators---------------
 def conv(a,b):
-    return dt*fftconvolve(a,b,mode='full',axes=0)[0:Nt,:,:]
+    if dim>1:
+        C = dt*fftconvolve(a,b,mode='full',axes=0)[0:Nt,:,:]
+    else:
+        C = dt*fftconvolve(a,b,mode='full',axes=0)[0:Nt,:]
+    return C
 
 def xcor(a,b):
-    return dt*fftconvolve(np.conjugate(np.flipud(a)),b,mode='full',axes=0)[(Nt-1):2*Nt,:,:]
+    if dim>1:
+        C = dt*fftconvolve(np.conjugate(np.flipud(a)),b,mode='full',axes=0)[(Nt-1):2*Nt,:,:]
+    else:
+        C = dt*fftconvolve(np.conjugate(np.flipud(a)),b,mode='full',axes=0)[(Nt-1):2*Nt,:]
+    return C
+
+def fftd(f):
+    if dim >1:
+        C = fft2(f)
+    else:
+        C = fft(f)
+    return C
+
+def ifftd(f):
+    if dim >1:
+        C = ifft2(f)
+    else:
+        C = ifft(f)
+    return C
+
 
 #------------------------Functions in kernel------------------------------------
 def Rg():
     # Ice surface relaxation function for grounded ice
+    #slope = 10*np.pi/180.0
     n = 2*np.pi*k           # used to convert to SciPy's Fourier Transform definition
     g = beta0/n
-    c_a = 0 # future: if we know bed slope then... (1j*kx/k)*np.tan(slope)
+    c_a = 0#(1j*kx/k)*np.tan(slope) # future: if we know bed slope then... (1j*kx/k)*np.tan(slope)
     R1 =  (1/n)*((1+g)*np.exp(4*n) - (2+4*g*n-4*c_a*n*(1+g*n))*np.exp(2*n) + 1 -g)
     D = (1+g)*np.exp(4*n) + (2*g+4*n+4*g*(n**2))*np.exp(2*n) -1 + g
 
@@ -38,7 +63,6 @@ Tw_ = Tw()
 
 def ker_w():
     # kernel for w_b forward problem
-    uh0,ub0 = 0,0
     K_0 = np.exp(-(1j*(2*np.pi*kx)*uh0+lamda*Rg_)*t)
     K = K_0*Tw_
 

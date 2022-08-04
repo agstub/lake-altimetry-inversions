@@ -2,7 +2,7 @@
 # the normal equations that arise from the least-squares minimization problem
 
 from operators import adj_fwd
-from params import dx,dy,dt,cg_tol,max_cg_iter
+from params import dx,dt,cg_tol,max_cg_iter,dim
 from scipy.integrate import trapz
 import numpy as np
 
@@ -11,7 +11,10 @@ import numpy as np
 def prod(a,b):
     # inner product for the optimization problem: L^2(0,T;L^2) space-time inner product
     int = a*b
-    p = trapz( trapz(trapz(int,dx=dx,axis=-2),dx=dy,axis=-1) ,dx=dt,axis=0)
+    if dim>1:
+        p = trapz( trapz(trapz(int,dx=dx,axis=-2),dx=dy,axis=-1) ,dx=dt,axis=0)
+    else:
+        p = trapz(trapz(int,dx=dx,axis=-1),dx=dt,axis=0)
     return p
 
 
