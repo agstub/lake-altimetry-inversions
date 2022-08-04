@@ -12,7 +12,7 @@ realtime_plot = 'on'
 print_convergence = 'off'
 
 # save vtk files for stokes solution if 'on':
-save_vtk = 'on'
+save_vtk = 'off'
 
 #-------------------------------------------------------------------------------
 #-----------------------------MODEL PARAMETERS----------------------------------

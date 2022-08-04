@@ -5,7 +5,7 @@ from scipy.fft import fftfreq
 
 # SET DATA DIRECTORY
 
-data_dir = '../data'
+data_dir = '../data_nonlinear'
 
 #----------------------------regularization-------------------------------------
 # set reguarization type
@@ -41,7 +41,7 @@ Nt = np.size(t_d)                    # number of time steps
 if dim>1:
     h0 = np.load(data_dir+'/h.npy')[0,:,:]+ np.zeros((Nt,Ny,Nx))
 else:
-    h0 = np.load('../data/h.npy')[0,:]+ np.zeros((Nt,Nx))
+    h0 = np.load(data_dir+'/h.npy')[0,:]+ np.zeros((Nt,Nx))
 
 H = np.mean(H_d)                   # ice thickness over the lake
 beta_e = beta_d[0]                 # basal drag coeff. near the lake

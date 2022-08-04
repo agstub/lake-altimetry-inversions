@@ -38,10 +38,9 @@ def ifftd(f):
 #------------------------Functions in kernel------------------------------------
 def Rg():
     # Ice surface relaxation function for grounded ice
-    #slope = 10*np.pi/180.0
     n = 2*np.pi*k           # used to convert to SciPy's Fourier Transform definition
     g = beta0/n
-    c_a = 0#(1j*kx/k)*np.tan(slope) # future: if we know bed slope then... (1j*kx/k)*np.tan(slope)
+    c_a = 0 # future: if we know bed slope then... (1j*kx/k)*np.tan(slope)
     R1 =  (1/n)*((1+g)*np.exp(4*n) - (2+4*g*n-4*c_a*n*(1+g*n))*np.exp(2*n) + 1 -g)
     D = (1+g)*np.exp(4*n) + (2*g+4*n+4*g*(n**2))*np.exp(2*n) -1 + g
 

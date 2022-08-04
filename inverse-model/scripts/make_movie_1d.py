@@ -8,13 +8,14 @@
 
 import sys
 sys.path.insert(0, '../source')
-sys.path.insert(0, '../data')
+from params import H,data_dir
+sys.path.insert(0, data_dir)
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
 import os
-from params import H
+
 
 
 if os.path.isdir('../pngs')==False:
@@ -24,9 +25,9 @@ if os.path.isdir('../pngs')==False:
 resultsname = 'results'
 
 # "data" and true solution
-wb = np.load('../data/wb.npy')             # Lower surface
-h = np.load('../data/h.npy')               # Upper surface
-dV = np.load('../data/dV.npy')             # Upper surface
+wb = np.load(data_dir+'/wb.npy')             # Lower surface
+h = np.load(data_dir+'/h.npy')               # Upper surface
+dV = np.load(data_dir+'/dV.npy')             # Upper surface
 
 # inversion and associated forward elevation, volume change estimate
 w_inv = np.load('../results/w_inv.npy')             # Lower surface
@@ -34,8 +35,8 @@ h_fwd = np.load('../results/h_fwd.npy')               # Upper surface
 dV_inv = np.load('../results/dV_inv.npy')             # Upper surface
 
 # Create array for plotting
-x = np.load('../data/x.npy')                          # x-coordinate array
-t = np.load('../data/t.npy')
+x = np.load(data_dir+'/x.npy')                          # x-coordinate array
+t = np.load(data_dir+'/t.npy')
 
 for i in range(np.size(t)):
     print('image '+str(i)+' out of '+str(np.size(t)))
@@ -43,7 +44,7 @@ for i in range(np.size(t)):
     plt.figure(figsize=(12,6))
 
     plt.subplot(121)
-    plt.plot(t[0:i],dV[0:i]*H,color='royalblue',linewidth=3,label=r'true sol.')
+    plt.plot(t[0:i],dV[0:i],color='royalblue',linewidth=3,label=r'true sol.')
     plt.plot(t[0:i],dV_inv[0:i]*H,color='k',linestyle='--',linewidth=3,label=r'inversion')
 
     plt.ylabel(r'$\Delta V$ (m$^2$)',fontsize=20)
