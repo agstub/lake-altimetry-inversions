@@ -1,37 +1,25 @@
 # this file contains the integral kernel functions that are used for applying the
 # forward and adjoint operators
 import numpy as np
-from params import beta0,k,kx,lamda,t,dt,Nt,uh0,dim
+from params import beta0,k,kx,lamda,t,dt,Nt,uh0,ub
 from scipy.signal import fftconvolve
 from scipy.fft import ifft2,fft2,fft,ifft
 
 #---------------------convolution and cross-correlation operators---------------
 def conv(a,b):
-    if dim>1:
-        C = dt*fftconvolve(a,b,mode='full',axes=0)[0:Nt,:,:]
-    else:
-        C = dt*fftconvolve(a,b,mode='full',axes=0)[0:Nt,:]
+    C = dt*fftconvolve(a,b,mode='full',axes=0)[0:Nt,:,:]
     return C
 
 def xcor(a,b):
-    if dim>1:
-        C = dt*fftconvolve(np.conjugate(np.flipud(a)),b,mode='full',axes=0)[(Nt-1):2*Nt,:,:]
-    else:
-        C = dt*fftconvolve(np.conjugate(np.flipud(a)),b,mode='full',axes=0)[(Nt-1):2*Nt,:]
+    C = dt*fftconvolve(np.conjugate(np.flipud(a)),b,mode='full',axes=0)[(Nt-1):2*Nt,:,:]
     return C
 
 def fftd(f):
-    if dim >1:
-        C = fft2(f)
-    else:
-        C = fft(f)
+    C = fft2(f)
     return C
 
 def ifftd(f):
-    if dim >1:
-        C = ifft2(f)
-    else:
-        C = ifft(f)
+    C = ifft2(f)
     return C
 
 
@@ -58,6 +46,20 @@ def Tw():
 Rg_ = Rg()
 Tw_ = Tw()
 
+
+def Tb():
+    # Basal sliding transfer function
+    n = 2*np.pi*k           # used to convert to SciPy's Fourier Transform definition
+    nx = 2*np.pi*kx
+    g = beta0/n
+    F1 =  (2/n)*(np.exp(3*n) + np.exp(n))
+    D = (1+g)*np.exp(4*n) + (2*g+4*n+4*g*(n**2))*np.exp(2*n) -1 + g
+
+    return F1/D
+
+Tb_ = Tb()
+
+
 #------------------------------- Kernel-----------------------------------------
 
 def ker_w():
@@ -68,3 +70,17 @@ def ker_w():
     return K
 
 ker_w_ = ker_w()
+
+
+
+
+#-------------beta stuff--------------------------------------------------------
+
+
+def ker_beta():
+    # kernel for beta forward problem
+    K_h = np.exp(-(1j*(2*np.pi*kx)*uh0+lamda*Rg_)*t)
+    K =  1j*(2*np.pi*kx)*ub*Tb_*K_h
+    return K
+
+ker_beta_ = ker_beta()

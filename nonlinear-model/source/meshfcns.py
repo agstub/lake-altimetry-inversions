@@ -259,7 +259,7 @@ def plot_surfaces(h_int,s_int):
         plt.plot(X/1000-0.5*Lngth/1000,bed(X),color='k',linewidth=1,label=r'$\beta$')
 
         # Plot ice-water surface
-        plt.plot(X[Gamma_s[:]-bed(X)>tol]/1000-0.5*Lngth/1000,Gamma_s[:][Gamma_s[:]-bed(X)>1e-3*tol],'o',color='crimson',markersize=1,label=r'$s>\beta$')
+        plt.plot(X[Gamma_s[:]-bed(X)>1e-3*tol]/1000-0.5*Lngth/1000,Gamma_s[:][Gamma_s[:]-bed(X)>1e-3*tol],'o',color='crimson',markersize=1,label=r'$s>\beta$')
 
 
         # Label axes and save png:

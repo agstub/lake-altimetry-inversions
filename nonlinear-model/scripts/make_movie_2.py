@@ -21,14 +21,14 @@ if os.path.isdir('pngs_2')==False:
 # Load relevant files
 resultsname = 'results'
 
-wb = np.load('data/wb.npy')             # Lower surface
-h = np.load('data/h.npy')             # Upper surface
-dV = np.load('data/dV.npy')             # Upper surface
+wb = np.load('data_nonlinear/wb.npy')             # Lower surface
+h = np.load('data_nonlinear/h.npy')             # Upper surface
+dV = np.load('data_nonlinear/dV.npy')             # Upper surface
 
 
 # Create array for plotting
-x = np.load('data/x.npy')                          # x-coordinate array
-t = np.load('data/t.npy')
+x = np.load('data_nonlinear/x.npy')                          # x-coordinate array
+t = np.load('data_nonlinear/t.npy')
 
 for i in range(np.size(t)):
     print('image '+str(i)+' out of '+str(np.size(t)))

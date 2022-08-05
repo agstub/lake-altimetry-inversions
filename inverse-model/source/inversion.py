@@ -5,10 +5,10 @@ from conj_grad import cg_solve,norm
 from operators import forward_w,adjoint_w
 import numpy as np
 from kernel_fcns import fftd,ifftd
-from params import h0,t,lamda,x
+from params import t,lamda,x,Nx,h0
 from kernel_fcns import Rg_
 import os
-from post_process import calc_dV
+from post_process import calc_dV_w
 
 def invert(h_obs,eps_w):
     # invert for w given the observed elevation change h_obs
@@ -24,12 +24,9 @@ def invert(h_obs,eps_w):
     if os.path.isdir('../results')==False:
         os.mkdir('../results')       # make a directory for the results.
 
-    dV_inv = calc_dV(w_inv,L=np.max(x)-5)
-
     np.save('../results/w_inv.npy',w_inv)
     np.save('../results/h_fwd.npy',h_fwd)
-    np.save('../results/dV_inv.npy',dV_inv)
 
 
 
-    return w_inv,h_fwd,dV_inv,mis
+    return w_inv,h_fwd,mis

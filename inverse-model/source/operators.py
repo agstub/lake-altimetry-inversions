@@ -12,8 +12,8 @@
 
 
 import numpy as np
-from kernel_fcns import Rg_,Tw_,ker_w_,conv,xcor
-from params import w_reg,t,k,kx,ky,dx
+from kernel_fcns import Rg_,Tw_,ker_w_,ker_beta_,conv,xcor
+from params import w_reg,t,k,kx,ky,dx,Nx
 from kernel_fcns import ifftd,fftd
 from regularizations import reg
 
@@ -36,3 +36,13 @@ def adjoint_w(f_ft):
     S = ifftd(xcor(ker_w_,f_ft)).real
     return S
 #-------------------------------------------------------------------------------
+
+def forward_beta(beta):
+    # forward operator for slipperiness beta
+    # returns the data (elevation) h
+
+    beta_ft = fftd(beta)
+
+    S_ft = conv(ker_beta_,beta_ft)
+
+    return S_ft

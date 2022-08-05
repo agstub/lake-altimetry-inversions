@@ -21,7 +21,8 @@ def eta(u):
         return 0.5*B*((inner(sym(grad(u)),sym(grad(u)))+Constant(eps_v))**(rm2/2.0))
 
 def beta(Tu):
-        return Constant(C)*((Constant(eps_v)+inner(Tu,Tu))**(rm2/2.0))
+        #return Constant(C)*((Constant(eps_v)+inner(Tu,Tu))**(rm2/2.0))
+        return 1e8
 
 def sigma(u,p):
         return -p*Identity(2) + 2*eta(u)*sym(grad(u))
@@ -95,12 +96,12 @@ def stokes_solve(mesh,lake_vol_0,s_mean,F_h,F_s,t):
         # solve for (u,p,pw).
         solve(Fw == 0, w, bcs=[],solver_parameters={"newton_solver":{"relative_tolerance": 1e-14,"maximum_iterations":50}},form_compiler_parameters={"quadrature_degree":quad_degree,"optimize":True,"eliminate_zeros":False})
 
-        beta_i = assemble(beta(w.sub(0))*ds(3))/assemble(Constant(1)*ds(3))
+        beta_i = assemble(beta(dot(T,w.sub(0)))*ds(3))/assemble(Constant(1)*ds(3)+Constant(1)*ds(4)+Constant(1)*ds(5))
         eta_i = assemble(eta(w.sub(0))*dx)/assemble(Constant(1)*dx)
         u_i = assemble(w.sub(0).sub(0)*ds(6))/assemble(Constant(1)*ds(6))*3.154e7
 
-        # print('mean u [m/yr] = '+str(u_i))
-        # print('mean drag [Pa s/m] = '+"{:.2e}".format(beta_i))
+        print('mean u [m/yr] = '+str(u_i))
+        print('mean drag [Pa s/m] = '+"{:.2e}".format(beta_i))
 
         # return solution w
         return w,beta_i,eta_i,u_i
