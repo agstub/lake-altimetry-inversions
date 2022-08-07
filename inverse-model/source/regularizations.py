@@ -16,7 +16,7 @@ def lap(f):
 def reg(f,reg_type):
     # first variation of regularization functional
     if reg_type == 'H1':
-        R = lap(f)       # note: adding an L2 term here seems to help with convergence
+        R = f+7e2*lap(f)    # note: adding an L2 term here seems to help with convergence
     elif reg_type == 'L2':
         R = f
     return R

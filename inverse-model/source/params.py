@@ -5,46 +5,30 @@ from scipy.fft import fftfreq
 
 # SET DATA DIRECTORY
 
-data_dir = '../data_nonlinear'
+data_dir = '../data_synth_lin'
 
 #----------------------------regularization-------------------------------------
 # set reguarization type
 
 # Regularization options: L2 and H1 (see regularizations.py)
-w_reg = 'L2'
+w_reg = 'H1'
 
 #----------------------import space and time arrays-----------------------------
 
 # arrays from the data directory
-h_obs = np.load(data_dir+'/h.npy')
+t0 = np.load(data_dir+'/t.npy')       # time array (yr)
+x0 = np.load(data_dir+'/x.npy')       # x array (m)
+y0 = np.load(data_dir+'/y.npy')       # y array (m)
 
-t_d = np.load(data_dir+'/t.npy')       # time array (yr)
-x_d = np.load(data_dir+'/x.npy')       # x array (m)
-y_d = np.load(data_dir+'/y.npy')       # y array (m)
-
-H_d = np.load(data_dir+'/H.npy')       # ice thickness (m)
-beta_d = np.load(data_dir+'/beta.npy') # basal drag coeff (Pa s/m)
-eta_d = np.load(data_dir+'/eta.npy')     # Newtonian ice viscosity (Pa s)
-u_d = np.load(data_dir+'/u.npy')     # mean surface velocity (Pa s)
+H = np.load(data_dir+'/H.npy').mean()       # ice thickness (m)
+beta = np.load(data_dir+'/beta.npy').mean() # basal drag coeff (Pa s/m)
+eta = np.load(data_dir+'/eta.npy').mean()     # Newtonian ice viscosity (Pa s)
+u = np.load(data_dir+'/u.npy').mean()     # mean surface velocity (Pa s)
 
 # initial elevation profile (used in RHS of normal equations)
 #h0 = np.load(data_dir+'/h.npy')[0,:,:]+ np.zeros(np.shape(h_obs))
 
 #-------------------------------------------------------------------------------
-H = 1000         #np.mean(H_d)         # ice thickness over the lake
-beta_e = 1e8     #beta_d[0]            # basal drag coeff. near the lake
-eta = 1e13       #eta_d[0]
-u = 0            #u_d[0]
-
-# print('{:.2e}'.format(eta))
-# print('{:.2e}'.format(beta_e))
-# print('{:.2e}'.format(u))
-# print('{:.2e}'.format(H))
-
-# scale and shift the data coordinates to be consistent with model formulation
-t0 = np.linspace(0,6,100)#t_d          # time
-x0 = x_d*1000/H #x_d                   # x coordinate
-y0 = y_d*1000/H #x_d                   # y coordinate
 
 # number of grid points in each direction
 Nx = np.size(x0)                    # number of grid points in x-direction
@@ -74,7 +58,7 @@ t_r = 2*eta/(rho_i*g*H)     # viscous relaxation time
 lamda = t_sc/t_r           # process timescale relative to
                            # surface relaxation timescale
 
-beta0 = beta_e*H/(2*eta)   # friction coefficient relative to ice viscosity
+beta0 = beta*H/(2*eta)   # friction coefficient relative to ice viscosity
 
 uh0 = u/H                  # advection
 

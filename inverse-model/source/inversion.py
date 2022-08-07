@@ -9,6 +9,7 @@ from params import t,lamda,x,Nx,h0
 from kernel_fcns import Rg_
 import os
 from post_process import calc_dV_w
+from localization import localize
 
 def invert(h_obs,eps_w):
     # invert for w given the observed elevation change h_obs
@@ -24,9 +25,9 @@ def invert(h_obs,eps_w):
     if os.path.isdir('../results')==False:
         os.mkdir('../results')       # make a directory for the results.
 
+    w_inv = localize(w_inv)
+
     np.save('../results/w_inv.npy',w_inv)
     np.save('../results/h_fwd.npy',h_fwd)
-
-
 
     return w_inv,h_fwd,mis

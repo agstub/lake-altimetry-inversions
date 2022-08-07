@@ -8,7 +8,7 @@ import numpy as np
 from kernel_fcns import ifftd,fftd
 from conj_grad import norm
 from post_process import calc_dV_w,calc_dV_h
-from pre_process import trim
+from localization import localize
 import os
 if os.path.isdir('../pngs')==False:
     os.mkdir('../pngs')    # make a directory for the results.
@@ -16,41 +16,33 @@ if os.path.isdir('../pngs')==False:
 
 import matplotlib.pyplot as plt
 
-L = 10
-sigma = (1000/H)*L/3
+h_obs = np.load(data_dir+'/h.npy')
+w_true = np.load(data_dir+'/w_true.npy')
 
-w_true = 5*np.exp(-0.5*(sigma**(-2))*(x**2+y**2))*np.sin(4*np.pi*t/np.max(t))
 
-h = ifftd(forward_w(w_true)).real
-
-h_mean = np.copy(h)
+# generate timeseries over the lake to estimate
+h_mean = np.copy(h_obs)
 h_mean[np.sqrt(x**2+y**2)>5] = 0
 h_mean = np.sum(h_mean,axis=(-1,-2))/np.sum(h_mean!=0,axis=(-1,-2))
 i_est = np.argmax(np.abs(h_mean))
 
-h_temp = 1+0*h[i_est,:,:]
-h_temp[np.abs(h[i_est,:,:])<0.1] = 0
+h_temp = 1+0*h_obs[i_est,:,:]
+h_temp[np.abs(h_obs[i_est,:,:])<0.1] = 0
 h_bdry = np.multiply.outer(np.ones(Nt),h_temp)
 
 w_bdry = 1+0*x
-w_bdry[np.sqrt(x**2+y**2)>3*sigma] = 0
+w_bdry[np.sqrt(x**2+y**2)>1e4/H] = 0
 
-noise_h = np.random.normal(size=(Nt,Nx,Ny))
-noise_level = 0.25
-h_obs = h + noise_level*norm(h)*noise_h/norm(noise_h)
-
-
-w_inv,h_fwd,mis = invert(h_obs,7e-3)
+w_inv,h_fwd,mis = invert(h_obs,1e-3)
 
 print('misfit norm = '+str(mis))
-#print('(noise level = '+str(noise_level)+')')
 
 dV_true = calc_dV_w(w_true,w_bdry)
 dV_alt = calc_dV_h(h_obs,h_bdry)
 dV_inv = calc_dV_w(w_inv,w_bdry)
 
-hs_true = np.argmax(np.abs(dV_true[0:int(Nt/2.)+10]))
-hs_alt = np.argmax(np.abs(dV_alt[0:int(Nt/2.)+10]))
+hs_true = np.argmax((dV_true[0:int(Nt/2.)+10]))
+hs_alt = np.argmax((dV_alt[0:int(Nt/2.)+10]))
 
 
 xy_str = H/1e3
