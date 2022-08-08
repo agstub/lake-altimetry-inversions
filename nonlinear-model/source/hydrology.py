@@ -30,7 +30,7 @@ def Vol(t,lake_vol_0):
         V = lake_vol_0+0*t
     else:
         V = 2*lake_vol_0*swt((t-t0)/t_period)
-    return V
+    return V/(2*np.pi)
 
 def Vdot(lake_vol_0,t):
     # compute rate of subglacial lake volume change

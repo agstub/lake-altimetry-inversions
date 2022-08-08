@@ -14,13 +14,13 @@ from geometry import interface,bed
 from meshfcns import mesh_routine,get_wb
 import scipy.integrate as scpint
 import os
-from params import (rho_i,g,tol,t_final,Lngth,Hght,nt,dt,rho_w,dy,alpha,
+from params import (rho_i,g,tol,t_final,Lngth,Hght,nt,dt,rho_w,dy,
                     print_convergence,X_fine,nx,Nx,Ny,save_vtk,i0)
 
 #--------------------Initial conditions-----------------------------------------
 # compute initial mean elevation of ice-water interface and initial lake volume.
 s_mean0 = np.mean(interface(X_fine)[interface(X_fine)-bed(X_fine)>tol])
-lake_vol_0 = scpint.quad(lambda x: interface(x)-bed(x),-0.5*Lngth,0.5*Lngth,full_output=1)[0]
+lake_vol_0 = 2*scpint.quad(lambda x: interface(x)-bed(x),0,0.5*Lngth,full_output=1)[0]
 #-------------------------------------------------------------------------------
 
 resultsname = 'results'
@@ -37,16 +37,13 @@ if save_vtk == 'on':
     vtkfile_p = File(resultsname+'/stokes/p.pvd')
 
 # create mesh
-p0 = Point((-0.5*Lngth,0.0))
+p0 = Point((0.0,0.0))
 p1 = Point((0.5*Lngth,Hght))
 mesh = RectangleMesh(p0,p1, Nx, Ny,diagonal="left/right")
 
 M = mesh.coordinates()
 # make sure all vertices are bounded below by the bed elevation
 M[:,1][M[:,1]<bed(M[:,0])] = bed(M[:,0])[M[:,1]<bed(M[:,0])]
-M[:,1][np.abs(M[:,1]-Hght)<0.9*dy] = Hght - M[:,0][np.abs(M[:,1]-Hght)<0.9*dy]*np.arctan(alpha)
-
-
 
 # define arrays for saving surfaces, lake volume, basal vertical velocity, viscosity,
 # horizontal surface velocity, and basal drag over time.
@@ -72,7 +69,7 @@ for i in range(nt):
         s_mean_i = s_mean0                    # Mean ice-water elevation.
         w = get_zero(mesh)
         mesh,s_int,h_int,sx_fn = mesh_routine(w,mesh,dt)
-        h_int = lambda x: Hght-x*np.arctan(alpha) # Ice-air surface function
+        h_int = lambda x: Hght # Ice-air surface function
         s_int = lambda x: interface(x)            # Lower surface function
 
     # solve the Stoke problem, returns solution "w", along with the mean basal drag "beta",
@@ -94,7 +91,7 @@ for i in range(nt):
     u_mean[i] = u_i
 
     # compute lake volume: integral of lower surface minus the bed elevation
-    lake_vol[i] = scpint.quad(lambda x: s_int(x)-bed(x),-0.5*Lngth,0.5*Lngth,full_output=1)[0]
+    lake_vol[i] = 2*scpint.quad(lambda x: s_int(x)-bed(x),0,0.5*Lngth,full_output=1)[0]
 
 
     # save Stokes solution if desired

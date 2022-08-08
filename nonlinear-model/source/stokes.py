@@ -1,13 +1,13 @@
 # This file contains the functions needed for solving the Stokes system.
 
-from params import rho_i,g,tol,B,rm2,rho_w,C,eps_p,eps_b,eps_v,dt,quad_degree,Lngth,t_period,Hght,alpha
-from boundaryconds import mark_boundary
+from params import rho_i,g,tol,B,rm2,rho_w,C,eps_p,eps_b,eps_v,dt,quad_degree,Lngth,t_period,Hght
+from boundaryconds import mark_boundary,apply_bcs
 from geometry import bed
 from hydrology import Vdot
 import numpy as np
 from dolfin import *
 
-def dPi(un,t):
+def dPi(un):
         # derivative of penalty functional for enforcing impenetrability
         # on the ice-bed boundary.
         return un+abs(un)
@@ -17,17 +17,34 @@ def Pi(u,nu):
         un = dot(u,nu)
         return 0.5*(un**2.0+un*abs(un))
 
-def eta(u):
-        return 0.5*B*((inner(sym(grad(u)),sym(grad(u)))+Constant(eps_v))**(rm2/2.0))
+def eta(u,x):
+        return 0.5*B*((inner(D(u,x),D(u,x))+Constant(eps_v))**(rm2/2.0))
 
 def beta(Tu):
         return Constant(C)*((Constant(eps_b)+inner(Tu,Tu))**(rm2/2.0))
-        #return 1e8
 
-def sigma(u,p):
-        return -p*Identity(2) + 2*eta(u)*sym(grad(u))
+def D(u,x):
+    # strain rate in cylindrical coordinates
+    return sym(as_tensor([[u[0].dx(0), 0, u[0].dx(1)],
+                          [0, u[0]/x[0], 0],
+                          [u[1].dx(0), 0, u[1].dx(1)]]))
 
-def weak_form(u,p,pw,v,q,qw,f,g_lake,g_in,g_out,ds,nu,T,lake_vol_0,t):
+
+def sigma(u,p,x):
+        return -p*Identity(3) + 2*eta(u,x)*D(u,x)
+
+def shear_bdry(u,v,nu,x):
+        n_ext = as_tensor([nu[0],0,nu[1]])
+        v_ext = as_tensor([v[0],0,v[1]])
+        T_ext = Identity(3) - outer(n_ext,n_ext)
+        TDn = dot(T_ext, dot(D(u,x),n_ext))
+        Tv = dot(T_ext, v_ext)
+        return inner(TDn,Tv)
+
+def div_c(u,x):
+        return u[0].dx(0) + u[0]/x[0] + u[1].dx(1)
+
+def weak_form(u,p,pw,v,q,qw,f,g_lake,g_in,g_out,ds,nu,T,lake_vol_0,t,x):
     # define weak form of the subglacial lake problem
 
     # measures of the extended boundary (L0) and ice-water boundary (L1)
@@ -38,18 +55,17 @@ def weak_form(u,p,pw,v,q,qw,f,g_lake,g_in,g_out,ds,nu,T,lake_vol_0,t):
     un = dot(u,nu)
     vn = dot(v,nu)
 
-    Fw =  2*eta(u)*inner(sym(grad(u)),sym(grad(v)))*dx + (- div(v)*p + q*div(u))*dx - inner(f, v)*dx\
-         + (g_lake+pw+Constant(rho_w*g*dt)*(un+Constant(Vdot(lake_vol_0,t)/L1)))*vn*ds(4)\
-         + qw*(un+Constant(Vdot(lake_vol_0,t))/(L0))*ds(4)\
-         + (g_lake+pw+Constant(rho_w*g*dt)*(un+Constant(Vdot(lake_vol_0,t)/L1)))*vn*ds(5)\
-         + qw*(un+Constant(Vdot(lake_vol_0,t))/(L0) )*ds(5)\
-         + Constant(1e-4/eps_p)*dPi(un,t)*vn*ds(5)\
-         + Constant(1/eps_p)*un*vn*ds(3)\
-         + beta(dot(T,u))*inner(dot(T,u),dot(T,v))*ds(3)\
-         - inner( dot(T, dot(sigma(u,p),nu)),dot(T,v) )*ds(1) - inner( dot(T, dot(sigma(u,p),nu)),dot(T,v) )*ds(2)\
-         + g_out*vn*ds(2) + g_in*vn*ds(1)
+    Fw =  inner(sigma(u,p,x),D(v,x))*x[0]*dx + q*div_c(u,x)*x[0]*dx - inner(f, v)*x[0]*dx\
+         + (g_lake+pw+Constant(rho_w*g*dt)*(un+Constant(Vdot(lake_vol_0,t)/L1)))*vn*x[0]*ds(4)\
+         + qw*(un+Constant(Vdot(lake_vol_0,t))/(L0))*x[0]*ds(4)\
+         + (g_lake+pw+Constant(rho_w*g*dt)*(un+Constant(Vdot(lake_vol_0,t)/L1)))*vn*x[0]*ds(5)\
+         + qw*(un+Constant(Vdot(lake_vol_0,t))/(L0) )*x[0]*ds(5)\
+         + Constant(1e-4/eps_p)*dPi(un)*vn*x[0]*ds(5)\
+         + Constant(1/eps_p)*un*vn*x[0]*ds(3)\
+         + beta(dot(T,u))*inner(dot(T,u),dot(T,v))*x[0]*ds(3)\
+         - shear_bdry(u,v,nu,x)*x[0]*ds(2) + g_out*vn*x[0]*ds(2)
     return Fw
-
+#         - shear_bdry(u,v,nu,x)*x[0]*ds(1) - shear_bdry(u,v,nu,x)*x[0]*ds(2)\
 
 def stokes_solve(mesh,lake_vol_0,s_mean,F_h,F_s,t):
         # stokes solver using Taylor-Hood elements and a Lagrange multiplier
@@ -69,7 +85,7 @@ def stokes_solve(mesh,lake_vol_0,s_mean,F_h,F_s,t):
         (v,q,qw) = TestFunctions(W)     # test functions corresponding to (u,p,pw)
 
         h_out = float(F_h(0.5*Lngth))       # upper surface elevation at outflow
-        h_in = float(F_h(-0.5*Lngth))          # upper surface elevation at inflow
+        h_in = float(F_h(0))          # upper surface elevation at inflow
 
         # Define Neumann condition at ice-water interface
         g_lake = Expression('rho_w*g*(s_mean-x[1])',rho_w=rho_w,g=g,s_mean=s_mean,degree=1)
@@ -90,18 +106,23 @@ def stokes_solve(mesh,lake_vol_0,s_mean,F_h,F_s,t):
         cell_markers = MeshFunction('size_t', mesh,dim=2)
         dx = Measure('dx', domain=mesh, subdomain_data=cell_markers)
 
+        x = SpatialCoordinate(mesh)
+
         # define weak form
-        Fw = weak_form(u,p,pw,v,q,qw,f,g_lake,g_in,g_out,ds,nu,T,lake_vol_0,t)
+        Fw = weak_form(u,p,pw,v,q,qw,f,g_lake,g_in,g_out,ds,nu,T,lake_vol_0,t,x)
+
+        bcs = apply_bcs(W,boundary_markers)
 
         # solve for (u,p,pw).
-        solve(Fw == 0, w, bcs=[],solver_parameters={"newton_solver":{"relative_tolerance": 1e-14,"maximum_iterations":50}},form_compiler_parameters={"quadrature_degree":quad_degree,"optimize":True,"eliminate_zeros":False})
+        solve(Fw == 0, w, bcs=bcs,solver_parameters={"newton_solver":{"relative_tolerance": 1e-14,"maximum_iterations":50}},form_compiler_parameters={"quadrature_degree":quad_degree,"optimize":True})
 
         beta_i = assemble(beta(dot(T,w.sub(0)))*ds(3))/assemble(Constant(1)*ds(3))
-        eta_i = assemble(eta(w.sub(0))*dx)/assemble(Constant(1)*dx)
+        eta_i = assemble(eta(w.sub(0),x)*dx)/assemble(Constant(1)*dx)
         u_i = assemble(sqrt(dot(w.sub(0),w.sub(0)))*dx)/assemble(Constant(1)*dx)*3.154e7
 
         print('mean u [m/yr] = '+str(u_i))
         print('mean drag [Pa s/m] = '+"{:.2e}".format(beta_i))
+        print('mean viscosity [Pa s] = '+"{:.2e}".format(eta_i))
 
         # return solution w
         return w,beta_i,eta_i,u_i

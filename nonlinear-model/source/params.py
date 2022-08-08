@@ -33,8 +33,6 @@ rho_w = 1000.0                     # density of water (kg/m^3)
 g = 9.81                           # gravitational acceleration (m/s^2)
 C = 1e4                            # sliding law friction coefficient (Pa s/m)^1/n
 
-alpha = 0.0
-
 # numerical parameters
 eps_p = 1.0e-17                    # penalty method parameter for unilateral condition
 eps_v = (2*1e13/B)**(1/(rm2/2.0))  # flow law regularization parameter
@@ -53,7 +51,7 @@ Lngth = 80*1000.0              # length of the domain (m)
 
 
 Ny = int(Hght/500.0)            # number of elements in vertical direction
-Nx = int(Lngth/100.0)            # number of elements in horizontal direction
+Nx = int(Lngth/250.0)            # number of elements in horizontal direction
 
 dy = Hght/Ny
 
@@ -73,5 +71,5 @@ nx = 4*Nx                          # number of grid points for interpolating
                                    # free surfaces and plotting (larger
                                    # than true number elements Nx)
 
-X_fine = np.linspace(-0.5*Lngth,0.5*Lngth,nx)   # horizontal coordinate for computing surface
+X_fine = np.linspace(0,0.5*Lngth,nx)   # horizontal coordinate for computing surface
                                    # slopes and plotting.

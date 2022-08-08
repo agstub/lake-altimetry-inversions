@@ -43,7 +43,7 @@ class BedBoundary(SubDomain):
 class LeftBoundary(SubDomain):
     # Left boundary
     def inside(self, x, on_boundary):
-        return (on_boundary and np.abs(x[0]+0.5*Lngth)<tol  )
+        return (on_boundary and np.abs(x[0])<tol  )
 
 class RightBoundary(SubDomain):
     # Right boundary
@@ -84,7 +84,7 @@ def mark_boundary(mesh):
     bdryBed = BedBoundary()
     bdryBed.mark(boundary_markers, 3)
 
-    # Mark inflow boundary
+    # Mark left boundary
     bdryLeft = LeftBoundary()
     bdryLeft.mark(boundary_markers, 1)
 
@@ -98,3 +98,14 @@ def mark_boundary(mesh):
     # markers << boundary_markers
 
     return boundary_markers
+
+
+def apply_bcs(W,boundary_markers):
+    # Apply Dirichlet conditions on the left wall of domain (center of lake)
+
+    bc1 = DirichletBC(W.sub(0).sub(0), Constant(0), boundary_markers,1)
+
+    bcs = [bc1]
+
+
+    return bcs

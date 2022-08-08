@@ -4,12 +4,12 @@
 #-------------------------------------------------------------------------------
 
 import numpy as np
-from params import Lngth,tol,alpha
+from params import Lngth,tol
 
 def bed(x):
     # generate bed topography
 
-    B = 1-8*(np.exp((-x**4)/(8000**4) ))+2
+    B = 4-8*(np.exp((-x**4)/(8000**4) ))
 
     return B
 
