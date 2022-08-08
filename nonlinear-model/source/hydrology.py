@@ -30,7 +30,7 @@ def Vol(t,lake_vol_0):
         V = lake_vol_0+0*t
     else:
         V = 2*lake_vol_0*swt((t-t0)/t_period)
-    return V/(2*np.pi)
+    return V/2.0
 
 def Vdot(lake_vol_0,t):
     # compute rate of subglacial lake volume change
@@ -39,7 +39,7 @@ def Vdot(lake_vol_0,t):
     return Vd
 
 ## ------------------------------
-# # plot lake volume timeseries:
+# plot lake volume timeseries:
 # import matplotlib.pyplot as plt
 # t = np.linspace(0,t_final,nt)
 # V = 0*t

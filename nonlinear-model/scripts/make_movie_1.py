@@ -37,10 +37,8 @@ h = np.loadtxt(resultsname+'/h')             # Upper surface
 
 
 # Create array for plotting
-X = np.loadtxt(resultsname+'/x')                          # x-coordinate array
+X = np.loadtxt(resultsname+'/r')                          # x-coordinate array
 t = np.loadtxt(resultsname+'/t')
-V = np.loadtxt(resultsname+'/lake_vol')
-
 
 # Loop over time steps
 for i in range(nt):
@@ -53,27 +51,36 @@ for i in range(nt):
     plt.title(r'$t=$'+format(t[i]/3.154e7,'.2f')+' yr',loc='left',fontsize=20)
 
     # Plot upper surface
-    plt.plot(X/1000-0.5*Lngth/1000,h[:,i]-0.98*Hght,color='royalblue',linewidth=1,label=r'$h$')
+    plt.plot(X/1000,h[:,i]-0.98*Hght,color='royalblue',linewidth=2,label=r'$h$')
+    plt.plot(-X/1000,h[:,i]-0.98*Hght,color='royalblue',linewidth=2,label=r'$h$')
+
 
     # Plot ice, water, and bed domains; colored accordingly.
-    p1 = plt.fill_between(X/1000-0.5*Lngth/1000,y1=s[:,i], y2=h[:,i]-0.98*Hght,facecolor='aliceblue',alpha=1.0)
-    p2 = plt.fill_between(X/1000-0.5*Lngth/1000,bed(X),s[:,i],facecolor='slateblue',alpha=0.5)
-    p3 = plt.fill_between(X/1000-0.5*Lngth/1000,-18*np.ones(np.size(X)),bed(X),facecolor='burlywood',alpha=1.0)
+    p1 = plt.fill_between(X/1000,y1=s[:,i], y2=h[:,i]-0.98*Hght,facecolor='aliceblue',alpha=1.0)
+    p2 = plt.fill_between(X/1000,bed(X),s[:,i],facecolor='slateblue',alpha=0.5)
+    p3 = plt.fill_between(X/1000,-18*np.ones(np.size(X)),bed(X),facecolor='burlywood',alpha=1.0)
+
+    p1 = plt.fill_between(-X/1000,y1=s[:,i], y2=h[:,i]-0.98*Hght,facecolor='aliceblue',alpha=1.0)
+    p2 = plt.fill_between(-X/1000,bed(X),s[:,i],facecolor='slateblue',alpha=0.5)
+    p3 = plt.fill_between(-X/1000,-18*np.ones(np.size(X)),bed(X),facecolor='burlywood',alpha=1.0)
 
 
     # Plot bed surface
-    plt.plot(X/1000-0.5*Lngth/1000,bed(X),color='k',linewidth=1,label=r'$\beta$')
+    plt.plot(X/1000,bed(X),color='k',linewidth=1,label=r'$\beta$')
+    plt.plot(X[(s[:,i]-bed(X)>1e-3*tol)]/1000,s[:,i][(s[:,i]-bed(X)>1e-3*tol)],'o',color='crimson',markersize=1,label=r'$s>\beta$')
 
-    plt.plot(X[(s[:,i]-bed(X)>1e-3*tol)]/1000-0.5*Lngth/1000,s[:,i][(s[:,i]-bed(X)>1e-3*tol)],'o',color='crimson',markersize=1,label=r'$s>\beta$')
+    plt.plot(-X/1000,bed(X),color='k',linewidth=1,label=r'$\beta$')
+    plt.plot(-X[(s[:,i]-bed(X)>1e-3*tol)]/1000,s[:,i][(s[:,i]-bed(X)>1e-3*tol)],'o',color='crimson',markersize=1,label=r'$s>\beta$')
 
-    plt.annotate(r'air',xy=(-35,20),fontsize=16)
-    plt.annotate(r'ice',xy=(-35,8),fontsize=16)
-    plt.annotate(r'bed',xy=(-35,4),fontsize=16)
-    plt.annotate(r'water',xy=(-3,-3),fontsize=16)
+
+    plt.annotate(r'air',xy=(-35,20.5),fontsize=16)
+    plt.annotate(r'ice',xy=(-35,4.5),fontsize=16)
+    plt.annotate(r'bed',xy=(-35,2),fontsize=16)
+    plt.annotate(r'water',xy=(-4,-3.5),fontsize=16)
 
 
     # Label axes and save png:
-    plt.xlabel(r'$x$ (km)',fontsize=20)
+    plt.xlabel(r'$r$ (km)',fontsize=20)
     plt.yticks([])
     plt.xticks(fontsize=16)
     plt.xlim(-0.5*Lngth/1000,0.5*Lngth/1000)

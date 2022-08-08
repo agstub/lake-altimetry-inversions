@@ -50,7 +50,7 @@ Hght = 1003                      # (initial) height of the domain (m)
 Lngth = 80*1000.0              # length of the domain (m)
 
 
-Ny = int(Hght/500.0)            # number of elements in vertical direction
+Ny = int(Hght/250.0)            # number of elements in vertical direction
 Nx = int(Lngth/250.0)            # number of elements in horizontal direction
 
 dy = Hght/Ny
@@ -63,7 +63,7 @@ nt_per_cycle = 1000                # number of timesteps per oscillation
 nt = int(t_final/t_period*nt_per_cycle) # number of time steps
 dt = t_final/nt                    # timestep size
 
-i0 = int(t0/dt)-1
+i0 = 0
 
 # spatial coordinate for plotting and interpolation
 

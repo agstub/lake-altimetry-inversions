@@ -10,7 +10,8 @@ import os
 if os.path.isdir('../data_nonlinear')==False:
     os.mkdir('../data_nonlinear')    # make a directory for the ../results.
 
-H = Hght - bed(0)
+H = Hght - bed(0.5*Lngth)
+
 
 t = np.loadtxt('../results/t')
 
@@ -18,14 +19,14 @@ lake_vol = np.loadtxt('../results/lake_vol')
 dV = lake_vol[i0:None]-lake_vol[i0]
 
 h = np.loadtxt('../results/h')
-h = h-np.outer(h[:,i0],np.ones(np.size(t)))
+h = h
 h = h[:,i0:None]
 
 wb = np.loadtxt('../results/wb')            # saved in m/yr
-wb = wb-np.outer(wb[:,i0],np.ones(np.size(t)))
+wb = wb
 wb = wb[:,i0:None]
 
-x = (np.loadtxt('../results/x')-Lngth/2.0)/H               # center and scale
+r = np.loadtxt('../results/r')/H               # center and scale
 t = (t[i0:None]-t0)/3.154e7                             # trim and scale
 
 eta = np.loadtxt('../results/eta_mean')[i0:None]
@@ -33,47 +34,46 @@ beta = np.loadtxt('../results/beta_mean')[i0:None]
 u = np.loadtxt('../results/u_mean')[i0:None]               # saved in m/yr
 
 
-# # nondimensional parameters for inversion (reference vs mean value)
-# print(beta[0]*H/(2*eta[0]))
-# print(np.mean(beta)*H/(2*eta[0]))
-#
-# print(u[0]/H)
-# print(np.mean(u)/H)
+h_int = interp2d(r, t, h.T)
+wb_int = interp2d(r, t, wb.T)
+dV_int = interp1d(t, dV)
 
-
-#
-h_int = interp2d(x, t, h.T)
-wb_int = interp2d(x, t, wb.T)
-dV_int = interp1d(t,dV)
 
 nx_d = 101
-nt_d = 200
+nt_d = 100
 
-
-x_d = np.linspace(x[0],x[-1],nx_d)
+x_d = np.linspace(-r[-1],r[-1],nx_d)
+y_d = np.linspace(-r[-1],r[-1],nx_d)
 t_d = np.linspace(t[0],t[-1],nt_d)
 
-h_d = h_int(x_d,t_d)
-wb_d = wb_int(x_d,t_d)
+T_d,Y_d,X_d = np.meshgrid(t_d,y_d,x_d,indexing='ij')
+
+h_d = 0*X_d
+wb_d = 0*Y_d
+
+for l in range(np.size(t_d)):
+    for i in range(np.size(y_d)):
+        for j in range(np.size(x_d)):
+            h_d[l,i,j] = h_int(np.sqrt(X_d[l,i,j]**2 + Y_d[l,i,j]**2),T_d[l,i,j])
+            wb_d[l,i,j] = wb_int(np.sqrt(X_d[l,i,j]**2 + Y_d[l,i,j]**2),T_d[l,i,j])
+
+
 dV_d = dV_int(t_d)
 
+
 # save numpy files for use in inversion
+np.save('../data_nonlinear/dV.npy',dV_d)
 np.save('../data_nonlinear/wb.npy',wb_d)
 np.save('../data_nonlinear/h.npy',h_d)
 np.save('../data_nonlinear/x.npy',x_d)
+np.save('../data_nonlinear/y.npy',x_d)
 np.save('../data_nonlinear/t.npy',t_d)
-np.save('../data_nonlinear/dV.npy',dV_d)
 np.save('../data_nonlinear/H.npy',np.array([H]))
 np.save('../data_nonlinear/beta.npy',beta)
 np.save('../data_nonlinear/eta.npy',eta)
-np.save('../data_nonlinear/u.npy',u)
 
 
-
-
-
-
-# # PLOT time series of mean viscosity, basal drag, and horizontal surface velocity
+# # PLOT time series of mean viscosity and basal drag
 # #
 # plt.figure(figsize=(6,10))
 # plt.subplot(311)

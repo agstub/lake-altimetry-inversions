@@ -28,9 +28,8 @@ def D(u,x):
     return sym(as_tensor([[u[0].dx(0), 0, u[0].dx(1)],
                           [0, u[0]/x[0], 0],
                           [u[1].dx(0), 0, u[1].dx(1)]]))
-
-
 def sigma(u,p,x):
+    # stress tensor
         return -p*Identity(3) + 2*eta(u,x)*D(u,x)
 
 def shear_bdry(u,v,nu,x):
@@ -42,6 +41,7 @@ def shear_bdry(u,v,nu,x):
         return inner(TDn,Tv)
 
 def div_c(u,x):
+    # divergence in cylindrical coordinates        
         return u[0].dx(0) + u[0]/x[0] + u[1].dx(1)
 
 def weak_form(u,p,pw,v,q,qw,f,g_lake,g_in,g_out,ds,nu,T,lake_vol_0,t,x):
@@ -65,7 +65,6 @@ def weak_form(u,p,pw,v,q,qw,f,g_lake,g_in,g_out,ds,nu,T,lake_vol_0,t,x):
          + beta(dot(T,u))*inner(dot(T,u),dot(T,v))*x[0]*ds(3)\
          - shear_bdry(u,v,nu,x)*x[0]*ds(2) + g_out*vn*x[0]*ds(2)
     return Fw
-#         - shear_bdry(u,v,nu,x)*x[0]*ds(1) - shear_bdry(u,v,nu,x)*x[0]*ds(2)\
 
 def stokes_solve(mesh,lake_vol_0,s_mean,F_h,F_s,t):
         # stokes solver using Taylor-Hood elements and a Lagrange multiplier

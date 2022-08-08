@@ -2,6 +2,11 @@
 # This FEniCS program simulates ice flow over a subglacial lake undergoing water
 # volume changes.
 #
+# This version uses cylindrical coordinates to obtain a radially symmetric 3D
+# solution (symmetry about the center of the lake). That is, the coordinates
+# in the problem are the radius r and depth z, although r is named x herein to be
+# consistent with FEniCS coordinates
+#
 # This is the main file that calls the stoke solver and free surface evolution
 # functions at each timestep, and saves the results.
 #-------------------------------------------------------------------------------
@@ -115,6 +120,6 @@ np.savetxt(resultsname+'/wb',wb)
 np.savetxt(resultsname+'/eta_mean',eta_mean)
 np.savetxt(resultsname+'/beta_mean',beta_mean)
 np.savetxt(resultsname+'/u_mean',u_mean)
-np.savetxt(resultsname+'/x',X_fine)           # x = spatial coordinate
+np.savetxt(resultsname+'/r',X_fine)           # x = spatial coordinate
 np.savetxt(resultsname+'/t',t_arr)            # t = time coordinate
-np.savetxt(resultsname+'/lake_vol',lake_vol)
+np.savetxt(resultsname+'/lake_vol',2*np.pi*lake_vol)
