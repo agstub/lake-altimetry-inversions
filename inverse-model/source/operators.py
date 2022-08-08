@@ -15,13 +15,13 @@ import numpy as np
 from kernel_fcns import Rg_,Tw_,ker_w_,conv,xcor
 from params import t,k,kx,ky,dx,Nx
 from kernel_fcns import ifftd,fftd
-from regularizations import reg
+from regularizations import Cpri_inv
 
 #-------------------------------------------------------------------------------
 def adj_fwd(X,eps_1,eps_2):
     # operator on the LHS of the normal equations:
     # apply forward operator then adjoint operator, and add the regularization term
-    A = adj(fwd(X)) + reg(reg(X,eps_1,eps_2),eps_1,eps_2)
+    A = adj(fwd(X)) + Cpri_inv(f,eps_1,eps2)
     return A
 
 def fwd(w):

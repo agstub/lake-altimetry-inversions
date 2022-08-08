@@ -14,6 +14,10 @@ def lap(f):
 
 
 def reg(f,eps_1,eps_2):
-    # first variation of regularization functional
+    # elliptic operator
     R = eps_1*f+eps_2*lap(f)    # note: adding an L2 term here seems to help with convergence
     return R
+
+def Cpri_inv(f,eps_1,eps2):
+    # squared elliptic operator (inverse of prior covariance operator)
+    return reg(reg(X,eps_1,eps_2),eps_1,eps_2)
