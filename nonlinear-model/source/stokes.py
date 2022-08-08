@@ -1,6 +1,6 @@
 # This file contains the functions needed for solving the Stokes system.
 
-from params import rho_i,g,tol,B,rm2,rho_w,C,eps_p,eps_v,dt,quad_degree,Lngth,t_period,Hght,alpha
+from params import rho_i,g,tol,B,rm2,rho_w,C,eps_p,eps_b,eps_v,dt,quad_degree,Lngth,t_period,Hght,alpha
 from boundaryconds import mark_boundary
 from geometry import bed
 from hydrology import Vdot
@@ -21,8 +21,8 @@ def eta(u):
         return 0.5*B*((inner(sym(grad(u)),sym(grad(u)))+Constant(eps_v))**(rm2/2.0))
 
 def beta(Tu):
-        #return Constant(C)*((Constant(eps_v)+inner(Tu,Tu))**(rm2/2.0))
-        return 1e8
+        return Constant(C)*((Constant(eps_b)+inner(Tu,Tu))**(rm2/2.0))
+        #return 1e8
 
 def sigma(u,p):
         return -p*Identity(2) + 2*eta(u)*sym(grad(u))
@@ -68,8 +68,8 @@ def stokes_solve(mesh,lake_vol_0,s_mean,F_h,F_s,t):
         (u,p,pw) = split(w)             # (velocity,pressure,mean water pressure)
         (v,q,qw) = TestFunctions(W)     # test functions corresponding to (u,p,pw)
 
-        h_out = float(F_h(Lngth))       # upper surface elevation at outflow
-        h_in = float(F_h(0.0))          # upper surface elevation at inflow
+        h_out = float(F_h(0.5*Lngth))       # upper surface elevation at outflow
+        h_in = float(F_h(-0.5*Lngth))          # upper surface elevation at inflow
 
         # Define Neumann condition at ice-water interface
         g_lake = Expression('rho_w*g*(s_mean-x[1])',rho_w=rho_w,g=g,s_mean=s_mean,degree=1)
@@ -96,9 +96,9 @@ def stokes_solve(mesh,lake_vol_0,s_mean,F_h,F_s,t):
         # solve for (u,p,pw).
         solve(Fw == 0, w, bcs=[],solver_parameters={"newton_solver":{"relative_tolerance": 1e-14,"maximum_iterations":50}},form_compiler_parameters={"quadrature_degree":quad_degree,"optimize":True,"eliminate_zeros":False})
 
-        beta_i = assemble(beta(dot(T,w.sub(0)))*ds(3))/assemble(Constant(1)*ds(3)+Constant(1)*ds(4)+Constant(1)*ds(5))
+        beta_i = assemble(beta(dot(T,w.sub(0)))*ds(3))/assemble(Constant(1)*ds(3))
         eta_i = assemble(eta(w.sub(0))*dx)/assemble(Constant(1)*dx)
-        u_i = assemble(w.sub(0).sub(0)*ds(6))/assemble(Constant(1)*ds(6))*3.154e7
+        u_i = assemble(sqrt(dot(w.sub(0),w.sub(0)))*dx)/assemble(Constant(1)*dx)*3.154e7
 
         print('mean u [m/yr] = '+str(u_i))
         print('mean drag [Pa s/m] = '+"{:.2e}".format(beta_i))

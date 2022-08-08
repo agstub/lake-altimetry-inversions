@@ -20,7 +20,7 @@ from params import (rho_i,g,tol,t_final,Lngth,Hght,nt,dt,rho_w,dy,alpha,
 #--------------------Initial conditions-----------------------------------------
 # compute initial mean elevation of ice-water interface and initial lake volume.
 s_mean0 = np.mean(interface(X_fine)[interface(X_fine)-bed(X_fine)>tol])
-lake_vol_0 = scpint.quad(lambda x: interface(x)-bed(x),0,Lngth,full_output=1)[0]
+lake_vol_0 = scpint.quad(lambda x: interface(x)-bed(x),-0.5*Lngth,0.5*Lngth,full_output=1)[0]
 #-------------------------------------------------------------------------------
 
 resultsname = 'results'
@@ -37,8 +37,8 @@ if save_vtk == 'on':
     vtkfile_p = File(resultsname+'/stokes/p.pvd')
 
 # create mesh
-p0 = Point((0.0,0.0))
-p1 = Point((Lngth,Hght))
+p0 = Point((-0.5*Lngth,0.0))
+p1 = Point((0.5*Lngth,Hght))
 mesh = RectangleMesh(p0,p1, Nx, Ny,diagonal="left/right")
 
 M = mesh.coordinates()
@@ -94,7 +94,7 @@ for i in range(nt):
     u_mean[i] = u_i
 
     # compute lake volume: integral of lower surface minus the bed elevation
-    lake_vol[i] = scpint.quad(lambda x: s_int(x)-bed(x),0,Lngth,full_output=1)[0]
+    lake_vol[i] = scpint.quad(lambda x: s_int(x)-bed(x),-0.5*Lngth,0.5*Lngth,full_output=1)[0]
 
 
     # save Stokes solution if desired

@@ -9,7 +9,7 @@ from params import Lngth,tol,alpha
 def bed(x):
     # generate bed topography
 
-    B = 1-x*np.arctan(alpha)-8*(np.exp((-(x-Lngth/2.0)**4)/(8000**4) ))+2
+    B = 1-8*(np.exp((-x**4)/(8000**4) ))+2
 
     return B
 

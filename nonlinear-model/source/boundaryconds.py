@@ -43,12 +43,12 @@ class BedBoundary(SubDomain):
 class LeftBoundary(SubDomain):
     # Left boundary
     def inside(self, x, on_boundary):
-        return (on_boundary and np.abs(x[0])<tol  )
+        return (on_boundary and np.abs(x[0]+0.5*Lngth)<tol  )
 
 class RightBoundary(SubDomain):
     # Right boundary
     def inside(self, x, on_boundary):
-        return (on_boundary and np.abs(x[0]-Lngth)<tol)
+        return (on_boundary and np.abs(x[0]-0.5*Lngth)<tol)
 
 #-------------------------------------------------------------------------------
 

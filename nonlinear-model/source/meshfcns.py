@@ -154,22 +154,22 @@ def get_sx_fn(w,mesh):
     # Get x and y values of boundary nodes
     bmesh = BoundaryMesh(mesh,'exterior')
     M = bmesh.coordinates()
-    X =  M[:,0][(M[:,0]>tol)&(M[:,0]<Lngth-tol)&(M[:,1]<Hght-50)]
-    Y =  M[:,1][ (M[:,0]>tol)&(M[:,0]<Lngth-tol)&(M[:,1]<Hght-50)]
+    X =  M[:,0][(M[:,0]>-0.5*Lngth+tol)&(M[:,0]<0.5*Lngth-tol)&(M[:,1]<Hght-50)]
+    Y =  M[:,1][ (M[:,0]>-0.5*Lngth+tol)&(M[:,0]<0.5*Lngth-tol)&(M[:,1]<Hght-50)]
 
     Y = Y[np.argsort(X)]
     X = np.sort(X)
 
-    s_left = np.min(M[:,1][M[:,0]<tol])
+    s_left = np.min(M[:,1][M[:,0]<-0.5*Lngth+tol])
 
-    s_right = np.min(M[:,1][np.abs(M[:,0]-Lngth)<tol])
+    s_right = np.min(M[:,1][np.abs(M[:,0]-0.5*Lngth)<tol])
 
     # Append values at x=0 and x=Lngth.
     Y = np.append(Y,s_right)
     Y = np.insert(Y,0,s_left)
 
-    X = np.append(X,Lngth)
-    X = np.insert(X,0,0)
+    X = np.append(X,0.5*Lngth)
+    X = np.insert(X,0,-0.5*Lngth)
 
     # Use SciPy to interpolate the lower surface
     s_int = interp1d(X,Y,kind='cubic',fill_value='extrapolate',bounds_error=False)
@@ -199,22 +199,22 @@ def get_hx_fn(w,mesh):
     bmesh = BoundaryMesh(mesh,'exterior')
     M = bmesh.coordinates()
 
-    X =  M[:,0][(M[:,0]>tol)&(M[:,0]<Lngth-tol)&(M[:,1]>Hght/2.)]
-    Y =  M[:,1][(M[:,0]>tol)&(M[:,0]<Lngth-tol)&(M[:,1]>Hght/2.)]
+    X =  M[:,0][(M[:,0]>-0.5*Lngth+tol)&(M[:,0]<0.5*Lngth-tol)&(M[:,1]>Hght/2.)]
+    Y =  M[:,1][ (M[:,0]>-0.5*Lngth+tol)&(M[:,0]<0.5*Lngth-tol)&(M[:,1]>Hght/2.)]
 
     Y = Y[np.argsort(X)]
     X = np.sort(X)
 
-    h_left = np.max(M[:,1][M[:,0]<tol])
+    h_left = np.max(M[:,1][M[:,0]<-0.5*Lngth+tol])
 
-    h_right = np.max(M[:,1][np.abs(M[:,0]-Lngth)<tol])
+    h_right = np.max(M[:,1][np.abs(M[:,0]-0.5*Lngth)<tol])
 
     # Append values at x=0 and x=Lngth.
     Y = np.append(Y,h_right)
     Y = np.insert(Y,0,h_left)
 
-    X = np.append(X,Lngth)
-    X = np.insert(X,0,0)
+    X = np.append(X,0.5*Lngth)
+    X = np.insert(X,0,-0.5*Lngth)
 
     # Interpolate the boundary points:
     h_int = interp1d(X,Y,kind='cubic',fill_value='extrapolate',bounds_error=False)
@@ -247,19 +247,19 @@ def plot_surfaces(h_int,s_int):
         plt.figure(figsize=(8,5))
 
         # Plot upper surface
-        plt.plot(X/1000-0.5*Lngth/1000,Gamma_h[:]-0.98*Hght,color='royalblue',linewidth=1,label=r'$h-0.99h_0$')
+        plt.plot(X/1000,Gamma_h[:]-0.98*Hght,color='royalblue',linewidth=1,label=r'$h-0.99h_0$')
 
         # Plot ice, water, and bed domains; colored accordingly.
-        p1 = plt.fill_between(X/1000-0.5*Lngth/1000,y1=Gamma_s[:], y2=Gamma_h[:]-0.98*Hght,facecolor='aliceblue',alpha=1.0)
-        p2 = plt.fill_between(X/1000-0.5*Lngth/1000,bed(X),Gamma_s[:],facecolor='slateblue',alpha=0.5)
-        p3 = plt.fill_between(X/1000-0.5*Lngth/1000,-18*np.ones(np.size(X)),bed(X),facecolor='burlywood',alpha=1.0)
+        p1 = plt.fill_between(X/1000,y1=Gamma_s[:], y2=Gamma_h[:]-0.98*Hght,facecolor='aliceblue',alpha=1.0)
+        p2 = plt.fill_between(X/1000,bed(X),Gamma_s[:],facecolor='slateblue',alpha=0.5)
+        p3 = plt.fill_between(X/1000,-18*np.ones(np.size(X)),bed(X),facecolor='burlywood',alpha=1.0)
 
 
         # Plot bed surface
-        plt.plot(X/1000-0.5*Lngth/1000,bed(X),color='k',linewidth=1,label=r'$\beta$')
+        plt.plot(X/1000,bed(X),color='k',linewidth=1,label=r'$\beta$')
 
         # Plot ice-water surface
-        plt.plot(X[Gamma_s[:]-bed(X)>1e-3*tol]/1000-0.5*Lngth/1000,Gamma_s[:][Gamma_s[:]-bed(X)>1e-3*tol],'o',color='crimson',markersize=1,label=r'$s>\beta$')
+        plt.plot(X[Gamma_s[:]-bed(X)>1e-3*tol]/1000,Gamma_s[:][Gamma_s[:]-bed(X)>1e-3*tol],'o',color='crimson',markersize=1,label=r'$s>\beta$')
 
 
         # Label axes and save png:
@@ -269,7 +269,7 @@ def plot_surfaces(h_int,s_int):
         plt.xticks(fontsize=16)
 
         plt.ylim(np.min(bed(X))-2.0,0.02*Hght+5,8)
-        plt.xlim(-0.5*Lngth/1000.0,0.5*Lngth/1000.0)
+        plt.xlim(-0.5*Lngth/1000,0.5*Lngth/1000.0)
         plt.tight_layout()
         plt.savefig('surfaces',bbox_inches='tight')
         plt.close()

@@ -31,13 +31,14 @@ B = (2**((n-1.0)/(2*n)))*B0        # coefficient in weak form (Pa s^{1/n})
 rho_i = 917.0                      # density of ice (kg/m^3)
 rho_w = 1000.0                     # density of water (kg/m^3)
 g = 9.81                           # gravitational acceleration (m/s^2)
-C = 5.0e4                         # sliding law friction coefficient (Pa s/m)^1/n
-#C = 1e5
+C = 1e4                            # sliding law friction coefficient (Pa s/m)^1/n
+
 alpha = 0.0
 
 # numerical parameters
 eps_p = 1.0e-17                    # penalty method parameter for unilateral condition
 eps_v = (2*1e13/B)**(1/(rm2/2.0))  # flow law regularization parameter
+eps_b = (1e8/C)**(1/((rm2/2.0)))   # sliding law regularization parameter
 
 
 quad_degree = 16                   # quadrature degree for weak forms
@@ -72,5 +73,5 @@ nx = 4*Nx                          # number of grid points for interpolating
                                    # free surfaces and plotting (larger
                                    # than true number elements Nx)
 
-X_fine = np.linspace(0,Lngth,nx)   # horizontal coordinate for computing surface
+X_fine = np.linspace(-0.5*Lngth,0.5*Lngth,nx)   # horizontal coordinate for computing surface
                                    # slopes and plotting.
