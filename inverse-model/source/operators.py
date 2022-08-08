@@ -12,37 +12,27 @@
 
 
 import numpy as np
-from kernel_fcns import Rg_,Tw_,ker_w_,ker_beta_,conv,xcor
-from params import w_reg,t,k,kx,ky,dx,Nx
+from kernel_fcns import Rg_,Tw_,ker_w_,conv,xcor
+from params import t,k,kx,ky,dx,Nx
 from kernel_fcns import ifftd,fftd
 from regularizations import reg
 
 #-------------------------------------------------------------------------------
-def adj_fwd(X,eps_w):
+def adj_fwd(X,eps_1,eps_2):
     # operator on the LHS of the normal equations:
     # apply forward operator then adjoint operator, and add the regularization term
-    A = adjoint_w(forward_w(X)) + eps_w*reg(X,w_reg)
+    A = adj(fwd(X)) + reg(reg(X,eps_1,eps_2),eps_1,eps_2)
     return A
 
-def forward_w(w):
+def fwd(w):
     # forward operator for basal vertical velocity w
     # returns the fourier-transformed data (elevation) h minus the initial elevation profile
     w_ft = fftd(w)
     S_ft = conv(ker_w_,w_ft)
     return S_ft
 
-def adjoint_w(f_ft):
+def adj(f_ft):
     # adjoint of the basal vertical velocity forward operator
     S = ifftd(xcor(ker_w_,f_ft)).real
     return S
 #-------------------------------------------------------------------------------
-
-def forward_beta(beta):
-    # forward operator for slipperiness beta
-    # returns the data (elevation) h
-
-    beta_ft = fftd(beta)
-
-    S_ft = conv(ker_beta_,beta_ft)
-
-    return S_ft

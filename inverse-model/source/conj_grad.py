@@ -21,7 +21,7 @@ def norm(a):
 
 #------------------------------------------------------------------------------
 
-def cg_solve(b,eps_w):
+def cg_solve(b,eps_1,eps_2):
 # conjugate gradient method for solving the normal equations
 #
 #              adj_fwd(X)  = b,           where...
@@ -46,7 +46,7 @@ def cg_solve(b,eps_w):
 
         rnorm0 = prod(r,r)
 
-        Ap = adj_fwd(p,eps_w)
+        Ap = adj_fwd(p,eps_1,eps_2)
 
         alpha_c = rnorm0/prod(p,Ap)
 

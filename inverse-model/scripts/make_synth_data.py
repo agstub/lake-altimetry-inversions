@@ -38,7 +38,7 @@ np.save('../data_synth_lin/u.npy',u)
 
 # import some functions to produce the synthetic elevation anomaly
 from params import t,x,y,Nt,Nx,Ny
-from operators import forward_w
+from operators import fwd
 from localization import localize
 from kernel_fcns import ifftd
 from conj_grad import norm
@@ -50,7 +50,7 @@ w_true = 5*np.exp(-0.5*(sigma**(-2))*(x**2+y**2))*np.sin(4*np.pi*t/np.max(t))
 # produce synthetic elevation anomaly by applying the forward operator
 # (returns fft of elevation), inverse fourier-transforming the results,
 # and removing the off-lake component ("localize" function)
-h = localize(ifftd(forward_w(w_true)).real)
+h = localize(ifftd(fwd(w_true)).real)
 
 # add some noise
 noise_h = np.random.normal(size=(Nt,Nx,Ny))

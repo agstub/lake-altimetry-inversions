@@ -7,12 +7,6 @@ from scipy.fft import fftfreq
 
 data_dir = '../data_synth_lin'
 
-#----------------------------regularization-------------------------------------
-# set reguarization type
-
-# Regularization options: L2 and H1 (see regularizations.py)
-w_reg = 'H1'
-
 #----------------------import space and time arrays-----------------------------
 
 # arrays from the data directory

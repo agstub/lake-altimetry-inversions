@@ -13,10 +13,7 @@ def lap(f):
     return ifftd((k**2)*fftd(f)).real
 
 
-def reg(f,reg_type):
+def reg(f,eps_1,eps_2):
     # first variation of regularization functional
-    if reg_type == 'H1':
-        R = f+7e2*lap(f)    # note: adding an L2 term here seems to help with convergence
-    elif reg_type == 'L2':
-        R = f
+    R = eps_1*f+eps_2*lap(f)    # note: adding an L2 term here seems to help with convergence
     return R

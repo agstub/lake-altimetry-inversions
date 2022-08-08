@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 h_obs = np.load(data_dir+'/h.npy')
 w_true = np.load(data_dir+'/w_true.npy')
 
-w_inv,h_fwd,mis = invert(h_obs,1e-3)
+w_inv,h_fwd,mis = invert(h_obs,eps_1=5e-2,eps_2=5e0)
 
 print('misfit norm = '+str(mis))
 
