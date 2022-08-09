@@ -1,7 +1,5 @@
 #-------------------------------------------------------------------------------
-# This function defines the rate of water volume change in the subglacial lake.
-# *Default volume change = sinusoidal timeseries
-# (of course you can calculate dVol/dt analytically for the default example)
+# This function defines the rate of water volume change in the subglacial lake
 #-------------------------------------------------------------------------------
 
 import numpy as np
