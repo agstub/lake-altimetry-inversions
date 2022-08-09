@@ -41,12 +41,12 @@ eps_b = (1e8/C)**(1/((rm2/2.0)))   # sliding law regularization parameter
 
 quad_degree = 16                   # quadrature degree for weak forms
 
-tol = 1.0e-2                       # numerical tolerance for boundary geometry:
+tol = 1.0e-3                       # numerical tolerance for boundary geometry:
                                    # s(x,t) - b(x) > tol on ice-water boundary,
                                    # s(x,t) - b(x) <= tol on ice-bed boundary.
 
 # geometry/mesh parameters
-Hght = 1003                      # (initial) height of the domain (m)
+Hght = 1004                      # (initial) height of the domain (m)
 
 Lngth = 80*1000.0                # length of the domain (m)
                                  # (the half-length is used in the simulations

@@ -64,7 +64,6 @@ def move_mesh(mesh,sx_fn,hx_fn,dt,s_int,h_int,w):
     vertices_on_boundary = d2v[u.vector() == 1]
     vertices_on_boundary = np.sort(vertices_on_boundary)
 
-
     # Loop over nodes in the boundary and displace them vertically according to
     # the velocity solution and surface slope.
 

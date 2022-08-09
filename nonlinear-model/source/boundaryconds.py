@@ -13,32 +13,18 @@ from dolfin import *
 # outflow (x=Length of domain). The parameter 'tol' is a minimal water depth
 # used to distinguish the ice-water and ice-bed surfaces.
 
-class ShoreBoundary(SubDomain):
-    # Shore boundary.
-    # This boundary is marked first and all of the irrelevant portions are
-    # overwritten by the other boundary markers.
-    def inside(self, x, on_boundary):
-        return (on_boundary and (x[1]<0.5*Hght) )
-
-class TopBoundary(SubDomain):
-    # Shore boundary.
-    # This boundary is marked first and all of the irrelevant portions are
-    # overwritten by the other boundary markers.
-    def inside(self, x, on_boundary):
-        return (on_boundary and (x[1]>0.5*Hght) )
-
 class WaterBoundary(SubDomain):
     # Ice-water boundary.
     # Lifting of ice from the bed *is not* allowed on this boundary.
     def inside(self, x, on_boundary):
-        return (on_boundary and (x[1]<0.5*Hght) and  ((x[1]-bed(x[0]))>tol) )
+        return (on_boundary and x[1]<0.5*Hght)
 
 class BedBoundary(SubDomain):
     # Ice-bed boundary away from the lake; the portions near the lake are overwritten
     # by BasinBoundary.
     # Lifting of ice from the bed *is not* allowed on this boundary.
     def inside(self, x, on_boundary):
-        return (on_boundary and (x[1]<0.5*Hght) and ((x[1]-bed(x[0]))<=1e-3*tol ) )
+        return (on_boundary and (x[1]<0.5*Hght) and ((x[1]-bed(x[0]))<=tol ) )
 
 class LeftBoundary(SubDomain):
     # Left boundary
@@ -68,14 +54,6 @@ def mark_boundary(mesh):
     boundary_markers = MeshFunction('size_t', mesh,dim=1)
     boundary_markers.set_all(0)
 
-    # Mark shoreline
-    bdryShore = ShoreBoundary()
-    bdryShore.mark(boundary_markers, 5)
-
-    # Mark upper surface (only needed for post-processing)
-    bdryTop = TopBoundary()
-    bdryTop.mark(boundary_markers, 6)
-
     # Mark ice-water boundary
     bdryWater = WaterBoundary()
     bdryWater.mark(boundary_markers, 4)
@@ -102,10 +80,10 @@ def mark_boundary(mesh):
 
 def apply_bcs(W,boundary_markers):
     # Apply Dirichlet conditions on the left wall of domain (center of lake)
+    # no horizontal flow due to symmetry at the lake center
 
     bc1 = DirichletBC(W.sub(0).sub(0), Constant(0), boundary_markers,1)
 
     bcs = [bc1]
-
 
     return bcs

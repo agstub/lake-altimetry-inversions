@@ -48,7 +48,7 @@ def weak_form(u,p,pw,v,q,qw,f,g_lake,g_out,ds,nu,T,t,x):
     # define weak form of the subglacial lake problem
 
     # measures of the extended boundary (L0) and ice-water boundary (L1)
-    L0 = Constant(assemble(1*ds(4))+assemble(1*ds(5)))
+    L0 = Constant(assemble(1*ds(4))+assemble(1*ds(3)))
     L1 = Constant(assemble(1*ds(4)))
 
     # Nonlinear residual
@@ -58,10 +58,9 @@ def weak_form(u,p,pw,v,q,qw,f,g_lake,g_out,ds,nu,T,t,x):
     Fw =  inner(sigma(u,p,x),D(v,x))*x[0]*dx + q*div_c(u,x)*x[0]*dx - inner(f, v)*x[0]*dx\
          + (g_lake+pw+Constant(rho_w*g*dt)*(un+Constant(Vdot(lake_vol_0,t)/(np.pi*(L1**2)))))*vn*x[0]*ds(4)\
          + qw*(un+Constant(Vdot(lake_vol_0,t)/(np.pi*L0**2)))*x[0]*ds(4)\
-         + (g_lake+pw+Constant(rho_w*g*dt)*(un+Constant(Vdot(lake_vol_0,t)/(np.pi*(L1**2)))))*vn*x[0]*ds(5)\
-         + qw*(un+Constant(Vdot(lake_vol_0,t)/(np.pi*L0**2)))*x[0]*ds(5)\
-         + Constant(1e-4/eps_p)*dPi(un)*vn*x[0]*ds(5)\
-         + Constant(1/eps_p)*un*vn*x[0]*ds(3)\
+         + (g_lake+pw+Constant(rho_w*g*dt)*(un+Constant(Vdot(lake_vol_0,t)/(np.pi*(L1**2)))))*vn*x[0]*ds(3)\
+         + qw*(un+Constant(Vdot(lake_vol_0,t)/(np.pi*L0**2)))*x[0]*ds(3)\
+         + Constant(1e-4/eps_p)*dPi(un)*vn*x[0]*ds(3)\
          + beta(dot(T,u))*inner(dot(T,u),dot(T,v))*x[0]*ds(3)\
          - shear_bdry(u,v,nu,x)*x[0]*ds(2) + g_out*vn*x[0]*ds(2)
     return Fw
@@ -83,8 +82,7 @@ def stokes_solve(mesh,s_mean,F_h,F_s,t):
         (u,p,pw) = split(w)             # (velocity,pressure,mean water pressure)
         (v,q,qw) = TestFunctions(W)     # test functions corresponding to (u,p,pw)
 
-        h_out = float(F_h(0.5*Lngth))       # upper surface elevation at outflow
-        h_in = float(F_h(0))          # upper surface elevation at inflow
+        h_out = float(F_h(0.5*Lngth))   # upper surface elevation at outflow
 
         # Define Neumann condition at ice-water interface
         g_lake = Expression('rho_w*g*(s_mean-x[1])',rho_w=rho_w,g=g,s_mean=s_mean,degree=1)
