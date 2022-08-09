@@ -18,6 +18,6 @@ def reg(f,eps_1,eps_2):
     R = eps_1*f+eps_2*lap(f)    # note: adding an L2 term here seems to help with convergence
     return R
 
-def Cpri_inv(f,eps_1,eps2):
+def Cpri_inv(f,eps_1,eps_2):
     # squared elliptic operator (inverse of prior covariance operator)
-    return reg(reg(X,eps_1,eps_2),eps_1,eps_2)
+    return reg(reg(f,eps_1,eps_2),eps_1,eps_2)

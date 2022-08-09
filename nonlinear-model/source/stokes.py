@@ -60,7 +60,7 @@ def weak_form(u,p,pw,v,q,qw,f,g_lake,g_out,ds,nu,T,t,x):
          + qw*(un+Constant(Vdot(lake_vol_0,t)/(np.pi*L0**2)))*x[0]*ds(4)\
          + (g_lake+pw+Constant(rho_w*g*dt)*(un+Constant(Vdot(lake_vol_0,t)/(np.pi*(L1**2)))))*vn*x[0]*ds(3)\
          + qw*(un+Constant(Vdot(lake_vol_0,t)/(np.pi*L0**2)))*x[0]*ds(3)\
-         + Constant(1e-4/eps_p)*dPi(un)*vn*x[0]*ds(3)\
+         + Constant(1/eps_p)*dPi(un)*vn*x[0]*ds(3)\
          + beta(dot(T,u))*inner(dot(T,u),dot(T,v))*x[0]*ds(3)\
          - shear_bdry(u,v,nu,x)*x[0]*ds(2) + g_out*vn*x[0]*ds(2)
     return Fw

@@ -21,7 +21,7 @@ from regularizations import Cpri_inv
 def adj_fwd(X,eps_1,eps_2):
     # operator on the LHS of the normal equations:
     # apply forward operator then adjoint operator, and add the regularization term
-    A = adj(fwd(X)) + Cpri_inv(f,eps_1,eps2)
+    A = adj(fwd(X)) + Cpri_inv(X,eps_1,eps_2)
     return A
 
 def fwd(w):

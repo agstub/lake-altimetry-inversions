@@ -56,7 +56,7 @@ t_f = np.loadtxt(resultsname+'/t')
 
 
 
-for i in range(nt):
+for i in range(np.size(t)):
 
     j = np.argmin(np.abs(t_f/3.154e7-t[i]))
     print('image '+str(i)+' out of '+str(np.size(t)))
@@ -91,8 +91,8 @@ for i in range(nt):
 
 
     plt.annotate(r'air',xy=(-35,20.5),fontsize=16)
-    plt.annotate(r'ice',xy=(-35,4.5),fontsize=16)
-    plt.annotate(r'bed',xy=(-35,2),fontsize=16)
+    plt.annotate(r'ice',xy=(-35,5),fontsize=16)
+    plt.annotate(r'bed',xy=(-35,1.5),fontsize=16)
     plt.annotate(r'water',xy=(-3,-3.5),fontsize=16)
 
 
@@ -111,14 +111,14 @@ for i in range(nt):
     plt.plot([t[i]],[dV[i]*(H**2)/1e9],color='forestgreen',marker='o',markersize=10)
     plt.ylabel(r'$\Delta V$ (km$^3$)',fontsize=20)
     plt.xlim(0,t[-1])
-    plt.ylim(-0.2,0.2)
+    plt.ylim(-2,2)
     plt.xlabel(r'$t$ (yr)',fontsize=20)
     plt.xticks(fontsize=16)
     plt.yticks(fontsize=16)
 
 
     plt.subplot(325)
-    p1 = plt.contourf(x,y,h_obs[i,:,:].T,cmap='coolwarm',levels=np.arange(-0.5,0.6,0.1),extend='both')
+    p1 = plt.contourf(x,y,h_obs[i,:,:].T,cmap='coolwarm',levels=np.arange(-0.8,0.9,0.1),extend='both')
     plt.ylabel(r'$y$ (km)',fontsize=20)
     plt.xlabel(r'$x$ (km)',fontsize=20)
     plt.yticks(fontsize=16)
@@ -143,5 +143,5 @@ for i in range(nt):
     cbar.set_label(r'$w_b$ (m/yr)', fontsize=20)
     cbar.ax.tick_params(labelsize=14)
     plt.tight_layout()
-    plt.savefig('pngs/'+str(i),bbox_inches='tight')
+    plt.savefig('pngs/'+str(i))
     plt.close()

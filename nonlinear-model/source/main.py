@@ -94,8 +94,6 @@ for i in range(nt):
     # compute mean elevation of ice-water and ice-air surfaces
     s_mean_i = (8/(Lngth**2))*quad(lambda x: s_int(x)*x,0,0.5*Lngth,full_output=1)[0]
 
-    print(s_mean_i)
-
     # save Stokes solution if desired
     if save_vtk == 'on':
         _u, _p,_pw = w.split()

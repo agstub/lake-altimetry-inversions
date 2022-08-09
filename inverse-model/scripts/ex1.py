@@ -77,7 +77,7 @@ for i in range(Nt):
 
 
     plt.subplot(222)
-    plt.annotate(r'$h_\mathrm{obs}$',fontsize=20,xy=(30,-37))
+    plt.annotate(r'$\Delta h^\mathrm{obs}$',fontsize=20,xy=(27,-37))
     p=plt.contourf(xy_str*x0,xy_str*y0,h_obs[i,:,:].T,cmap='coolwarm',levels=np.arange(-1,1,0.2),extend='both')
     plt.contour(xy_str*x0,xy_str*y0,h_bdry[:,:].T,colors='crimson',linestyles='-.',linewidths=3,levels=[1e-10])
     plt.gca().xaxis.set_ticklabels([])
@@ -90,7 +90,7 @@ for i in range(Nt):
     plt.yticks(fontsize=16)
 
     plt.subplot(224)
-    plt.annotate(r'$w_\mathrm{inv}$',fontsize=20,xy=(30,-37))
+    plt.annotate(r'$w_b^\mathrm{inv}$',fontsize=20,xy=(30,-37))
     p=plt.contourf(xy_str*x0,xy_str*y0,w_inv[i,:,:].T,cmap='coolwarm',extend='both',levels=np.arange(-5,5,1))
     plt.contour(xy_str*x0,xy_str*y0,inv_bdry[:,:].T,colors='k',linestyles='--',linewidths=3,levels=[1e-1])
     plt.contour(xy_str*x0,xy_str*y0,w_bdry[0,:,:].T,colors='forestgreen',linewidths=3,levels=[1e-10])
