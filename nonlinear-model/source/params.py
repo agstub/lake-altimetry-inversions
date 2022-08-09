@@ -60,7 +60,7 @@ dy = Hght/Ny
 
 # time-stepping parameters
 t_period = 4*3.154e7               # oscillation period (secs; yr*sec_per_year)
-t0 = 0*0.1*t_period
+t0 = 0
 t_final = t0+1.5*t_period          # final time
 nt_per_cycle = 2000                # number of timesteps per oscillation
 nt = int(t_final/t_period*nt_per_cycle) # number of time steps

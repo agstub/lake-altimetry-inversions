@@ -117,4 +117,4 @@ np.savetxt(resultsname+'/beta_mean',beta_mean)
 np.savetxt(resultsname+'/u_mean',u_mean)
 np.savetxt(resultsname+'/r',X_fine)           # x = spatial coordinate
 np.savetxt(resultsname+'/t',t_arr)            # t = time coordinate
-np.savetxt(resultsname+'/lake_vol',2*np.pi*lake_vol)
+np.savetxt(resultsname+'/lake_vol',lake_vol)

@@ -40,7 +40,7 @@ dV_int = interp1d(t, dV)
 
 
 nx_d = 101
-nt_d = 100
+nt_d = 200
 
 x_d = np.linspace(-r[-1],r[-1],nx_d)
 y_d = np.linspace(-r[-1],r[-1],nx_d)

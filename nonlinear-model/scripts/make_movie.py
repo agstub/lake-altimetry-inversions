@@ -15,7 +15,7 @@ import numpy as np
 import os
 from geometry import interface, bed
 from params import tol,t_final,Lngth,Hght,t_period,C,nt
-
+from hydrology import Vol
 
 mpl.rcParams['xtick.major.size'] = 4
 mpl.rcParams['xtick.major.width'] = 1
@@ -34,7 +34,7 @@ resultsname = 'results'
 
 wb = np.load('data_nonlinear/wb.npy')           # Lower surface
 h_obs = np.load('data_nonlinear/h.npy')             # Upper surface
-dV = np.load('data_nonlinear/dV.npy')           # Upper surface
+dV = np.load('data_nonlinear/dV.npy')/(2*np.pi)           # Upper surface
 
 
 # Create array for plotting
@@ -111,7 +111,7 @@ for i in range(np.size(t)):
     plt.plot([t[i]],[dV[i]*(H**2)/1e9],color='forestgreen',marker='o',markersize=10)
     plt.ylabel(r'$\Delta V$ (km$^3$)',fontsize=20)
     plt.xlim(0,t[-1])
-    plt.ylim(-2,2)
+    plt.ylim(-0.3,0.3)
     plt.xlabel(r'$t$ (yr)',fontsize=20)
     plt.xticks(fontsize=16)
     plt.yticks(fontsize=16)

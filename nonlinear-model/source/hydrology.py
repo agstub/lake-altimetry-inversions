@@ -23,31 +23,30 @@ def sqr(t):
 def swt(t):
     return (1 + trg((2*t - 1)/4)*sqr(t/2))/2
 
+lake_vol_0 = 2*np.pi*quad(lambda x: (interface(x)-bed(x))*x,0,0.5*Lngth,full_output=1)[0]
+
 # Sawtooth volume change
-def Vol(t,lake_vol_0):
-    if t < t0:
-        V = lake_vol_0+0*t
-    else:
-        V = 2*lake_vol_0*swt((t-t0)/t_period)
+def Vol(t):
+    V = 2*lake_vol_0*swt((t-t0)/t_period)
     return V
 
-def Vdot(lake_vol_0,t):
+def Vdot(t):
     # compute rate of subglacial lake volume change
     dt_fine = 3.154e7/5000.0       # timestep for computing derivative (1/5000 yr)
-    Vd = scm.derivative(Vol,t,dx=dt_fine,args=(lake_vol_0,))
+    Vd = scm.derivative(Vol,t,dx=dt_fine)
     return Vd
 
-lake_vol_0 = 2*np.pi*quad(lambda x: (interface(x)-bed(x))*x,0,0.5*Lngth,full_output=1)[0]
 
 
 ## ------------------------------
-# plot lake volume timeseries:
+#plot lake volume timeseries:
 # import matplotlib.pyplot as plt
 # t = np.linspace(0,t_final,nt)
 # V = 0*t
 #
 # for i in range(np.size(t)):
-#     V[i] = Vol(t[i],1)
-#
-# plt.plot(V)
+#     V[i] = Vol(t[i])
+
+# plt.plot(V/1e9)
+# plt.axhline(y=lake_vol_0/1e9)
 # plt.show()
