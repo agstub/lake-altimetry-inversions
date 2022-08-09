@@ -14,19 +14,14 @@
 from dolfin import *
 import matplotlib.pyplot as plt
 import numpy as np
-from stokes import stokes_solve,get_zero
-from geometry import interface,bed
+from stokes import stokes_solve
+from geometry import interface,bed,s_mean_0
+from hydrology import lake_vol_0
 from meshfcns import mesh_routine,get_wb
-import scipy.integrate as scpint
 import os
 from params import (rho_i,g,tol,t_final,Lngth,Hght,nt,dt,rho_w,dy,
                     print_convergence,X_fine,nx,Nx,Ny,save_vtk,i0)
-
-#--------------------Initial conditions-----------------------------------------
-# compute initial mean elevation of ice-water interface and initial lake volume.
-s_mean0 = np.mean(interface(X_fine)[interface(X_fine)-bed(X_fine)>tol])
-lake_vol_0 = 2*scpint.quad(lambda x: interface(x)-bed(x),0,0.5*Lngth,full_output=1)[0]
-#-------------------------------------------------------------------------------
+from scipy.integrate import quad
 
 resultsname = 'results'
 
@@ -59,9 +54,9 @@ lake_vol = np.zeros(nt)     # lake volume
 
 eta_mean  = np.zeros(nt)    # mean viscosity
 beta_mean  = np.zeros(nt)   # mean basal drag
-u_mean = np.zeros(nt)       # mean horizontal surface velocity
+u_mean = np.zeros(nt)       # mean horizontal velocity
 
-t = 0                             # time
+t = 0                       # time
 
 # begin time stepping
 for i in range(nt):
@@ -71,15 +66,13 @@ for i in range(nt):
 
     if t==0:
         # set initial conditions.
-        s_mean_i = s_mean0                    # Mean ice-water elevation.
-        w = get_zero(mesh)
-        mesh,s_int,h_int,sx_fn = mesh_routine(w,mesh,dt)
-        h_int = lambda x: Hght # Ice-air surface function
+        s_mean_i = s_mean_0                    # Mean ice-water elevation.
+        h_int = lambda x: Hght                    # Ice-air surface function
         s_int = lambda x: interface(x)            # Lower surface function
 
     # solve the Stoke problem, returns solution "w", along with the mean basal drag "beta",
     # the mean viscosity "eta", and the mean horizontal surface velocity "u"
-    w,beta_i,eta_i,u_i = stokes_solve(mesh,lake_vol_0,s_mean_i,h_int,s_int,t)
+    w,beta_i,eta_i,u_i = stokes_solve(mesh,s_mean_i,h_int,s_int,t)
 
     # solve the surface kinematic equations and move the mesh.
     mesh,s_int,h_int,sx_fn = mesh_routine(w,mesh,dt)
@@ -96,8 +89,12 @@ for i in range(nt):
     u_mean[i] = u_i
 
     # compute lake volume: integral of lower surface minus the bed elevation
-    lake_vol[i] = 2*scpint.quad(lambda x: s_int(x)-bed(x),0,0.5*Lngth,full_output=1)[0]
+    lake_vol[i] = 2*np.pi*quad(lambda x: (s_int(x)-bed(x))*x,0,0.5*Lngth,full_output=1)[0]
 
+    # compute mean elevation of ice-water and ice-air surfaces
+    s_mean_i = (8/(Lngth**2))*quad(lambda x: s_int(x)*x,0,0.5*Lngth,full_output=1)[0]
+
+    print(s_mean_i)
 
     # save Stokes solution if desired
     if save_vtk == 'on':

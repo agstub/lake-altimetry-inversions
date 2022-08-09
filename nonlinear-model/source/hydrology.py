@@ -7,14 +7,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.misc as scm
-from params import nt,t_period,t_final,t0
+from params import nt,t_period,t_final,t0,X_fine,Lngth
+from geometry import interface,bed
+from scipy.integrate import quad
 
 d0 = 0.1            # Smoothing parameter
 
 # Smoothed triangle wave
 def trg(t):
     return 1 - 2*np.arccos((1 - d0)*np.sin(2*np.pi*t))/np.pi
-
 
 # Smooth square wave
 def sqr(t):
@@ -30,13 +31,16 @@ def Vol(t,lake_vol_0):
         V = lake_vol_0+0*t
     else:
         V = 2*lake_vol_0*swt((t-t0)/t_period)
-    return V/2.0
+    return V
 
 def Vdot(lake_vol_0,t):
     # compute rate of subglacial lake volume change
     dt_fine = 3.154e7/5000.0       # timestep for computing derivative (1/5000 yr)
     Vd = scm.derivative(Vol,t,dx=dt_fine,args=(lake_vol_0,))
     return Vd
+
+lake_vol_0 = 2*np.pi*quad(lambda x: (interface(x)-bed(x))*x,0,0.5*Lngth,full_output=1)[0]
+
 
 ## ------------------------------
 # plot lake volume timeseries:

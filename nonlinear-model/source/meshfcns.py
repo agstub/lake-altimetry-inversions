@@ -29,16 +29,10 @@ def mesh_routine(w,mesh,dt):
     hx_fn, h_int = get_hx_fn(w,mesh)
 
     # next, move the mesh
-    #move_mesh(w,mesh)
     move_mesh(mesh,sx_fn,hx_fn,dt,s_int,h_int,w)
 
     # plot surfaces in real time if realtime_plot = "on"
     plot_surfaces(h_int,s_int)
-
-    # compute mean elevation of ice-water and ice-air surfaces
-    s_mean = np.mean(s_int(X_fine)[s_int(X_fine)-tol>bed(X_fine)])
-    h_mean = np.mean(h_int(X_fine)[s_int(X_fine)-tol>bed(X_fine)])
-
 
     return mesh,s_int,h_int,sx_fn
 

@@ -3,7 +3,7 @@
 from params import rho_i,g,tol,B,rm2,rho_w,C,eps_p,eps_b,eps_v,dt,quad_degree,Lngth,t_period,Hght
 from boundaryconds import mark_boundary,apply_bcs
 from geometry import bed
-from hydrology import Vdot
+from hydrology import Vdot,lake_vol_0
 import numpy as np
 from dolfin import *
 
@@ -41,10 +41,10 @@ def shear_bdry(u,v,nu,x):
         return inner(TDn,Tv)
 
 def div_c(u,x):
-    # divergence in cylindrical coordinates        
+    # divergence in cylindrical coordinates
         return u[0].dx(0) + u[0]/x[0] + u[1].dx(1)
 
-def weak_form(u,p,pw,v,q,qw,f,g_lake,g_in,g_out,ds,nu,T,lake_vol_0,t,x):
+def weak_form(u,p,pw,v,q,qw,f,g_lake,g_out,ds,nu,T,t,x):
     # define weak form of the subglacial lake problem
 
     # measures of the extended boundary (L0) and ice-water boundary (L1)
@@ -56,17 +56,17 @@ def weak_form(u,p,pw,v,q,qw,f,g_lake,g_in,g_out,ds,nu,T,lake_vol_0,t,x):
     vn = dot(v,nu)
 
     Fw =  inner(sigma(u,p,x),D(v,x))*x[0]*dx + q*div_c(u,x)*x[0]*dx - inner(f, v)*x[0]*dx\
-         + (g_lake+pw+Constant(rho_w*g*dt)*(un+Constant(Vdot(lake_vol_0,t)/L1)))*vn*x[0]*ds(4)\
-         + qw*(un+Constant(Vdot(lake_vol_0,t))/(L0))*x[0]*ds(4)\
-         + (g_lake+pw+Constant(rho_w*g*dt)*(un+Constant(Vdot(lake_vol_0,t)/L1)))*vn*x[0]*ds(5)\
-         + qw*(un+Constant(Vdot(lake_vol_0,t))/(L0) )*x[0]*ds(5)\
+         + (g_lake+pw+Constant(rho_w*g*dt)*(un+Constant(Vdot(lake_vol_0,t)/(np.pi*(L1**2)))))*vn*x[0]*ds(4)\
+         + qw*(un+Constant(Vdot(lake_vol_0,t)/(np.pi*L0**2)))*x[0]*ds(4)\
+         + (g_lake+pw+Constant(rho_w*g*dt)*(un+Constant(Vdot(lake_vol_0,t)/(np.pi*(L1**2)))))*vn*x[0]*ds(5)\
+         + qw*(un+Constant(Vdot(lake_vol_0,t)/(np.pi*L0**2)))*x[0]*ds(5)\
          + Constant(1e-4/eps_p)*dPi(un)*vn*x[0]*ds(5)\
          + Constant(1/eps_p)*un*vn*x[0]*ds(3)\
          + beta(dot(T,u))*inner(dot(T,u),dot(T,v))*x[0]*ds(3)\
          - shear_bdry(u,v,nu,x)*x[0]*ds(2) + g_out*vn*x[0]*ds(2)
     return Fw
 
-def stokes_solve(mesh,lake_vol_0,s_mean,F_h,F_s,t):
+def stokes_solve(mesh,s_mean,F_h,F_s,t):
         # stokes solver using Taylor-Hood elements and a Lagrange multiplier
         # for the water pressure.
 
@@ -91,7 +91,6 @@ def stokes_solve(mesh,lake_vol_0,s_mean,F_h,F_s,t):
 
         # Define cryostatic normal stress conditions for inflow/outflow boundaries
         g_out = Expression('rho_i*g*(h_out-x[1])',rho_i=rho_i,g=g,h_out=h_out,degree=1)
-        g_in = Expression('rho_i*g*(h_in-x[1])',rho_i=rho_i,g=g,h_in=h_in,degree=1)
 
         f = Constant((0,-rho_i*g))        # Body force
         nu = FacetNormal(mesh)            # Outward-pointing unit normal to the boundary
@@ -108,7 +107,7 @@ def stokes_solve(mesh,lake_vol_0,s_mean,F_h,F_s,t):
         x = SpatialCoordinate(mesh)
 
         # define weak form
-        Fw = weak_form(u,p,pw,v,q,qw,f,g_lake,g_in,g_out,ds,nu,T,lake_vol_0,t,x)
+        Fw = weak_form(u,p,pw,v,q,qw,f,g_lake,g_out,ds,nu,T,t,x)
 
         bcs = apply_bcs(W,boundary_markers)
 
@@ -125,18 +124,3 @@ def stokes_solve(mesh,lake_vol_0,s_mean,F_h,F_s,t):
 
         # return solution w
         return w,beta_i,eta_i,u_i
-
-def get_zero(mesh):
-        # get zero element of function space.
-        # only used for setting initial conditions; see main.py.
-
-        # define function spaces
-        P1 = FiniteElement('P',triangle,1)     # pressure
-        P2 = FiniteElement('P',triangle,2)     # velocity
-        R = FiniteElement("R", triangle,0)     # mean water pressure
-        element = MixedElement([[P2,P2],P1,R])
-        W = FunctionSpace(mesh,element)        # function space for (u,p,pw)
-
-        w = Function(W)                        # zero by default
-
-        return w
