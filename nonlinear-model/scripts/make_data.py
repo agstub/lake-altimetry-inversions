@@ -2,7 +2,7 @@ import sys
 sys.path.insert(0, './source')
 import numpy as np
 from scipy.interpolate import interp2d,interp1d
-from params import t_final,i0,t0,Lngth,Hght,nt
+from params import t_final,Lngth,Hght,nt
 from geometry import bed
 import matplotlib.pyplot as plt
 import os
@@ -16,22 +16,20 @@ H = Hght - bed(0.5*Lngth)
 t = np.loadtxt('./results/t')
 
 lake_vol = np.loadtxt('./results/lake_vol')
-dV = (lake_vol[i0:None]-lake_vol[i0])/(H**2)
+dV = (lake_vol-lake_vol[0])/(H**2)
 
 h = np.loadtxt('./results/h')
-h = h-np.outer(h[:,i0],np.ones(nt))
-h = h[:,i0:None]
+
+h = h - np.outer(h[:,0],np.ones(nt))
 
 wb = np.loadtxt('./results/wb')            # saved in m/yr
-wb = wb
-wb = wb[:,i0:None]
 
 r = np.loadtxt('./results/r')/H               # center and scale
-t = (t[i0:None]-t0)/3.154e7                             # trim and scale
+t = t/3.154e7                             # trim and scale
 
-eta = np.loadtxt('./results/eta_mean')[i0:None]
-beta = np.loadtxt('./results/beta_mean')[i0:None]
-u = np.loadtxt('./results/u_mean')[i0:None]               # saved in m/yr
+eta = np.loadtxt('./results/eta_mean')
+beta = np.loadtxt('./results/beta_mean')
+u = np.loadtxt('./results/u_mean')              # saved in m/yr
 
 
 h_int = interp2d(r, t, h.T)

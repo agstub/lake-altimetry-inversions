@@ -20,7 +20,7 @@ from hydrology import lake_vol_0
 from meshfcns import mesh_routine,get_wb
 import os
 from params import (rho_i,g,tol,t_final,Lngth,Hght,nt,dt,rho_w,dy,
-                    print_convergence,X_fine,nx,Nx,Ny,save_vtk,i0)
+                    print_convergence,X_fine,nx,Nx,Ny,save_vtk)
 from scipy.integrate import quad
 
 resultsname = 'results'

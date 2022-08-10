@@ -6,7 +6,7 @@ import numpy as np
 
 # Turn 'on' or 'off' real-time plotting that saves a png figure called 'surfs' at
 # each time step of the free surface geometry.
-realtime_plot = 'on'
+realtime_plot = 'off'
 
 # Turn 'on' or 'off' Newton convergence information:
 print_convergence = 'off'
@@ -34,7 +34,7 @@ g = 9.81                           # gravitational acceleration (m/s^2)
 C = 1e4                            # sliding law friction coefficient (Pa s/m)^1/n
 
 # numerical parameters
-eps_p = 1.0e-13                    # penalty method parameter for unilateral condition
+eps_p = 1.0e-14                    # penalty method parameter for unilateral condition
 eps_v = (2*1e13/B)**(1/(rm2/2.0))  # flow law regularization parameter
 eps_b = (1e8/C)**(1/((rm2/2.0)))   # sliding law regularization parameter
 
@@ -60,13 +60,11 @@ dy = Hght/Ny
 
 # time-stepping parameters
 t_period = 4*3.154e7               # oscillation period (secs; yr*sec_per_year)
-t0 = 0
-t_final = t0+1.5*t_period          # final time
+t_final = 1.5*t_period             # final time
 nt_per_cycle = 2000                # number of timesteps per oscillation
 nt = int(t_final/t_period*nt_per_cycle) # number of time steps
 dt = t_final/nt                    # timestep size
 
-i0 = 0
 
 # spatial coordinate for plotting and interpolation
 

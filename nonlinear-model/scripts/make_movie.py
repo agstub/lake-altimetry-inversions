@@ -33,8 +33,8 @@ if os.path.isdir('pngs')==False:
 resultsname = 'results'
 
 wb = np.load('data_nonlinear/wb.npy')           # Lower surface
-h_obs = np.load('data_nonlinear/h.npy')             # Upper surface
-dV = np.load('data_nonlinear/dV.npy')/(2*np.pi)           # Upper surface
+h_obs = np.load('data_nonlinear/h.npy')         # Upper surface
+dV = np.load('data_nonlinear/dV.npy')           # Upper surface
 
 
 # Create array for plotting
@@ -109,6 +109,7 @@ for i in range(np.size(t)):
     plt.subplot(312)
     plt.plot(t[0:i],dV[0:i]*(H**2)/1e9,color='forestgreen',linewidth=3)
     plt.plot([t[i]],[dV[i]*(H**2)/1e9],color='forestgreen',marker='o',markersize=10)
+    #plt.plot(t_f[0:j]/3.154e7,(Vol(t_f[0:j])-Vol(0))/1e9,color='k',linestyle='--',linewidth=3)
     plt.ylabel(r'$\Delta V$ (km$^3$)',fontsize=20)
     plt.xlim(0,t[-1])
     plt.ylim(-0.3,0.3)
@@ -118,7 +119,7 @@ for i in range(np.size(t)):
 
 
     plt.subplot(325)
-    p1 = plt.contourf(x,y,h_obs[i,:,:].T,cmap='coolwarm',levels=np.arange(-0.8,0.9,0.1),extend='both')
+    p1 = plt.contourf(x,y,h_obs[i,:,:].T,cmap='coolwarm',levels=np.arange(-0.5,0.55,0.05),extend='both')
     plt.ylabel(r'$y$ (km)',fontsize=20)
     plt.xlabel(r'$x$ (km)',fontsize=20)
     plt.yticks(fontsize=16)
@@ -132,7 +133,7 @@ for i in range(np.size(t)):
 
 
     plt.subplot(326)
-    p2 = plt.contourf(x,y,wb[i,:,:].T,cmap='coolwarm',extend='both',levels=np.arange(-10,11,2))
+    p2 = plt.contourf(x,y,wb[i,:,:].T,cmap='coolwarm',extend='both',levels=np.arange(-5,5.5,0.5))
     plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.2f'))
     # Label axes and save png:
     plt.xlabel(r'$x$ (km)',fontsize=20)

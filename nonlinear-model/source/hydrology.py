@@ -5,7 +5,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.misc as scm
-from params import nt,t_period,t_final,t0,X_fine,Lngth
+from params import nt,t_period,t_final,Lngth
 from geometry import interface,bed
 from scipy.integrate import quad
 
@@ -27,7 +27,7 @@ lake_vol_0 = 2*np.pi*quad(lambda x: (interface(x)-bed(x))*x,0,0.5*Lngth,full_out
 
 # Sawtooth volume change
 def Vol(t):
-    V = 2*lake_vol_0*swt((t-t0)/t_period)
+    V = 2*lake_vol_0*swt(t/t_period)
     return V
 
 def Vdot(t):
