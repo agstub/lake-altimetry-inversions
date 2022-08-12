@@ -6,7 +6,7 @@ import numpy as np
 
 # Turn 'on' or 'off' real-time plotting that saves a png figure called 'surfs' at
 # each time step of the free surface geometry.
-realtime_plot = 'off'
+realtime_plot = 'on'
 
 # Turn 'on' or 'off' Newton convergence information:
 print_convergence = 'off'
@@ -31,17 +31,16 @@ B = (2**((n-1.0)/(2*n)))*B0        # coefficient in weak form (Pa s^{1/n})
 rho_i = 917.0                      # density of ice (kg/m^3)
 rho_w = 1000.0                     # density of water (kg/m^3)
 g = 9.81                           # gravitational acceleration (m/s^2)
-C = 1e4                            # sliding law friction coefficient (Pa s/m)^1/n
+C = 1e5                            # sliding law friction coefficient (Pa s/m)^1/n
 
 # numerical parameters
 eps_p = 1.0e-14                    # penalty method parameter for unilateral condition
 eps_v = (2*1e13/B)**(1/(rm2/2.0))  # flow law regularization parameter
-eps_b = (1e8/C)**(1/((rm2/2.0)))   # sliding law regularization parameter
-
+eps_b = (1e9/C)**(1/((rm2/2.0)))   # sliding law regularization parameter
 
 quad_degree = 16                   # quadrature degree for weak forms
 
-tol = 1.0e-3                       # numerical tolerance for boundary geometry:
+tol = 1.0e-2                       # numerical tolerance for boundary geometry:
                                    # s(x,t) - b(x) > tol on ice-water boundary,
                                    # s(x,t) - b(x) <= tol on ice-bed boundary.
 
@@ -61,7 +60,7 @@ dy = Hght/Ny
 # time-stepping parameters
 t_period = 4*3.154e7               # oscillation period (secs; yr*sec_per_year)
 t_final = 1.5*t_period             # final time
-nt_per_cycle = 2000                # number of timesteps per oscillation
+nt_per_cycle = 1000                # number of timesteps per oscillation
 nt = int(t_final/t_period*nt_per_cycle) # number of time steps
 dt = t_final/nt                    # timestep size
 

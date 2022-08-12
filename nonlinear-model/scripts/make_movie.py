@@ -32,7 +32,7 @@ if os.path.isdir('pngs')==False:
 # Load relevant files
 resultsname = 'results'
 
-wb = np.load('data_nonlinear/wb.npy')           # Lower surface
+wb = np.load('data_nonlinear/w_true.npy')           # Lower surface
 h_obs = np.load('data_nonlinear/h.npy')         # Upper surface
 dV = np.load('data_nonlinear/dV.npy')           # Upper surface
 

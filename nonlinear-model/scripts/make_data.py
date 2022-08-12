@@ -61,12 +61,13 @@ dV_d = dV_int(t_d)
 
 # save numpy files for use in inversion
 np.save('./data_nonlinear/dV.npy',dV_d)
-np.save('./data_nonlinear/wb.npy',wb_d)
+np.save('./data_nonlinear/w_true.npy',wb_d)
 np.save('./data_nonlinear/h.npy',h_d)
 np.save('./data_nonlinear/x.npy',x_d)
 np.save('./data_nonlinear/y.npy',x_d)
 np.save('./data_nonlinear/t.npy',t_d)
 np.save('./data_nonlinear/H.npy',np.array([H]))
+np.save('./data_nonlinear/u.npy',np.array([0.0]))
 np.save('./data_nonlinear/beta.npy',beta)
 np.save('./data_nonlinear/eta.npy',eta)
 

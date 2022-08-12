@@ -5,7 +5,7 @@ from scipy.fft import fftfreq
 
 # SET DATA DIRECTORY
 
-data_dir = '../data_synth_lin'
+data_dir = '../data_nonlinear'
 
 #----------------------import space and time arrays-----------------------------
 
@@ -17,7 +17,7 @@ y0 = np.load(data_dir+'/y.npy')       # y array (m)
 H = np.load(data_dir+'/H.npy').mean()       # ice thickness (m)
 beta = np.load(data_dir+'/beta.npy').mean() # basal drag coeff (Pa s/m)
 eta = np.load(data_dir+'/eta.npy').mean()     # Newtonian ice viscosity (Pa s)
-u = np.load(data_dir+'/u.npy').mean()     # mean surface velocity (Pa s)
+u = 0#np.load(data_dir+'/u.npy').mean()     # mean surface velocity (Pa s)
 #-------------------------------------------------------------------------------
 
 # number of grid points in each direction
@@ -52,7 +52,7 @@ uh0 = u/H                  # advection
 ub = u                     # background sliding speed (scaled)
 
 #---------------------- numerical parameters------------------------------------
-cg_tol = 1e-5               # stopping tolerance for conjugate gradient solver
+cg_tol = 1e-4               # stopping tolerance for conjugate gradient solver
 
 max_cg_iter =  1000         # maximum conjugate gradient iterations
 

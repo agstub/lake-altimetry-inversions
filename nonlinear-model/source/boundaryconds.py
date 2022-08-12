@@ -77,7 +77,6 @@ def mark_boundary(mesh):
 
     return boundary_markers
 
-
 def apply_bcs(W,boundary_markers):
     # Apply Dirichlet conditions on the left wall of domain (center of lake)
     # no horizontal flow due to symmetry at the lake center
