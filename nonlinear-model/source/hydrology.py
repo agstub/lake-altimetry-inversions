@@ -9,7 +9,7 @@ from params import nt,t_period,t_final,Lngth
 from geometry import interface,bed
 from scipy.integrate import quad
 
-d0 = 0.1            # Smoothing parameter
+d0 = 0.15            # Smoothing parameter
 
 # Smoothed triangle wave
 def trg(t):
@@ -27,7 +27,7 @@ lake_vol_0 = 2*np.pi*quad(lambda x: (interface(x)-bed(x))*x,0,0.5*Lngth,full_out
 
 # Sawtooth volume change
 def Vol(t):
-    V = 2*lake_vol_0*swt(t/t_period)
+    V = lake_vol_0*(1.5*swt(t/t_period)+0.5*swt(0))
     return V
 
 def Vdot(t):
@@ -39,14 +39,15 @@ def Vdot(t):
 
 
 ## ------------------------------
-#plot lake volume timeseries:
+##plot lake volume timeseries:
 # import matplotlib.pyplot as plt
 # t = np.linspace(0,t_final,nt)
-# V = 0*t
 #
-# for i in range(np.size(t)):
-#     V[i] = Vol(t[i])
-#
-# plt.plot(V/1e9)
-# plt.axhline(y=lake_vol_0/1e9)
+# plt.plot(t/3.154e7,(Vol(t)-Vol(0))/1e9)
+# #plt.axhline(y=lake_vol_0/1e9,linestyle='--')
+# plt.ylabel(r'$\Delta V$ (km$^3$)',fontsize=20)
+# plt.xlabel(r'$t$ (yr)',fontsize=20)
+# plt.xticks(fontsize=16)
+# plt.yticks(fontsize=16)
+# plt.tight_layout()
 # plt.show()

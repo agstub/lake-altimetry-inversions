@@ -112,7 +112,7 @@ for i in range(np.size(t)):
     #plt.plot(t_f[0:j]/3.154e7,(Vol(t_f[0:j])-Vol(0))/1e9,color='k',linestyle='--',linewidth=3)
     plt.ylabel(r'$\Delta V$ (km$^3$)',fontsize=20)
     plt.xlim(0,t[-1])
-    plt.ylim(-0.3,0.3)
+    plt.ylim(-0.2,0.2)
     plt.xlabel(r'$t$ (yr)',fontsize=20)
     plt.xticks(fontsize=16)
     plt.yticks(fontsize=16)

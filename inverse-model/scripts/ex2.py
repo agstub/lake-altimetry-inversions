@@ -25,8 +25,12 @@ h_obs = h + noise_level*norm(h)*noise_h/norm(noise_h)
 h_obs = localize(h_obs)
 
 w_true = np.load(data_dir+'/w_true.npy')
+dV_true = np.load(data_dir+'/dV.npy')
 
-w_inv,h_fwd,mis = invert(h_obs,eps_1=1e-2,eps_2=5e0)
+
+#w_inv,h_fwd,mis = invert(h_obs,eps_1=2e-2,eps_2=1e0)
+w_inv,h_fwd,mis = invert(h_obs,eps_1=1e-1,eps_2=1e-1)
+
 
 print('misfit norm = '+str(mis))
 
@@ -34,19 +38,29 @@ print('misfit norm = '+str(mis))
 h_bdry = 1+0*x
 h_bdry[np.abs(h_obs)<0.1] = 0
 h_bdry = np.mean(h_bdry,axis=0)
+h_bdry[h_bdry<0.5] = 0
+h_bdry[h_bdry>=0.5] = 1
 
 # boundary of true basal vertical velocity ("true" lake boundary)
-w_bdry = 1+0*x
-w_bdry[np.abs(w_true)<0.02*np.max(np.abs(w_true))] = 0
+w_bdry = 0*x
+w_bdry[np.abs(w_true)>0.015*np.max(np.abs(w_true))] = 1
 w_bdry = np.mean(w_bdry,axis=0)
+w_bdry[w_bdry<0.5] = 0
+w_bdry[w_bdry>=0.5] = 1
 
 # boundary of basal vertical velocity inversion (estimated lake boundary)
-inv_bdry = 1+0*x
-inv_bdry[np.abs(w_inv)<0.02*np.max(np.abs(w_inv))] = 0
+inv_bdry = 0*x
+inv_bdry[np.abs(w_inv)>0.015*np.max(np.abs(w_inv))] = 1
 inv_bdry = np.mean(inv_bdry,axis=0)
+inv_bdry[inv_bdry<0.5] = 0
+inv_bdry[inv_bdry>=0.5] = 1
+
+# plt.contourf(inv_bdry)
+# plt.colorbar()
+# plt.show()
+# plt.close()
 
 # calculate volume change time series:
-dV_true = calc_dV_w(w_true,w_bdry)      # true volume change (from w_true)
 dV_alt = calc_dV_h(h_obs,h_bdry)        # volume change estimate from h_obs alone
 dV_inv = calc_dV_w(w_inv,inv_bdry)        # volume change from inversion
 
@@ -77,7 +91,7 @@ for i in range(Nt):
 
     plt.ylabel(r'$\Delta V$ (km$^3$)',fontsize=20)
     plt.xlim(0,t0[-1])
-    plt.ylim(-0.3,0.3)
+    plt.ylim(-0.2,0.2)
     plt.xlabel(r'$t$ (yr)',fontsize=20)
     plt.xticks(fontsize=16)
     plt.yticks(fontsize=16)
@@ -87,7 +101,7 @@ for i in range(Nt):
     plt.subplot(222)
     plt.annotate(r'$\Delta h^\mathrm{obs}$',fontsize=20,xy=(27,-37))
     p=plt.contourf(xy_str*x0,xy_str*y0,h_obs[i,:,:].T,cmap='coolwarm',levels=np.arange(-0.5,0.55,0.05),extend='both')
-    plt.contour(xy_str*x0,xy_str*y0,h_bdry[:,:].T,colors='crimson',linestyles='-.',linewidths=3,levels=[1e-2])
+    plt.contour(xy_str*x0,xy_str*y0,h_bdry[:,:].T,colors='crimson',linestyles='-.',linewidths=3,levels=[1e-10])
     plt.gca().xaxis.set_ticklabels([])
     plt.gca().yaxis.tick_right()
     plt.ylabel(r'$y$ (km)',fontsize=20)
@@ -100,8 +114,8 @@ for i in range(Nt):
     plt.subplot(224)
     plt.annotate(r'$w_b^\mathrm{inv}$',fontsize=20,xy=(30,-37))
     p=plt.contourf(xy_str*x0,xy_str*y0,w_inv[i,:,:].T,cmap='coolwarm',extend='both',levels=np.arange(-5,5.5,0.5))
-#    plt.contour(xy_str*x0,xy_str*y0,inv_bdry[:,:].T,colors='k',linestyles='--',linewidths=3,levels=[1e-1])
-#    plt.contour(xy_str*x0,xy_str*y0,w_bdry[:,:].T,colors='forestgreen',linewidths=3,levels=[1e-1])
+    plt.contour(xy_str*x0,xy_str*y0,inv_bdry[:,:].T,colors='k',linestyles='--',linewidths=3,levels=[1e-10])
+    plt.contour(xy_str*x0,xy_str*y0,w_bdry[:,:].T,colors='forestgreen',linewidths=3,levels=[1e-10])
     plt.ylabel(r'$y$ (km)',fontsize=20)
     plt.xlabel(r'$x$ (km)',fontsize=20)
     plt.gca().yaxis.tick_right()
