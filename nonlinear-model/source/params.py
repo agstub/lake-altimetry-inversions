@@ -31,7 +31,7 @@ B = (2**((n-1.0)/(2*n)))*B0        # coefficient in weak form (Pa s^{1/n})
 rho_i = 917.0                      # density of ice (kg/m^3)
 rho_w = 1000.0                     # density of water (kg/m^3)
 g = 9.81                           # gravitational acceleration (m/s^2)
-C = 1e6                            # sliding law friction coefficient (Pa s/m)^1/n
+C = 1e4                            # sliding law friction coefficient (Pa s/m)^1/n
 
 # numerical parameters
 eps_p = 1.0e-14                    # penalty method parameter for unilateral condition
@@ -60,7 +60,7 @@ dy = Hght/Ny
 # time-stepping parameters
 t_period = 4*3.154e7               # oscillation period (secs; yr*sec_per_year)
 t_final = 1.5*t_period             # final time
-nt_per_cycle = 2000                # number of timesteps per oscillation
+nt_per_cycle = 1000                # number of timesteps per oscillation
 nt = int(t_final/t_period*nt_per_cycle) # number of time steps
 dt = t_final/nt                    # timestep size
 
