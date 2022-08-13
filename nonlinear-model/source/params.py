@@ -6,7 +6,7 @@ import numpy as np
 
 # Turn 'on' or 'off' real-time plotting that saves a png figure called 'surfs' at
 # each time step of the free surface geometry.
-realtime_plot = 'on'
+realtime_plot = 'off'
 
 # Turn 'on' or 'off' Newton convergence information:
 print_convergence = 'off'
