@@ -28,8 +28,9 @@ w_true = np.load(data_dir+'/w_true.npy')
 dV_true = np.load(data_dir+'/dV.npy')
 
 
-#w_inv,h_fwd,mis = invert(h_obs,eps_1=2e-2,eps_2=1e0)
-w_inv,h_fwd,mis = invert(h_obs,eps_1=1e-1,eps_2=1e-1)
+# w_inv,h_fwd,mis = invert(h_obs,eps_1=1e-1,eps_2=1e-1) # good for beta = 1e10
+w_inv,h_fwd,mis = invert(h_obs,eps_1=5e-2,eps_2=1e-1)   # good for beta = 1e8
+# w_inv,h_fwd,mis = invert(h_obs,eps_1=6e-2,eps_2=1e-1) # good for beta = 1e9
 
 
 print('misfit norm = '+str(mis))
@@ -38,8 +39,8 @@ print('misfit norm = '+str(mis))
 h_bdry = 1+0*x
 h_bdry[np.abs(h_obs)<0.1] = 0
 h_bdry = np.mean(h_bdry,axis=0)
-h_bdry[h_bdry<0.5] = 0
-h_bdry[h_bdry>=0.5] = 1
+h_bdry[h_bdry<0.25] = 0
+h_bdry[h_bdry>=0.25] = 1
 
 # boundary of true basal vertical velocity ("true" lake boundary)
 w_bdry = 0*x
