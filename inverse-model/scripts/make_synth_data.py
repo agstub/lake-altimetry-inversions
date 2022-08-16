@@ -42,6 +42,7 @@ from operators import fwd
 from localization import localize
 from kernel_fcns import ifftd
 from conj_grad import norm
+from noise import noise_var
 
 # set basal vertical velocity anomaly to an oscillating gaussian
 sigma = (10000.0/H)/3.0
@@ -53,7 +54,7 @@ w_true = 5*np.exp(-0.5*(sigma**(-2))*(x**2+y**2))*np.sin(4*np.pi*t/np.max(t))
 h = localize(ifftd(fwd(w_true)).real)
 
 # add some noise
-noise_h = np.random.normal(size=(Nt,Nx,Ny))
+noise_h = np.random.normal(size=(Nt,Nx,Ny),scale=np.sqrt(noise_var))
 noise_level = 0.25
 h_obs = h + noise_level*norm(h)*noise_h/norm(noise_h)
 

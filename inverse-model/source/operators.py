@@ -15,13 +15,14 @@ import numpy as np
 from kernel_fcns import Rg_,Tw_,ker_w_,conv,xcor
 from params import t,k,kx,ky,dx,Nx
 from kernel_fcns import ifftd,fftd
-from regularizations import Cpri_inv
-
+from prior import Cpri_inv
+from noise import Cnoise_inv
 #-------------------------------------------------------------------------------
 def adj_fwd(X,eps_1,eps_2):
     # operator on the LHS of the normal equations:
     # apply forward operator then adjoint operator, and add the regularization term
-    A = adj(fwd(X)) + Cpri_inv(X,eps_1,eps_2)
+    # This is the inverse of the posterior covariance operator
+    A = adj(Cnoise_inv(fwd(X))) + Cpri_inv(X,eps_1,eps_2)
     return A
 
 def fwd(w):

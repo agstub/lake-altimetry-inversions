@@ -5,7 +5,7 @@ from scipy.fft import fftfreq
 
 # SET DATA DIRECTORY
 
-data_dir = '../lake-inv-data-nonlinear/logbeta8/data_nonlinear'
+data_dir = '../lake-inv-data-nonlinear/logbeta9/data_nonlinear'
 
 #----------------------import space and time arrays-----------------------------
 

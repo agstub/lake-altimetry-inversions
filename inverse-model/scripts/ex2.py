@@ -11,27 +11,24 @@ from post_process import calc_dV_w,calc_dV_h
 import os
 if os.path.isdir('../pngs')==False:
     os.mkdir('../pngs')    # make a directory for the results.
-
-
+from noise import noise_var
 import matplotlib.pyplot as plt
 from localization import localize
 from conj_grad import norm
 
 # load synthetic elevation data (h_obs) and "true" basal vertical velocity (w_true)
 h = np.load(data_dir+'/h.npy')
-noise_h = np.random.normal(size=(Nt,Nx,Ny))
-noise_level = 0.25
-h_obs = h + noise_level*norm(h)*noise_h/norm(noise_h)
+noise_h = np.random.normal(size=(Nt,Nx,Ny),scale=np.sqrt(noise_var))
+h_obs = h + noise_h
 h_obs = localize(h_obs)
 
 w_true = np.load(data_dir+'/w_true.npy')
 dV_true = np.load(data_dir+'/dV.npy')
 
+eps_1 = 6e-4/noise_var
+eps_2 = 1e-2/noise_var
 
-# w_inv,h_fwd,mis = invert(h_obs,eps_1=1e-1,eps_2=1e-1) # good for beta = 1e10
-w_inv,h_fwd,mis = invert(h_obs,eps_1=5e-2,eps_2=1e-1)   # good for beta = 1e8
-# w_inv,h_fwd,mis = invert(h_obs,eps_1=6e-2,eps_2=1e-1) # good for beta = 1e9
-
+w_inv,h_fwd,mis = invert(h_obs,eps_1=eps_1,eps_2=eps_2)    # good for beta = 1e9
 
 print('misfit norm = '+str(mis))
 
@@ -56,10 +53,6 @@ inv_bdry = np.mean(inv_bdry,axis=0)
 inv_bdry[inv_bdry<0.5] = 0
 inv_bdry[inv_bdry>=0.5] = 1
 
-# plt.contourf(inv_bdry)
-# plt.colorbar()
-# plt.show()
-# plt.close()
 
 # calculate volume change time series:
 dV_alt = calc_dV_h(h_obs,h_bdry)        # volume change estimate from h_obs alone
