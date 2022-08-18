@@ -13,3 +13,19 @@ def calc_dV_h(h,h_bdry):
     h_copy = np.copy(h)*h_bdry
     dV = trapezoid(trapezoid(h_copy,dx=dy,axis=-1),dx=dx,axis=-1)
     return dV
+
+def calc_bdry_w(w,thresh):
+    bdry = 0*x
+    bdry[np.abs(w)>thresh*np.max(np.abs(w))] = 1
+    bdry = np.mean(bdry,axis=0)
+    bdry[bdry<0.5] = 0
+    bdry[bdry>=0.5] = 1
+    return bdry
+
+def calc_bdry_h(h,thresh):
+    bdry = 1+0*x
+    bdry[np.abs(h)<0.1] = 0
+    bdry = np.mean(bdry,axis=0)
+    bdry[bdry<0.25] = 0
+    bdry[bdry>=0.25] = 1
+    return bdry

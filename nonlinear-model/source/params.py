@@ -31,7 +31,7 @@ B = (2**((n-1.0)/(2*n)))*B0        # coefficient in weak form (Pa s^{1/n})
 rho_i = 917.0                      # density of ice (kg/m^3)
 rho_w = 1000.0                     # density of water (kg/m^3)
 g = 9.81                           # gravitational acceleration (m/s^2)
-C = 1e4                            # sliding law friction coefficient (Pa s/m)^1/n
+C = 1e5                            # sliding law friction coefficient (Pa s/m)^1/n
 
 # numerical parameters
 eps_p = 1.0e-14                    # penalty method parameter for unilateral condition

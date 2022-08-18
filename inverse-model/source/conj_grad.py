@@ -21,7 +21,7 @@ def norm(a):
 
 #------------------------------------------------------------------------------
 
-def cg_solve(b,eps_1,eps_2):
+def cg_solve(b,eps_1,eps_2,num):
 # conjugate gradient method for solving the normal equations
 #
 #              adj_fwd(X)  = b,           where...
@@ -35,10 +35,17 @@ def cg_solve(b,eps_1,eps_2):
     r = r0                    # initialize residual
     X = 0*p                   # initial guess
 
+    dims = list(np.shape(X))
+    dims.append(num)
+    dims = tuple(dims)
+    Y = np.zeros(dims)
+
     rnorm0 = prod(r,r)    # (squared) norm of the residual: previous iteration
     rnorm1 = rnorm0       # (squared) norm of the residual: current iteration
 
     r00 = norm(b)
+    Ap = adj_fwd(p,eps_1,eps_2)
+    d = prod(p,Ap)
 
     while np.sqrt(rnorm1)/r00 > cg_tol:
         if j%10 == 0:
@@ -47,20 +54,29 @@ def cg_solve(b,eps_1,eps_2):
         rnorm0 = prod(r,r)
 
         Ap = adj_fwd(p,eps_1,eps_2)
+        d = prod(p,Ap)
 
-        alpha_c = rnorm0/prod(p,Ap)
+        alpha_c = rnorm0/d
 
         X = X + alpha_c*p                     # update solution
+
+        Z = np.random.default_rng().normal(loc=0,scale=1,size=num)
+
+        Y = Y + np.multiply.outer(p,Z)/np.sqrt(d)
+
         r = r - alpha_c*Ap                    # update residual
         rnorm1 = prod(r,r)
         beta_c = rnorm1/rnorm0
         p = r + beta_c*p                     # update search direction
         j = j+1
 
-
         if j > max_cg_iter:
             print('\n...CG terminated because maximum iterations reached.')
             break
     if j<max_cg_iter:
         print('\n...CG converged!')
-    return X
+    w_map = X
+
+    sample = np.multiply.outer(w_map,np.ones(num)) + Y
+
+    return w_map,sample

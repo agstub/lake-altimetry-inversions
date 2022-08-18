@@ -18,7 +18,7 @@ if os.path.isdir('../data_synth_lin')==False:
 # define the scalar parameters in the problem
 # in practice we might use means of some of these fields around the lake
 H = np.array([1000])          # ice thickness over the lake
-beta = np.array([1e8])        # basal drag coeff. near the lake
+beta = np.array([1e9])        # basal drag coeff. near the lake
 eta = np.array([1e13])        # viscosity near the lake
 u = np.array([0])             # background flow speed near the lake
 
@@ -51,12 +51,11 @@ w_true = 5*np.exp(-0.5*(sigma**(-2))*(x**2+y**2))*np.sin(4*np.pi*t/np.max(t))
 # produce synthetic elevation anomaly by applying the forward operator
 # (returns fft of elevation), inverse fourier-transforming the results,
 # and removing the off-lake component ("localize" function)
-h = localize(ifftd(fwd(w_true)).real)
+h = ifftd(fwd(w_true)).real
 
 # add some noise
-noise_h = np.random.normal(size=(Nt,Nx,Ny),scale=np.sqrt(noise_var))
-noise_level = 0.25
-h_obs = h + noise_level*norm(h)*noise_h/norm(noise_h)
+# noise_h = np.random.normal(size=(Nt,Nx,Ny),scale=np.sqrt(noise_var))
+# h_obs = h + noise_h
 
-np.save('../data_synth_lin/h.npy',h_obs)
+np.save('../data_synth_lin/h.npy',h)
 np.save('../data_synth_lin/w_true.npy',w_true)
