@@ -1,7 +1,6 @@
 # this file contains a conjugate gradient method implementation that is used to solve
 # the normal equations that arise from the least-squares minimization problem
 
-from operators import adj_fwd
 from params import dx,dy,dt,cg_tol,max_cg_iter
 from scipy.integrate import trapz
 import numpy as np
@@ -21,12 +20,12 @@ def norm(a):
 
 #------------------------------------------------------------------------------
 
-def cg_solve(b,eps_1,eps_2,num):
+def cg_solve(A,b,num):
 # conjugate gradient method for solving the normal equations
 #
-#              adj_fwd(X)  = b,           where...
+#              A(X)  = b,           where...
 #
-# * adj_fwd is a linear operator defined in operators.py
+# * A is a symmetric positive definite operator (function)
 # * b = right-side vector
 
     r0 = b                    # initial residual
@@ -44,7 +43,7 @@ def cg_solve(b,eps_1,eps_2,num):
     rnorm1 = rnorm0       # (squared) norm of the residual: current iteration
 
     r00 = norm(b)
-    Ap = adj_fwd(p,eps_1,eps_2)
+    Ap = A(p)
     d = prod(p,Ap)
 
     while np.sqrt(rnorm1)/r00 > cg_tol:
@@ -53,7 +52,7 @@ def cg_solve(b,eps_1,eps_2,num):
 
         rnorm0 = prod(r,r)
 
-        Ap = adj_fwd(p,eps_1,eps_2)
+        Ap = A(p)
         d = prod(p,Ap)
 
         alpha_c = rnorm0/d

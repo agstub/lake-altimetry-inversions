@@ -2,7 +2,7 @@
 # vector of the normal equations and calls the conjugate-gradient solver
 
 from conj_grad import cg_solve,norm
-from operators import fwd,adj
+from operators import fwd,adj,Cpost_inv
 import numpy as np
 from kernel_fcns import fftd,ifftd
 from params import t,lamda,x,Nx
@@ -22,7 +22,7 @@ def invert(h_obs,eps_1,eps_2,num):
 
 
     # solve the normal equations with CG for the basal vertical velocity anomaly
-    w_map,sample = cg_solve(b,eps_1,eps_2,num)
+    w_map,sample = cg_solve(lambda X: Cpost_inv(X,eps_1,eps_2),b,num)
 
     # get the forward solution (elevation profile) associated with the inversion
     h_fwd = ifftd(fwd(w_map)).real+ifftd(np.exp(-lamda*Rg_*t)*fftd(h0)).real

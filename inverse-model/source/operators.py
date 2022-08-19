@@ -18,7 +18,7 @@ from kernel_fcns import ifftd,fftd
 from prior import Cpri_inv
 from noise import Cnoise_inv
 #-------------------------------------------------------------------------------
-def adj_fwd(X,eps_1,eps_2):
+def Cpost_inv(X,eps_1,eps_2):
     # operator on the LHS of the normal equations:
     # apply forward operator then adjoint operator, and add the regularization term
     # This is the inverse of the posterior covariance operator
