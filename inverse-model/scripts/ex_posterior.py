@@ -1,16 +1,16 @@
 # example script running the inversion on some synthetic data
-# and plotting the results
+# and plotting the results (MAP point)
 
 import sys
 sys.path.insert(0, '../source')
 
 from inversion import invert
-from params import x,y,t,Nt,data_dir,H,x0,y0,t0,Nx,Ny
+from params import x,y,t,Nt,data_dir,H,x0,y0,t0,Nx,Ny,lamda0,beta0
 import numpy as np
 from post_process import calc_dV_w,calc_dV_h,calc_bdry_w,calc_bdry_h
 import os
-if os.path.isdir('../pngs')==False:
-    os.mkdir('../pngs')    # make a directory for the results.
+if os.path.isdir('../post_pngs')==False:
+    os.mkdir('../post_pngs')    # make a directory for the results.
 from noise import noise_var
 import matplotlib.pyplot as plt
 from localization import localize
@@ -24,10 +24,7 @@ h_obs = localize(h_obs)
 
 w_true = np.load(data_dir+'/w_true.npy')
 
-eps_1 = 3
-eps_2 = 10
-
-w_map,sample,h_fwd,mis = invert(h_obs,eps_1=eps_1,eps_2=eps_2,num=1)    # good for beta = 1e9
+w_map,sample,h_fwd,mis = invert(h_obs,kappa=0.05,tau=60,a=5,lamda=lamda0,beta=beta0,num=1)    # good for beta = 1e9
 
 sample = sample[:,:,:,0]
 
@@ -100,5 +97,5 @@ for i in range(Nt):
     plt.xticks(fontsize=16)
     plt.yticks(fontsize=16)
     plt.tight_layout()
-    plt.savefig('../pngs/'+str(i))
+    plt.savefig('../post_pngs/'+str(i))
     plt.close()

@@ -20,7 +20,7 @@ def norm(a):
 
 #------------------------------------------------------------------------------
 
-def cg_solve(A,b,num):
+def cg_solve(A,b,num=0,tol = cg_tol):
 # conjugate gradient method for solving the normal equations
 #
 #              A(X)  = b,           where...
@@ -34,10 +34,11 @@ def cg_solve(A,b,num):
     r = r0                    # initialize residual
     X = 0*p                   # initial guess
 
-    dims = list(np.shape(X))
-    dims.append(num)
-    dims = tuple(dims)
-    Y = np.zeros(dims)
+    if num>0:
+        dims = list(np.shape(X))
+        dims.append(num)
+        dims = tuple(dims)
+        Y = np.zeros(dims)
 
     rnorm0 = prod(r,r)    # (squared) norm of the residual: previous iteration
     rnorm1 = rnorm0       # (squared) norm of the residual: current iteration
@@ -46,9 +47,9 @@ def cg_solve(A,b,num):
     Ap = A(p)
     d = prod(p,Ap)
 
-    while np.sqrt(rnorm1)/r00 > cg_tol:
+    while np.sqrt(rnorm1)/r00 > tol:
         if j%10 == 0:
-            print("CG iter. "+str(j)+': rel. residual norm = '+"{:.2e}".format(np.sqrt(rnorm1)/r00)+',  tol = '+"{:.2e}".format(cg_tol))
+            print("CG iter. "+str(j)+': rel. residual norm = '+"{:.2e}".format(np.sqrt(rnorm1)/r00)+',  tol = '+"{:.2e}".format(tol))
 
         rnorm0 = prod(r,r)
 
@@ -59,9 +60,9 @@ def cg_solve(A,b,num):
 
         X = X + alpha_c*p                     # update solution
 
-        Z = np.random.default_rng().normal(loc=0,scale=1,size=num)
-
-        Y = Y + np.multiply.outer(p,Z)/np.sqrt(d)
+        if num>0:
+            Z = np.random.default_rng().normal(loc=0,scale=1,size=num)
+            Y = Y + np.multiply.outer(p,Z)/np.sqrt(d)
 
         r = r - alpha_c*Ap                    # update residual
         rnorm1 = prod(r,r)
@@ -74,8 +75,10 @@ def cg_solve(A,b,num):
             break
     if j<max_cg_iter:
         print('\n...CG converged!')
-    w_map = X
 
-    sample = np.multiply.outer(w_map,np.ones(num)) + Y
+    if num>0:
+        sample = np.multiply.outer(X,np.ones(num)) + Y
+    else:
+        sample = None
 
-    return w_map,sample
+    return X,sample

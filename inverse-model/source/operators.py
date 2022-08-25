@@ -12,28 +12,35 @@
 
 
 import numpy as np
-from kernel_fcns import Rg_,Tw_,ker_w_,conv,xcor
-from params import t,k,kx,ky,dx,Nx
+from kernel_fcns import ker,ker0,conv,xcor
+from params import t,k,kx,ky,dx,Nx,lamda0,beta0
 from kernel_fcns import ifftd,fftd
 from prior import Cpri_inv
 from noise import Cnoise_inv
 #-------------------------------------------------------------------------------
-def Cpost_inv(X,eps_1,eps_2):
+def Cpost_inv(X,kappa,tau,a):
     # operator on the LHS of the normal equations:
     # apply forward operator then adjoint operator, and add the regularization term
     # This is the inverse of the posterior covariance operator
-    A = adj(Cnoise_inv(fwd(X))) + Cpri_inv(X,eps_1,eps_2)
+    A = adj(Cnoise_inv(fwd(X))) + Cpri_inv(X,kappa,tau,a)
     return A
+
+def fwd_uq(w,lamda=lamda0,beta=beta0):
+    # forward operator for basal vertical velocity w
+    # returns the fourier-transformed data (elevation) h minus the initial elevation profile
+    w_ft = fftd(w)
+    S_ft = conv(ker(lamda,beta),w_ft)
+    return ifftd(S_ft).real
+
 
 def fwd(w):
     # forward operator for basal vertical velocity w
     # returns the fourier-transformed data (elevation) h minus the initial elevation profile
     w_ft = fftd(w)
-    S_ft = conv(ker_w_,w_ft)
+    S_ft = conv(ker0,w_ft)
     return S_ft
 
 def adj(f_ft):
     # adjoint of the basal vertical velocity forward operator
-    S = ifftd(xcor(ker_w_,f_ft)).real
+    S = ifftd(xcor(ker0,f_ft)).real
     return S
-#-------------------------------------------------------------------------------

@@ -25,7 +25,7 @@ w_true = np.load(data_dir+'/w_true.npy')
 
 eps_1 = 3
 eps_2 = 10
-num = 600
+num = 200
 
 batch = 200
 
@@ -36,7 +36,7 @@ plt.figure(figsize=(8,6))
 for k in range(N):
     print('\n ***Drawing samples '+str(k*batch)+'-'+str((k+1)*batch)+' out of '+str(num)+'*** \n')
 
-    w_map,sample,h_fwd,mis = invert(h_obs,eps_1=eps_1,eps_2=eps_2,num=batch)    # good for beta = 1e9
+    w_map,sample,h_fwd,mis = invert(h_obs,kappa=0.05,tau=60,a=5,num=batch)
 
     print('rel. misfit norm = '+str(mis))
     print('rel. noise norm = '+str(norm(noise_h)/norm(h_obs)))

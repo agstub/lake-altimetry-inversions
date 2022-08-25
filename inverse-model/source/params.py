@@ -15,8 +15,8 @@ x0 = np.load(data_dir+'/x.npy')       # x array (m)
 y0 = np.load(data_dir+'/y.npy')       # y array (m)
 
 H = np.load(data_dir+'/H.npy').mean()       # ice thickness (m)
-beta = np.load(data_dir+'/beta.npy').mean() # basal drag coeff (Pa s/m)
-eta = np.load(data_dir+'/eta.npy').mean()     # Newtonian ice viscosity (Pa s)
+beta_d = np.load(data_dir+'/beta.npy').mean() # basal drag coeff (Pa s/m)
+eta_d = np.load(data_dir+'/eta.npy').mean()     # Newtonian ice viscosity (Pa s)
 u = 0 #np.load(data_dir+'/u.npy').mean()     # mean surface velocity (Pa s)
 #-------------------------------------------------------------------------------
 
@@ -39,13 +39,13 @@ rho_i = 917                 # ice density (kg/m^3)
 g = 9.81                    # gravitational acceleration
 
 #----------------------Derived parameters---------------------------------------
-t_r = 2*eta/(rho_i*g*H)     # viscous relaxation time
+t_r = 2*eta_d/(rho_i*g*H)     # viscous relaxation time
 
 # nondimensional parameters
-lamda = t_sc/t_r           # process timescale relative to
-                           # surface relaxation timescale
+lamda0 = t_sc/t_r           # process timescale relative to
+                            # surface relaxation timescale
 
-beta0 = beta*H/(2*eta)     # drag coefficient relative to ice viscosity and thickness
+beta0 = beta_d*H/(2*eta_d) # drag coefficient relative to ice viscosity and thickness
 
 uh0 = u/H                  # advection
 
@@ -54,7 +54,7 @@ ub = u                     # background sliding speed (scaled)
 #---------------------- numerical parameters------------------------------------
 cg_tol = 1e-5               # stopping tolerance for conjugate gradient solver
 
-max_cg_iter =  500         # maximum conjugate gradient iterations
+max_cg_iter =  1000         # maximum conjugate gradient iterations
 
 
 # spatial frequencies
