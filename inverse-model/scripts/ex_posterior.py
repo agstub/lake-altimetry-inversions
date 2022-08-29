@@ -11,7 +11,7 @@ from post_process import calc_dV_w,calc_dV_h,calc_bdry_w,calc_bdry_h
 import os
 if os.path.isdir('../post_pngs')==False:
     os.mkdir('../post_pngs')    # make a directory for the results.
-from noise import noise_var
+from error_model import noise_var
 import matplotlib.pyplot as plt
 from localization import localize
 from conj_grad import norm
@@ -24,27 +24,28 @@ h_obs = localize(h_obs)
 
 w_true = np.load(data_dir+'/w_true.npy')
 
-w_map,sample,h_fwd,mis = invert(h_obs,kappa=0.05,tau=60,a=5,lamda=lamda0,beta=beta0,num=1)    # good for beta = 1e9
+kappa = 0.0001
+tau = 10
+a = 5
+
+w_map,sample,h_fwd,mis = invert(h_obs,kappa=kappa,tau=tau,a=a,num=1)    # good for beta = 1e9
 
 sample = sample[:,:,:,0]
 
 print('rel. misfit norm = '+str(mis))
 print('rel. noise norm = '+str(norm(noise_h)/norm(h_obs)))
-B = 1+0*x
-B[np.sqrt(x**2+y**2)>20]=0
-
 
 # lake boundary estimates
 # h_bdry = calc_bdry_h(h_obs,0.1)
-# w_bdry = calc_bdry_w(w_true,0.025)
-# inv_bdry = calc_bdry_w(w_map,0.025)
-# samp_bdry = calc_bdry_w(sample,0.025)
+true_bdry = calc_bdry_w(w_true,0.025)
+map_bdry = calc_bdry_w(w_map,0.025)
+samp_bdry = calc_bdry_w(sample,0.025)
 
 # calculate volume change time series:
 #dV_alt = calc_dV_h(h_obs,h_bdry)        # volume change estimate from h_obs alone
-dV_map = calc_dV_w(w_map,B)        # volume change from inversion
-dV_samp = calc_dV_w(sample,B)        # volume change from inversion
-dV_true = calc_dV_w(w_true,B)        # volume change from inversion
+dV_map = calc_dV_w(w_map,map_bdry)        # volume change from inversion
+dV_samp = calc_dV_w(sample,samp_bdry)        # volume change from inversion
+dV_true = calc_dV_w(w_true,true_bdry)        # volume change from inversion
 
 
 # plot everything
@@ -85,9 +86,9 @@ for i in range(Nt):
     plt.subplot(224)
     plt.annotate(r'$w^\mathrm{MAP}$',fontsize=20,xy=(28,-37))
     p=plt.contourf(xy_str*x0,xy_str*y0,w_map[i,:,:].T,cmap='coolwarm',extend='both',levels=np.arange(-5,5.5,0.5))
-    # plt.contour(xy_str*x0,xy_str*y0,inv_bdry[:,:].T,colors='k',linestyles='--',linewidths=3,levels=[1e-10])
-    # plt.contour(xy_str*x0,xy_str*y0,w_bdry[:,:].T,colors='forestgreen',linewidths=3,levels=[1e-10])
-    # plt.contour(xy_str*x0,xy_str*y0,samp_bdry[:,:].T,colors='indigo',linewidths=2,levels=[1e-10])
+    plt.contour(xy_str*x0,xy_str*y0,map_bdry[:,:].T,colors='crimson',linestyles='--',linewidths=3,levels=[1e-10])
+    plt.contour(xy_str*x0,xy_str*y0,true_bdry[:,:].T,colors='royalblue',linewidths=3,levels=[1e-10])
+    plt.contour(xy_str*x0,xy_str*y0,samp_bdry[:,:].T,colors='k',linewidths=2,levels=[1e-10])
     plt.ylabel(r'$y$ (km)',fontsize=20)
     plt.xlabel(r'$x$ (km)',fontsize=20)
     plt.gca().yaxis.tick_right()

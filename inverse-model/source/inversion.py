@@ -10,7 +10,7 @@ from kernel_fcns import Rg
 import os
 from post_process import calc_dV_w
 from localization import localize
-from noise import Cnoise_inv
+from error_model import Cerr_inv
 
 def invert(h_obs,kappa,tau,a,lamda=lamda0,beta=beta0,num=1):
     # invert for basal vertical velocity w given the observed elevation change h_obs
@@ -18,8 +18,7 @@ def invert(h_obs,kappa,tau,a,lamda=lamda0,beta=beta0,num=1):
     print('Solving normal equations with CG....\n')
     # extract initial elevation profile (goes on RHS of normal equations "b")
     h0 = h_obs[0,:,:] + np.zeros(np.shape(h_obs))
-    b = adj(Cnoise_inv(fftd(h_obs)-np.exp(-lamda*Rg(beta)*t)*fftd(h0)))
-
+    b = adj(Cerr_inv(fftd(h_obs)-np.exp(-lamda*Rg(beta)*t)*fftd(h0)))
 
     # solve the normal equations with CG for the basal vertical velocity anomaly
     w_map,sample = cg_solve(lambda X: Cpost_inv(X,kappa,tau,a),b,num)

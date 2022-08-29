@@ -42,7 +42,6 @@ from operators import fwd
 from localization import localize
 from kernel_fcns import ifftd
 from conj_grad import norm
-from noise import noise_var
 
 # set basal vertical velocity anomaly to an oscillating gaussian
 sigma = (10000.0/H)/3.0

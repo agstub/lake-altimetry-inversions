@@ -10,7 +10,7 @@ def lap(f):
 
 def A(f,kappa):
     # elliptic operator
-    R = (kappa**2)*f-lap(f)
+    R = kappa*f-lap(f)
     return R
 
 def dfdt(f):
@@ -39,4 +39,4 @@ def Cpri_inv(f,kappa,tau,a):
     # walk that continually returns to the mean). For large values of the parameter
     # "a", the prior looks like white noise in time. For smaller values of "a",
     # the process looks more like a Brownian motion.
-    return (tau**2/(2*a))*Qt_a(Qs2(Qt(f,tau,a),kappa),tau,a)
+    return tau*Qt_a(Qs2(Qt(f,tau,a),kappa),tau,a)

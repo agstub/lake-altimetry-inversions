@@ -16,13 +16,13 @@ from kernel_fcns import ker,ker0,conv,xcor
 from params import t,k,kx,ky,dx,Nx,lamda0,beta0
 from kernel_fcns import ifftd,fftd
 from prior import Cpri_inv
-from noise import Cnoise_inv
+from error_model import Cerr_inv
 #-------------------------------------------------------------------------------
 def Cpost_inv(X,kappa,tau,a):
     # operator on the LHS of the normal equations:
     # apply forward operator then adjoint operator, and add the regularization term
     # This is the inverse of the posterior covariance operator
-    A = adj(Cnoise_inv(fwd(X))) + Cpri_inv(X,kappa,tau,a)
+    A = adj(Cerr_inv(fwd(X))) + Cpri_inv(X,kappa,tau,a)
     return A
 
 def fwd_uq(w,lamda=lamda0,beta=beta0):
