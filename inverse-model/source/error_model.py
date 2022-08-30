@@ -4,6 +4,8 @@ import numpy as np
 
 if os.path.isfile('../uncertainty/var_red.npy')==True:
     model_var = np.load('../uncertainty/var_red.npy')
+else:
+    model_var = 0
 
 noise_var = 1e-4
 

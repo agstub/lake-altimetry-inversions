@@ -8,7 +8,6 @@ from kernel_fcns import fftd,ifftd
 from params import t,x,Nx,lamda0,beta0
 from kernel_fcns import Rg
 import os
-from post_process import calc_dV_w
 from localization import localize
 from error_model import Cerr_inv
 
