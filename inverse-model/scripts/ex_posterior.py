@@ -28,7 +28,9 @@ kappa = 0.0001
 tau = 10
 a = 5
 
-w_map,sample,h_fwd,mis = invert(h_obs,kappa=kappa,tau=tau,a=a,num=1)    # good for beta = 1e9
+num = 1                     # num posterior samples
+
+w_map,sample,h_fwd,mis = invert(h_obs,kappa=kappa,tau=tau,a=a,num=num)    # good for beta = 1e9
 
 sample = sample[:,:,:,0]
 

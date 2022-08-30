@@ -42,6 +42,7 @@ def invert(h_obs,kappa,tau,a,lamda=lamda0,beta=beta0,num=1):
 
     # save the results
     np.save('../results/w_map.npy',w_map)
+    np.save('../results/post_samples.npy',sample)
     np.save('../results/h_fwd.npy',h_fwd)
 
     return w_map,sample,h_fwd,mis

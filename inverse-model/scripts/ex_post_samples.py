@@ -17,12 +17,16 @@ h = np.load(data_dir+'/h.npy')
 noise_h = np.random.normal(size=(Nt,Nx,Ny),scale=np.sqrt(noise_var))
 h_obs = h + noise_h
 h_obs = localize(h_obs)
-
 w_true = np.load(data_dir+'/w_true.npy')
 
-num = 200
+# prior parameters
+kappa = 0.0001
+tau = 10
+a = 5
 
-batch = 200
+num = 500
+
+batch = 500
 
 N = int(num/batch)
 
@@ -34,7 +38,7 @@ plt.figure(figsize=(8,6))
 for k in range(N):
     print('\n ***Drawing samples '+str(k*batch)+'-'+str((k+1)*batch)+' out of '+str(num)+'*** \n')
 
-    w_map,sample,h_fwd,mis = invert(h_obs,kappa=0.0001,tau=10,a=5,num=batch)
+    w_map,sample,h_fwd,mis = invert(h_obs,kappa=kappa,tau=tau,a=a,num=batch)
 
 
     print('rel. misfit norm = '+str(mis))
@@ -42,11 +46,11 @@ for k in range(N):
 
     # calculate volume change time series:
 
-    for i in range(batch):
-        samp_bdry = calc_bdry_w(sample[:,:,:,i],0.025)
-        dV_samp_i = calc_dV_w(sample[:,:,:,i],samp_bdry)        # volume change from inversion
-
-        plt.plot(t0,dV_samp_i*(H**2)/1e9,color='k',linestyle='-',linewidth=1,alpha=0.1)
+    # for i in range(batch):
+    #     samp_bdry = calc_bdry_w(sample[:,:,:,i],0.025)
+    #     dV_samp_i = calc_dV_w(sample[:,:,:,i],samp_bdry)        # volume change from inversion
+    #
+    #     plt.plot(t0,dV_samp_i*(H**2)/1e9,color='k',linestyle='-',linewidth=1,alpha=0.1)
 
 
 map_bdry = calc_bdry_w(w_map,0.025)
@@ -55,6 +59,7 @@ dV_map = calc_dV_w(w_map,map_bdry)
 dV_true = calc_dV_w(w_true,true_bdry)
 
 dV_samp_i = calc_dV_w(sample[:,:,:,i],B)        # volume change from inversion
+
 plt.plot(t0,1+dV_samp_i*(H**2)/1e9,color='k',linestyle='-',linewidth=1,label=r'posterior samples',alpha=0.5)
 plt.plot(t0,dV_map*(H**2)/1e9,color='crimson',linestyle='-',linewidth=4,label=r'MAP point')
 plt.plot(t0,dV_true*(H**2)/1e9,color='royalblue',linestyle='--',linewidth=4,label=r'true solution')

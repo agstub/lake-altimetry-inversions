@@ -27,7 +27,7 @@ for i in range(num):
     X, sample = cg_solve(lambda X: A(X,kappa=kappa),f,tol=1e-3)
     w_pri[...,i] = conv(np.exp(-a*t),X/tau)
 
-etad_dist = 10**np.random.default_rng().normal(loc=np.log10(eta_d),scale=2.0/3.0,size=num)
+etad_dist = 10**np.random.default_rng().normal(loc=np.log10(eta_d),scale=1.0/3.0,size=num)
 betad_dist = 10**np.random.default_rng().normal(loc=np.log10(beta_d),scale=2.0/3.0,size=num)
 
 t_r = 2*etad_dist/(rho_i*g*H)     # viscous relaxation time
@@ -52,12 +52,20 @@ for i in range(num):
 for i in range(num):
     err_var += (1/(num-1))*(err[...,i] - err_mean)**2
 
+var_red = np.multiply.outer(np.mean(err_var,axis=(1,2)),np.ones((Ny,Nx)))
+
+if os.path.isdir('../uncertainty')==False:
+    os.mkdir('../uncertainty')
+    np.save('../uncertainty/var_red.npy',var_red)
+    np.save('../uncertainty/err_mean.npy',err_mean)
+    np.save('../uncertainty/err_var.npy',err_var)
+
 
 ## Plot mean error
 # for i in range(Nt):
 #     plt.figure(figsize=(8,6))
 #     plt.title(r'variance error',fontsize=24)
-#     plt.contourf(x0,y0,err_mean[i,:,:].T/np.max(np.abs(err_mean)),cmap='coolwarm',extend='both',levels=np.arange(-1,1.1,0.1))
+#     plt.contourf(x0,y0,err_m[i,:,:].T/np.max(np.abs(err_m)),cmap='coolwarm',extend='both',levels=np.arange(-1,1.1,0.1))
 #     plt.colorbar()
 #     plt.ylabel(r'$y$ (km)',fontsize=20)
 #     plt.xlabel(r'$x$ (km)',fontsize=20)
