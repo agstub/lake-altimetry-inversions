@@ -7,10 +7,10 @@ if os.path.isfile('../uncertainty/var_red.npy')==True:
 else:
     model_var = 0
 
-noise_var = 1e-4
+noise_var = 1e-3
 
 var = model_var + noise_var
 
 def Cerr_inv(f):
     # identity operator divided by variance
-    return f/(noise_var+model_var)
+    return f/var

@@ -20,11 +20,11 @@ def Qs2(f,kappa):
     # spatial component of precision operator
     return A(A(f,kappa),kappa)
 
-def Qt(f,tau,a):
+def Qt(f,a):
     # square root of temporal component of precision operator
     return dfdt(f)+a*f
 
-def Qt_a(f,tau,a):
+def Qt_a(f,a):
     # adjoint square root of temporal component of precision operator
     return -dfdt(f)+a*f
 
@@ -39,4 +39,6 @@ def Cpri_inv(f,kappa,tau,a):
     # walk that continually returns to the mean). For large values of the parameter
     # "a", the prior looks like white noise in time. For smaller values of "a",
     # the process looks more like a Brownian motion.
-    return tau*Qt_a(Qs2(Qt(f,tau,a),kappa),tau,a)
+
+    return tau*f ## white noise prior.... better convergence?!?!?
+    #return tau*Qt_a(Qs2(Qt(f,a),kappa),a)

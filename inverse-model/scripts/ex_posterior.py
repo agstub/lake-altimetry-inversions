@@ -9,7 +9,6 @@ from params import x,y,t,Nt,data_dir,H,x0,y0,t0,Nx,Ny,lamda0,beta0
 import numpy as np
 import os
 from error_model import noise_var
-import matplotlib.pyplot as plt
 from localization import localize
 from conj_grad import norm
 
@@ -25,7 +24,7 @@ kappa = 0.0001
 tau = 10
 a = 5
 
-num = 500                     # num posterior samples
+num = 1                     # num posterior samples
 
 w_map,sample,h_fwd,mis = invert(h_obs,kappa=kappa,tau=tau,a=a,num=num)    # good for beta = 1e9
 print('rel. misfit norm = '+str(mis))

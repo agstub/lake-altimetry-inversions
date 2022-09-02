@@ -18,8 +18,8 @@ from kernel_fcns import conv
 from scipy.special import gamma
 
 kappa = 0.0001
-tau = 10
-a = 5
+tau = 1e-2*10
+a = 10
 
 w_pri = np.zeros((Nt,Ny,Nx))
 

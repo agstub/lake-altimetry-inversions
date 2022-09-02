@@ -23,9 +23,10 @@ w_pri = np.zeros((Nt,Ny,Nx,num))
 
 for i in range(num):
     print('\n prior sample '+str(i+1)+' out of '+str(num))
-    f = np.random.default_rng().normal(size=np.shape(x))
+    f = np.random.default_rng().normal(size=np.shape(x),scale=np.sqrt(1e2))
     X, sample = cg_solve(lambda X: A(X,kappa=kappa),f,tol=1e-3)
     w_pri[...,i] = conv(np.exp(-a*t),X/tau)
+
 
 etad_dist = 10**np.random.default_rng().normal(loc=np.log10(eta_d),scale=1.0/3.0,size=num)
 betad_dist = 10**np.random.default_rng().normal(loc=np.log10(beta_d),scale=2.0/3.0,size=num)
@@ -59,35 +60,3 @@ if os.path.isdir('../uncertainty')==False:
     np.save('../uncertainty/var_red.npy',var_red)
     np.save('../uncertainty/err_mean.npy',err_mean)
     np.save('../uncertainty/err_var.npy',err_var)
-
-
-## Plot mean error
-# for i in range(Nt):
-#     plt.figure(figsize=(8,6))
-#     plt.title(r'variance error',fontsize=24)
-#     plt.contourf(x0,y0,err_m[i,:,:].T/np.max(np.abs(err_m)),cmap='coolwarm',extend='both',levels=np.arange(-1,1.1,0.1))
-#     plt.colorbar()
-#     plt.ylabel(r'$y$ (km)',fontsize=20)
-#     plt.xlabel(r'$x$ (km)',fontsize=20)
-#     plt.xlim(-40,40)
-#     plt.ylim(-40,40)
-#     plt.xticks(fontsize=16)
-#     plt.yticks(fontsize=16)
-#     plt.savefig('../error_pngs/err_'+str(i))
-#     plt.close()
-
-
-## Plot variance
-# for i in range(Nt):
-#     plt.figure(figsize=(8,6))
-#     plt.title(r'mean error',fontsize=24)
-#     plt.contourf(x0,y0,err_var[i,:,:].T/np.max(np.abs(err_var)),cmap='coolwarm',extend='both',levels=np.arange(-1,1.1,0.1))
-#     plt.colorbar()
-#     plt.ylabel(r'$y$ (km)',fontsize=20)
-#     plt.xlabel(r'$x$ (km)',fontsize=20)
-#     plt.xlim(-40,40)
-#     plt.ylim(-40,40)
-#     plt.xticks(fontsize=16)
-#     plt.yticks(fontsize=16)
-#     plt.savefig('../error_pngs/err_'+str(i))
-#     plt.close()

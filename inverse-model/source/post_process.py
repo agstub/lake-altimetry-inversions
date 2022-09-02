@@ -17,9 +17,10 @@ def calc_dV_h(h,h_bdry):
 def calc_bdry_w(w,thresh):
     bdry = 0*x
     bdry[np.abs(w)>thresh*np.max(np.abs(w))] = 1
+    bdry[np.sqrt(x**2+y**2)>x.max()-0] = 0
     bdry = np.mean(bdry,axis=0)
-    bdry[bdry<0.5] = 0
-    bdry[bdry>=0.5] = 1
+    bdry[bdry<0.6] = 0
+    bdry[bdry>=0.6] = 1
     return bdry
 
 def calc_bdry_h(h,thresh):
