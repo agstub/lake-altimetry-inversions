@@ -123,7 +123,7 @@ X_sub,Y_sub = np.meshgrid(x_sub,y_sub)
 
 #---------------- thickness and drag estimates
 
-H_beta = xr.open_zarr('../../../thickness/data/H_beta.zarr')
+H_beta = xr.open_zarr('../../../thickness/data/H_beta.zarr',consolidated=False)
 H_beta.load()
 
 x, y = np.array(H_beta.x),np.array(H_beta.y)                # horizontal map coordinates

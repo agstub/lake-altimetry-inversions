@@ -12,19 +12,19 @@ import matplotlib.pyplot as plt
 from operators import fwd_uq
 from kernel_fcns import conv
 
-num = 500                                                    # number of samples
+num = 250                                                    # number of samples
 
 # prior parameters
-kappa = 0.0001
-tau = 10
-a = 5
+kappa = 0.001
+tau = 0.1
+a = 10
 
 w_pri = np.zeros((Nt,Ny,Nx,num))
 
 for i in range(num):
     print('\n prior sample '+str(i+1)+' out of '+str(num))
     f = np.random.default_rng().normal(size=np.shape(x),scale=np.sqrt(1e2))
-    X, sample = cg_solve(lambda X: A(X,kappa=kappa),f,tol=1e-3)
+    X, sample = cg_solve(lambda X: A(X,kappa=kappa),f,restart='off',tol=1e-5)
     w_pri[...,i] = conv(np.exp(-a*t),X/tau)
 
 
