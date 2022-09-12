@@ -20,7 +20,7 @@ def norm(a):
 
 #------------------------------------------------------------------------------
 
-def cg_solve(A,b,num=0,tol = cg_tol):
+def cg_solve(A,b,num=0,tol = cg_tol,restart='on'):
 # conjugate gradient method for solving the normal equations
 #
 #              A(X)  = b,           where...
@@ -47,6 +47,9 @@ def cg_solve(A,b,num=0,tol = cg_tol):
     Ap = A(p)
     d = prod(p,Ap)
 
+    r0 = 0*r
+
+
     while np.sqrt(rnorm1)/r00 > tol:
         if j%10 == 0:
             print("CG iter. "+str(j)+': rel. residual norm = '+"{:.2e}".format(np.sqrt(rnorm1)/r00)+',  tol = '+"{:.2e}".format(tol))
@@ -67,8 +70,17 @@ def cg_solve(A,b,num=0,tol = cg_tol):
         r = r - alpha_c*Ap                    # update residual
         rnorm1 = prod(r,r)
         beta_c = rnorm1/rnorm0
+
+        D0 = np.abs(prod(r0,r))/prod(r,r)
+
+        if D0 > 0.75 and j>10 and restart=='on':
+            print('CG restart...')
+            beta_c = 0.0
+
         p = r + beta_c*p                     # update search direction
-        j = j+1
+        j += 1
+
+        r0 = r
 
         if j > max_cg_iter:
             print('\n...CG terminated because maximum iterations reached.')

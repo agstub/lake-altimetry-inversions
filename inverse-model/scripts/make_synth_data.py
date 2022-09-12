@@ -36,12 +36,14 @@ np.save('../data_synth_lin/beta.npy',beta)
 np.save('../data_synth_lin/H.npy',H)
 np.save('../data_synth_lin/u.npy',u)
 
+
 # import some functions to produce the synthetic elevation anomaly
 from params import t,x,y,Nt,Nx,Ny
 from operators import fwd
 from localization import localize
 from kernel_fcns import ifftd
 from conj_grad import norm
+from error_model import noise_var
 
 # set basal vertical velocity anomaly to an oscillating gaussian
 sigma = (10000.0/H)/3.0
@@ -53,8 +55,9 @@ w_true = 5*np.exp(-0.5*(sigma**(-2))*(x**2+y**2))*np.sin(4*np.pi*t/np.max(t))
 h = ifftd(fwd(w_true)).real
 
 # add some noise
-# noise_h = np.random.normal(size=(Nt,Nx,Ny),scale=np.sqrt(noise_var))
-# h_obs = h + noise_h
+noise_h = np.random.normal(size=(Nt,Nx,Ny),scale=np.sqrt(noise_var))
+h_obs = h + noise_h
+h_obs = localize(h_obs)
 
-np.save('../data_synth_lin/h.npy',h)
+np.save('../data_synth_lin/h_obs.npy',h_obs)
 np.save('../data_synth_lin/w_true.npy',w_true)

@@ -18,14 +18,14 @@ from kernel_fcns import conv
 from scipy.special import gamma
 
 kappa = 0.0001
-tau = 1e-2*10
+tau = 1
 a = 10
 
 w_pri = np.zeros((Nt,Ny,Nx))
 
 # # for i in range(M):
 f = np.random.default_rng().normal(size=np.shape(x))
-X, sample = cg_solve(lambda X: A(X,kappa=kappa),f,tol=1e-5)
+X, sample = cg_solve(lambda X: A(X,kappa=kappa),f,tol=1e-5,restart='off')
 w_pri = conv(np.exp(-a*t),X/tau)
 
 print('max |prior| = '+str(np.max(np.abs(w_pri))))

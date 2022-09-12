@@ -26,7 +26,9 @@ def Qt(f,a):
 
 def Qt_a(f,a):
     # adjoint square root of temporal component of precision operator
-    return -dfdt(f)+a*f
+    f_0 = f[0,:,:] + 0*f
+    f_T = f[-1,:,:] + 0*f
+    return (f_T - f_0)-dfdt(f)+a*f
 
 def Cpri_inv(f,kappa,tau,a):
     # inverse of prior covariance operator: C^-1 = Qt* Qs* Qs Qt
@@ -40,5 +42,5 @@ def Cpri_inv(f,kappa,tau,a):
     # "a", the prior looks like white noise in time. For smaller values of "a",
     # the process looks more like a Brownian motion.
 
-    return tau*f ## white noise prior.... better convergence?!?!?
-    #return tau*Qt_a(Qs2(Qt(f,a),kappa),a)
+    #return tau*f ## white noise prior.... faster convergence?!?!?
+    return tau*Qt_a(Qs2(Qt(f,a),kappa),a)

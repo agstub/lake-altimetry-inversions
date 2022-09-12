@@ -13,19 +13,13 @@ from localization import localize
 from conj_grad import norm
 
 # load synthetic elevation data (h_obs) and "true" basal vertical velocity (w_true)
-h = np.load(data_dir+'/h.npy')
-noise_h = np.random.normal(size=(Nt,Nx,Ny),scale=np.sqrt(noise_var))
-h_obs = h + noise_h
-h_obs = localize(h_obs)
-
-w_true = np.load(data_dir+'/w_true.npy')
+h_obs = np.load(data_dir+'/h_obs.npy')
 
 kappa = 0.0001
 tau = 10
-a = 5
+a = 10
 
-num = 1                     # num posterior samples
+num = 2                     # num posterior samples
 
 w_map,sample,h_fwd,mis = invert(h_obs,kappa=kappa,tau=tau,a=a,num=num)    # good for beta = 1e9
 print('rel. misfit norm = '+str(mis))
-print('rel. noise norm = '+str(norm(noise_h)/norm(h_obs)))
