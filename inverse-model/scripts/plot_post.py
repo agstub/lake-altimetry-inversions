@@ -27,6 +27,8 @@ thresh = 0.1
 if os.path.isfile(data_dir+'/w_true.npy')==True:
     true_bdry = calc_bdry_w(w_true,thresh)
     dV_true = calc_dV_w(w_true,true_bdry)        # "true" volume change
+else:
+    dV_true = np.zeros(Nt)
 
 map_bdry = calc_bdry_w(w_map,thresh)
 
@@ -63,7 +65,7 @@ for i in range(Nt):
     plt.plot(t0[0:i],dV_samp[0:i,:]*(H**2)/1e9,color='k',linestyle='-',linewidth=1,alpha=0.1)
     plt.plot(t0[0:i],dV_map[0:i]*(H**2)/1e9,color='forestgreen',linewidth=3,label=r'MAP point')
 
-    if os.path.isfile(data_dir+'/w_true.npy')==True:
+    if np.max(np.abs(dV_true))>0:
         plt.plot(t0[0:i],dV_true[0:i]*(H**2)/1e9,color='royalblue',linestyle='-.',linewidth=3,label=r'true sol.')
 
     plt.plot(t0[0:i],10+(dV_samp[0:i,-1])*(H**2)/1e9,color='k',linestyle='-',linewidth=1,alpha=0.5,label='posterior sample')
@@ -80,7 +82,7 @@ for i in range(Nt):
 
 
     plt.subplot(221)
-    sc = np.around(np.max(np.abs(h_obs))/1.,decimals=0)*1
+    sc = np.around(np.max(np.abs(h_obs))/5.,decimals=0)*5
     p=plt.contourf(xp,yp,h_obs[i,:,:].T,cmap='coolwarm',levels=sc*np.arange(-1.0,1.05,0.2),extend='both')
     plt.ylabel(r'$y$ (km)',fontsize=20)
     plt.xlabel(r'$x$ (km)',fontsize=20)
@@ -97,14 +99,12 @@ for i in range(Nt):
     cbar.ax.xaxis.set_label_position('top')
 
     plt.subplot(222)
-    sc = np.around(np.max(np.abs(w_map))/1.,decimals=0)*1
+    sc = np.around(np.max(np.abs(w_map))/5.,decimals=0)*5
     p=plt.contourf(xp,yp,w_map[i,:,:].T,cmap='coolwarm',extend='both',levels=sc*np.arange(-1.0,1.05,0.2))
     #for l in range(num):
      #  plt.contour(xy_str*x0,xy_str*y0,samp_bdry[...,l].T,colors='k',linewidths=2,levels=[1e-10],alpha=0.1)
     plt.contour(xp,yp,map_bdry[:,:].T,colors='forestgreen',linestyles='-',linewidths=3,levels=[1e-5])
     plt.xlabel(r'$x$ (km)',fontsize=20)
-    # plt.gca().yaxis.tick_right()
-    # plt.gca().yaxis.set_label_position("right")
     plt.gca().yaxis.set_ticklabels([])
     plt.xlim(xp.min(),xp.max())
     plt.ylim(yp.min(),yp.max())

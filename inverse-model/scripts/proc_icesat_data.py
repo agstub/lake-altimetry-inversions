@@ -85,7 +85,7 @@ def localize(f):
 
 
     f_far = f_far.sum(axis=(1,2))/(f_far != 0).sum(axis=(1,2))
-    f_loc = f- np.multiply.outer(f_far,np.ones((101,101)))
+    f_loc = f- np.multiply.outer(f_far,np.ones(np.shape(f[0,:,:])))
     return f_loc
 
 dh_loc = localize(dh_f)

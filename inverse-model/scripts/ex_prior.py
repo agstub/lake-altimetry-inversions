@@ -17,8 +17,8 @@ from scipy.integrate import cumulative_trapezoid
 from kernel_fcns import conv
 from scipy.special import gamma
 
-kappa = 0.0001
-tau = 1
+kappa = 0.001
+tau = 0.1
 a = 10
 
 w_pri = np.zeros((Nt,Ny,Nx))
@@ -47,22 +47,27 @@ print('mean |prior| = '+str(np.mean(np.abs(w_pri))))
 
 
 # plot snapshot with time series:
+xy_str = H/1e3
+
+xp = xy_str*x0
+yp = xy_str*y0
+
 plt.figure(figsize=(16,6))
 plt.subplot(121)
 plt.title(r'prior sample (Matérn in space)',fontsize=20)
-plt.contourf(x0,y0,w_pri[40,:,:].T/np.max(np.abs(w_pri)),cmap='coolwarm',extend='both',levels=np.arange(-1,1.1,0.1))
+plt.contourf(xp,yp,w_pri[50,:,:].T/np.max(np.abs(w_pri)),cmap='coolwarm',extend='both',levels=np.arange(-1,1.1,0.1))
 cbar = plt.colorbar()
 cbar.ax.tick_params(labelsize=16)
 plt.ylabel(r'$y$ (km)',fontsize=20)
 plt.xlabel(r'$x$ (km)',fontsize=20)
-plt.xlim(-40,40)
-plt.ylim(-40,40)
+plt.xlim(xp.min(),xp.max())
+plt.ylim(yp.min(),yp.max())
 plt.xticks(fontsize=16)
 plt.yticks(fontsize=16)
 
 plt.subplot(122)
 plt.title(r'prior sample (OU in time)',fontsize=20)
-plt.plot(t0,w_pri[:,::51,20]/np.max(np.abs(w_pri)),linewidth=3)
+plt.plot(t0,w_pri[:,::20,20]/np.max(np.abs(w_pri)),linewidth=3)
 plt.xlabel(r'$t$ (yr)',fontsize=20)
 plt.gca().yaxis.tick_right()
 plt.gca().yaxis.set_label_position("right")

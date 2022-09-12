@@ -5,18 +5,15 @@ import sys
 sys.path.insert(0, '../source')
 
 from inversion import invert
-from params import x,y,t,Nt,data_dir,H,x0,y0,t0,Nx,Ny,lamda0,beta0
 import numpy as np
 import os
-from error_model import noise_var
-from localization import localize
-from conj_grad import norm
+from params import data_dir
 
 # load synthetic elevation data (h_obs) and "true" basal vertical velocity (w_true)
 h_obs = np.load(data_dir+'/h_obs.npy')
 
-kappa = 0.0001
-tau = 10
+kappa = 0.001
+tau = 0.1
 a = 10
 
 num = 2                     # num posterior samples

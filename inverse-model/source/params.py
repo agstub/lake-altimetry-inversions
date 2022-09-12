@@ -5,7 +5,7 @@ from scipy.fft import fftfreq
 
 # SET DATA DIRECTORY
 
-data_dir = '../data_synth_lin'
+data_dir = '../data'
 
 #----------------------import space and time arrays-----------------------------
 
@@ -55,7 +55,7 @@ ub = u                     # background sliding speed (scaled)
 #---------------------- numerical parameters------------------------------------
 cg_tol = 1e-4               # stopping tolerance for conjugate gradient solver
 
-max_cg_iter =  500          # maximum conjugate gradient iterations
+max_cg_iter =  10000        # maximum conjugate gradient iterations
 
 
 # spatial frequencies

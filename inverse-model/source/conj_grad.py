@@ -73,7 +73,7 @@ def cg_solve(A,b,num=0,tol = cg_tol,restart='on'):
 
         D0 = np.abs(prod(r0,r))/prod(r,r)
 
-        if D0 > 0.75 and j>10 and restart=='on':
+        if D0 > 0.5 and j>10 and restart=='on':
             print('CG restart...')
             beta_c = 0.0
 
