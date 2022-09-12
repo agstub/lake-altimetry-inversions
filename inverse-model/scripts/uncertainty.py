@@ -23,7 +23,7 @@ w_pri = np.zeros((Nt,Ny,Nx,num))
 
 for i in range(num):
     print('\n prior sample '+str(i+1)+' out of '+str(num))
-    f = np.random.default_rng().normal(size=np.shape(x),scale=np.sqrt(1e2))
+    f = np.random.default_rng().normal(size=np.shape(x))
     X, sample = cg_solve(lambda X: A(X,kappa=kappa),f,restart='off',tol=1e-5)
     w_pri[...,i] = conv(np.exp(-a*t),X/tau)
 
