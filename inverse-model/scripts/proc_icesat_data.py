@@ -89,14 +89,14 @@ far = np.mean(dh_f-dh_loc,axis=(1,2))
 
 #--------------------------PLOTTING-------------------------------
 
-levels=np.arange(-6,6.1,0.5)
-
-# plot png at each time step to make sure the interpolation worked
-
-if os.path.isdir('data_pngs')==False:
-    os.mkdir('data_pngs')
-
-X_sub,Y_sub = np.meshgrid(x_sub,y_sub)
+# levels=np.arange(-6,6.1,0.5)
+#
+# # plot png at each time step to make sure the interpolation worked
+#
+# if os.path.isdir('data_pngs')==False:
+#     os.mkdir('data_pngs')
+#
+# X_sub,Y_sub = np.meshgrid(x_sub,y_sub)
 
 #-------------------------------------------------------------------------------
 ## PLOT elevation change anomaly
