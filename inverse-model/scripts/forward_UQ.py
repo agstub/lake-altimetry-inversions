@@ -1,8 +1,6 @@
 import sys
 sys.path.insert(0, '../source')
 import os
-if os.path.isdir('../error_pngs')==False:
-    os.mkdir('../error_pngs')
 
 from conj_grad import cg_solve
 from params import x,x0,y0,eta_d,beta_d,t_sc,rho_i,g,H,lamda0,beta0,Nt,Ny,Nx,dt,t
@@ -12,7 +10,7 @@ import matplotlib.pyplot as plt
 from operators import fwd_uq
 from kernel_fcns import conv
 
-num = 250                                                    # number of samples
+num = 200                                                    # number of samples
 
 # prior parameters
 kappa = 0.001

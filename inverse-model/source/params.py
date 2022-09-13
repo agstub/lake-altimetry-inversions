@@ -53,9 +53,9 @@ uh0 = u/H                  # advection
 ub = u                     # background sliding speed (scaled)
 
 #---------------------- numerical parameters------------------------------------
-cg_tol = 1e-4               # stopping tolerance for conjugate gradient solver
+cg_tol = 1e-5               # stopping tolerance for conjugate gradient solver
 
-max_cg_iter =  10000        # maximum conjugate gradient iterations
+max_cg_iter =  100000       # maximum conjugate gradient iterations
 
 
 # spatial frequencies
