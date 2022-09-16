@@ -1,9 +1,12 @@
 # define noise covariance operator
 import os
 import numpy as np
+from params import data_name
 
-if os.path.isfile('../uncertainty/var_red.npy')==True:
-    model_var = np.load('../uncertainty/var_red.npy')
+uq_dir = '../UQ_'+data_name
+
+if os.path.isfile(uq_dir+'/var_red.npy')==True:
+    model_var = np.load(uq_dir+'/var_red.npy')
 else:
     model_var = 0
 

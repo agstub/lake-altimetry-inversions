@@ -16,11 +16,16 @@ h_obs = np.load(data_dir+'/h_obs.npy')
 
 num = np.shape(sample)[-1]
 
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# Define boundary for volume change integration !!!!
 xc = -1
-yc = -1
+yc = -2
 bdry = 0*x+1
-bdry[np.sqrt((x-xc)**2+(y-yc)**2)>6] = 0
+bdry[np.sqrt((x-xc)**2+(y-yc)**2)>8] = 0
 bdry = np.mean(bdry,axis=0)
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 
 if os.path.isfile(data_dir+'/w_true.npy')==True:
     w_true = np.load(data_dir+'/w_true.npy')
@@ -44,7 +49,7 @@ dV_var = np.sum((1./(num-1.))*(dV_map - dV_samp.T)**2,axis=0)
 dV_sigma = np.sqrt(dV_var)
 
 ### sample variance:
-## w_var = np.sum((1./(num-1.))*(w_map - np.transpose(sample,axes=(-1,0,1,2)))**2,axis=0)
+## w_var = np.sum((1./(num-1.))*(w_map - npranspose(sample,axes=(-1,0,1,2)))**2,axis=0)
 
 # plot everything
 xy_str = H/1e3
@@ -89,8 +94,8 @@ for i in range(Nt):
 
     plt.subplot(221)
     sc = np.around(np.max(np.abs(h_obs))/5.,decimals=0)*5
-    p=plt.contourf(xp,yp,h_obs[i,:,:].T,cmap='coolwarm',levels=sc*np.arange(-1.0,1.05,0.2),extend='both')
-    plt.contour(xp,yp,bdry.T,colors='k',linestyles='--',linewidths=2,levels=[1e-5])
+    p=plt.contourf(xp,yp,h_obs[i,:,:],cmap='coolwarm',levels=sc*np.arange(-1.0,1.05,0.2),extend='both')
+    plt.contour(xp,yp,bdry,colors='k',linestyles='--',linewidths=2,levels=[1e-5])
 
     plt.ylabel(r'$y$ (km)',fontsize=20)
     plt.xlabel(r'$x$ (km)',fontsize=20)
@@ -108,9 +113,9 @@ for i in range(Nt):
 
     plt.subplot(222)
     sc = np.around(np.max(np.abs(w_map))/5.,decimals=0)*5
-    p=plt.contourf(xp,yp,w_map[i,:,:].T,cmap='coolwarm',extend='both',levels=sc*np.arange(-1.0,1.05,0.2))
+    p=plt.contourf(xp,yp,w_map[i,:,:],cmap='coolwarm',extend='both',levels=sc*np.arange(-1.0,1.05,0.2))
 
-    plt.contour(xp,yp,bdry.T,colors='k',linestyles='--',linewidths=2,levels=[1e-5])
+    plt.contour(xp,yp,bdry,colors='k',linestyles='--',linewidths=2,levels=[1e-5])
     plt.xlabel(r'$x$ (km)',fontsize=20)
     plt.gca().yaxis.set_ticklabels([])
     plt.xlim(xp.min(),xp.max())

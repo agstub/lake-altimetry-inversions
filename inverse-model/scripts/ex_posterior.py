@@ -16,7 +16,7 @@ kappa = 0.001
 tau = 0.1
 a = 10
 
-num = 500                                                # num posterior samples
+num = int(input('input number of posterior samples: '))                                                # num posterior samples
 
 w_map,sample,h_fwd,mis = invert(h_obs,kappa=kappa,tau=tau,a=a,num=num)    # good for beta = 1e9
 print('rel. misfit norm = '+str(mis))

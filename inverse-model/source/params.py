@@ -2,11 +2,12 @@
 
 import numpy as np
 from scipy.fft import fftfreq
-
+import sys
 # SET DATA DIRECTORY
 
-data_name = 'data'
-data_dir = '../'+data_name
+
+data_name = input('input lake name: ')
+data_dir = '../data_'+data_name
 results_dir = '../results_'+data_name
 
 #----------------------import space and time arrays-----------------------------

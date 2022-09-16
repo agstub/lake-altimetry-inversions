@@ -3,14 +3,14 @@ sys.path.insert(0, '../source')
 import os
 
 from conj_grad import cg_solve
-from params import x,x0,y0,eta_d,beta_d,t_sc,rho_i,g,H,lamda0,beta0,Nt,Ny,Nx,dt,t,t0
+from params import x,x0,y0,eta_d,beta_d,t_sc,rho_i,g,H,lamda0,beta0,Nt,Ny,Nx,dt,t,t0,data_name
 from prior import Cpri_inv,A
 import numpy as np
 import matplotlib.pyplot as plt
 from operators import fwd_uq
 from kernel_fcns import conv
 
-num = 200                                                    # number of samples
+num = int(input('input number of samples to draw: '))                                                    # number of samples
 
 # prior parameters
 kappa = 0.001
@@ -56,11 +56,13 @@ if num > 1:
 
     var_red = np.multiply.outer(np.mean(err_var,axis=(1,2)),np.ones((Ny,Nx)))
 
-    if os.path.isdir('../uncertainty')==False:
-        os.mkdir('../uncertainty')
-        np.save('../uncertainty/var_red.npy',var_red)
-        np.save('../uncertainty/err_mean.npy',err_mean)
-        np.save('../uncertainty/err_var.npy',err_var)
+    uq_dir = '../UQ_'+data_name
+
+    if os.path.isdir(uq_dir)==False:
+        os.mkdir(uq_dir)
+        np.save(uq_dir+'/var_red.npy',var_red)
+        np.save(uq_dir+'/err_mean.npy',err_mean)
+        np.save(uq_dir+'/err_var.npy',err_var)
 
     ## PLOTTING-----------------------------------------------------------------
     xy_str = H/1e3
