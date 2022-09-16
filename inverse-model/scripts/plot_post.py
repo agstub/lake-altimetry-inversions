@@ -3,14 +3,14 @@ sys.path.insert(0, '../source')
 from post_process import calc_dV_w,calc_dV_h
 import numpy as np
 import matplotlib.pyplot as plt
-from params import data_dir,H,t0,x0,y0,Nt,Nx,Ny,x,y
+from params import data_dir,H,t0,x0,y0,Nt,Nx,Ny,x,y,results_dir
 from error_model import noise_var
 
-if os.path.isdir('../post_pngs')==False:
-    os.mkdir('../post_pngs')
+if os.path.isdir(results_dir+'/post_pngs')==False:
+    os.mkdir(results_dir+'/post_pngs')
 
-w_map = np.load('../results/w_map.npy')
-sample = np.load('../results/post_samples.npy')
+w_map = np.load(results_dir+'/w_map.npy')
+sample = np.load(results_dir+'/post_samples.npy')
 
 h_obs = np.load(data_dir+'/h_obs.npy')
 
@@ -125,5 +125,5 @@ for i in range(Nt):
     cbar.ax.xaxis.set_ticks_position('top')
     cbar.ax.xaxis.set_label_position('top')
 
-    plt.savefig('../post_pngs/'+str(i),bbox_inches='tight')
+    plt.savefig(results_dir+'/post_pngs/'+str(i),bbox_inches='tight')
     plt.close()

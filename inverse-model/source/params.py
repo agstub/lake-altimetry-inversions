@@ -5,7 +5,9 @@ from scipy.fft import fftfreq
 
 # SET DATA DIRECTORY
 
-data_dir = '../data'
+data_name = 'data'
+data_dir = '../'+data_name
+results_dir = '../results_'+data_name
 
 #----------------------import space and time arrays-----------------------------
 

@@ -5,7 +5,7 @@ from conj_grad import cg_solve,norm
 from operators import fwd,adj,Cpost_inv
 import numpy as np
 from kernel_fcns import fftd,ifftd
-from params import t,x,Nx,lamda0,beta0
+from params import t,x,Nx,lamda0,beta0,results_dir
 from kernel_fcns import Rg
 import os
 from localization import localize
@@ -16,7 +16,7 @@ def invert(h_obs,kappa,tau,a,lamda=lamda0,beta=beta0,num=1):
 
     print('Solving normal equations with CG....\n')
     # extract initial elevation profile (goes on RHS of normal equations "b")
-    h0 = h_obs[0,:,:] + 0*h_obs 
+    h0 = h_obs[0,:,:] + 0*h_obs
     b = adj(Cerr_inv(fftd(h_obs)-np.exp(-lamda*Rg(beta)*t)*fftd(h0)))
 
     # solve the normal equations with CG for the basal vertical velocity anomaly
@@ -36,12 +36,14 @@ def invert(h_obs,kappa,tau,a,lamda=lamda0,beta=beta0,num=1):
         sample[:,:,:,l] = localize(sample[:,:,:,l])
 
      # make a directory for the results
-    if os.path.isdir('../results')==False:
-        os.mkdir('../results')
+
+
+    if os.path.isdir(results_dir)==False:
+        os.mkdir(results_dir)
 
     # save the results
-    np.save('../results/w_map.npy',w_map)
-    np.save('../results/post_samples.npy',sample)
-    np.save('../results/h_fwd.npy',h_fwd)
+    np.save(results_dir+'/w_map.npy',w_map)
+    np.save(results_dir+'/post_samples.npy',sample)
+    np.save(results_dir+'/h_fwd.npy',h_fwd)
 
     return w_map,sample,h_fwd,mis

@@ -11,11 +11,21 @@ import xarray as xr
 if os.path.isdir('../data')==False:
     os.mkdir('../data')
 
-# Subglacial Lake Mercer coordinates
+# # Subglacial Lake Mercer coordinates
 x0 = -292*1e3
 y0 = -500*1e3
-
 L0 = 20*1000
+
+# # Subglacial Totten-2 coordinates
+# x0 = 1962.955*1e3
+# y0 = -734.348*1e3
+# L0 = 40*1000
+
+# # Subglacial Lake Nimrod-2 coordinates
+# x0 = 387.072*1e3
+# y0 = -478.062*1e3
+# L0 = 40*1000
+
 x_min = x0-L0
 x_max = x0+L0
 y_min = y0-L0
@@ -53,6 +63,40 @@ for i in range(nt):
     dh0 = dh[i,:,:]
     dh_sub[i,:,:] = dh0[inds_xy]
 
+
+#--------------------------PLOTTING-------------------------------
+
+levels=np.arange(-1,1.1,0.1)*np.max(np.abs(dh_sub))
+
+# plot png at each time step
+
+if os.path.isdir('../data_pngs')==False:
+    os.mkdir('../data_pngs')
+
+X_sub,Y_sub = np.meshgrid(x_sub,y_sub)
+
+
+# PLOT elevation change anomaly
+for i in range(np.size(t)):
+    print('image '+str(i+1)+' out of '+str(np.size(t)))
+    plt.close()
+    plt.figure(figsize=(8,6))
+    plt.title(r'$t=$ '+'{:.2f}'.format(t[i])+' d',fontsize=24)
+    p = plt.contourf(X_sub/1e3,Y_sub/1e3,dh_sub[i,:,:],levels=levels,cmap='coolwarm',extend='both')
+    plt.xlabel(r'$x$ (km)',fontsize=20)
+    plt.ylabel(r'$y$ (km)',fontsize=20)
+    cbar = plt.colorbar(p)
+    cbar.set_label(r'$dh$ (m)',fontsize=20)
+    cbar.ax.tick_params(labelsize=16)
+    plt.xticks(fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.tight_layout()
+    plt.savefig('../data_pngs/dh_'+str(i))
+    plt.close()
+
+##------------------------------------------------------------------------------
+## INTERPOLATE DATA
+
 def interp_tyx(f,t,y,x):
     Nx_f = 101            # fine Nx
     Ny_f = 101            # fine Ny
@@ -87,35 +131,10 @@ def localize(f):
 dh_loc = localize(dh_f)
 far = np.mean(dh_f-dh_loc,axis=(1,2))
 
-#--------------------------PLOTTING-------------------------------
 
-# levels=np.arange(-6,6.1,0.5)
-#
-# # plot png at each time step to make sure the interpolation worked
-#
-# if os.path.isdir('data_pngs')==False:
-#     os.mkdir('data_pngs')
-#
-# X_sub,Y_sub = np.meshgrid(x_sub,y_sub)
-
-#-------------------------------------------------------------------------------
-## PLOT elevation change anomaly
-# for i in range(np.size(t_f)):
-#     print('image '+str(i+1)+' out of '+str(np.size(t_f)))
-#     plt.close()
-#     plt.figure(figsize=(8,6))
-#     plt.title(r'$t=$ '+'{:.2f}'.format(t_f[i])+' d',fontsize=24)
-#     p = plt.contourf(x_f/1e3,y_f/1e3,dh_loc[i,:,:],levels=levels,cmap='coolwarm',extend='both')
-#     plt.xlabel(r'$x$ (km)',fontsize=20)
-#     plt.ylabel(r'$y$ (km)',fontsize=20)
-#     cbar = plt.colorbar(p)
-#     cbar.set_label(r'$dh$ (m)',fontsize=20)
-#     cbar.ax.tick_params(labelsize=16)
-#     plt.xticks(fontsize=16)
-#     plt.yticks(fontsize=16)
-#     plt.tight_layout()
-#     plt.savefig('data_pngs/dh_'+str(i))
-#     plt.close()
+plt.plot(t_f,far)
+plt.show()
+plt.close()
 
 #---------------- thickness and drag estimates
 
@@ -135,9 +154,7 @@ y_sub = y[(y>=y_min)&(y<=y_max)]
 inds_x = ind_x[(x>=x_min)&(x<=x_max)]
 inds_y = ind_y[(y>=y_min)&(y<=y_max)]
 
-inds_xy = np.ix_(inds_x,inds_y)
-
-X, Y = np.meshgrid(x,y)
+inds_xy = np.ix_(inds_y,inds_x)
 
 H_mean = np.mean(H[inds_xy])
 beta_mean = np.mean(beta[inds_xy])
