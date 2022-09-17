@@ -3,7 +3,7 @@ import os
 import numpy as np
 from params import data_name
 
-uq_dir = '../UQ_'+data_name
+uq_dir = '../UQ'
 
 if os.path.isfile(uq_dir+'/var_red.npy')==True:
     model_var = np.load(uq_dir+'/var_red.npy')

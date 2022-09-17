@@ -12,29 +12,29 @@ import numpy as np
 import os
 
 # make a directory for the data
-if os.path.isdir('../data_synth_lin')==False:
-    os.mkdir('../data_synth_lin')
+if os.path.isdir('../data_synth')==False:
+    os.mkdir('../data_synth')
 
 # define the scalar parameters in the problem
 # in practice we might use means of some of these fields around the lake
-H = np.array([1000])          # ice thickness over the lake
-beta = np.array([1e9])        # basal drag coeff. near the lake
+H = np.array([2000])          # ice thickness over the lake
+beta = np.array([5e10])        # basal drag coeff. near the lake
 eta = np.array([1e13])        # viscosity near the lake
 u = np.array([0])             # background flow speed near the lake
 
 # define coordinate arrays
-t0 = np.linspace(0,6,100)                     # time
-x0 = np.linspace(-40,40,101)*1000/H.mean()    # x coordinate
-y0 = np.linspace(-40,40,101)*1000/H.mean()    # y coordinate
+t0 = np.linspace(0,3,100)                     # time
+x0 = np.linspace(-30,30,101)*1000/H.mean()    # x coordinate
+y0 = np.linspace(-30,30,101)*1000/H.mean()    # y coordinate
 
 # save everything so far in the data directory
-np.save('../data_synth_lin/t.npy',t0)
-np.save('../data_synth_lin/x.npy',x0)
-np.save('../data_synth_lin/y.npy',y0)
-np.save('../data_synth_lin/eta.npy',eta)
-np.save('../data_synth_lin/beta.npy',beta)
-np.save('../data_synth_lin/H.npy',H)
-np.save('../data_synth_lin/u.npy',u)
+np.save('../data_synth/t.npy',t0)
+np.save('../data_synth/x.npy',x0)
+np.save('../data_synth/y.npy',y0)
+np.save('../data_synth/eta.npy',eta)
+np.save('../data_synth/beta.npy',beta)
+np.save('../data_synth/H.npy',H)
+np.save('../data_synth/u.npy',u)
 
 
 # import some functions to produce the synthetic elevation anomaly
@@ -46,8 +46,8 @@ from conj_grad import norm
 from error_model import noise_var
 
 # set basal vertical velocity anomaly to an oscillating gaussian
-sigma = (10000.0/H)/3.0
-w_true = 5*np.exp(-0.5*(sigma**(-2))*(x**2+y**2))*np.sin(4*np.pi*t/np.max(t))
+sigma = (10*1000.0/H)/3.0
+w_true = 10*np.exp(-0.5*(sigma**(-2))*(x**2+y**2))*np.sin(4*np.pi*t/np.max(t))
 
 # produce synthetic elevation anomaly by applying the forward operator
 # (returns fft of elevation), inverse fourier-transforming the results,
@@ -59,5 +59,5 @@ noise_h = np.random.normal(size=(Nt,Nx,Ny),scale=np.sqrt(noise_var))
 h_obs = h + noise_h
 h_obs = localize(h_obs)
 
-np.save('../data_synth_lin/h_obs.npy',h_obs)
-np.save('../data_synth_lin/w_true.npy',w_true)
+np.save('../data_synth/h_obs.npy',h_obs)
+np.save('../data_synth/w_true.npy',w_true)
