@@ -19,8 +19,8 @@ num = np.shape(sample)[-1]
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 # Define boundary for volume change integration !!!!
-xc = -1
-yc = -2
+xc = 0
+yc = 0
 bdry = 0*x+1
 bdry[np.sqrt((x-xc)**2+(y-yc)**2)>8] = 0
 bdry = np.mean(bdry,axis=0)
@@ -93,7 +93,7 @@ for i in range(Nt):
     plt.legend(fontsize=20,ncol=4,bbox_to_anchor=(1.05,-0.15))
 
     plt.subplot(221)
-    sc = np.around(np.max(np.abs(h_obs))/5.,decimals=0)*5
+    sc = np.around(np.max(np.abs(h_obs))/2.,decimals=0)*2
     p=plt.contourf(xp,yp,h_obs[i,:,:],cmap='coolwarm',levels=sc*np.arange(-1.0,1.05,0.2),extend='both')
     plt.contour(xp,yp,bdry,colors='k',linestyles='--',linewidths=2,levels=[1e-5])
 

@@ -4,9 +4,6 @@
 import sys
 sys.path.insert(0, '../source')
 import os
-if os.path.isdir('../prior_pngs')==False:
-    os.mkdir('../prior_pngs')    # make a directory for the results.
-
 from conj_grad import cg_solve
 from params import x,x0,y0,t0,eta_d,beta_d,t_sc,rho_i,g,H,lamda0,beta0,Nt,Ny,Nx,dt,t
 from prior import Cpri_inv,A
@@ -25,12 +22,17 @@ w_pri = np.zeros((Nt,Ny,Nx))
 
 # # for i in range(M):
 f = np.random.default_rng().normal(size=np.shape(x))
-X, sample = cg_solve(lambda X: A(X,kappa=kappa),f,tol=1e-5,restart='off')
+X, sample = cg_solve(lambda X: A(X,kappa=kappa),f,restart='off')
 w_pri = conv(np.exp(-a*t),X/tau)
 
 print('max |prior| = '+str(np.max(np.abs(w_pri))))
 print('mean |prior| = '+str(np.mean(np.abs(w_pri))))
 
+
+# # PLOTTING
+# if os.path.isdir('../prior_pngs')==False:
+#     os.mkdir('../prior_pngs')    # make a directory for the results.
+#
 # for i in range(10):
 #     plt.figure(figsize=(8,6))
 #     plt.title(r'prior sample',fontsize=18)
@@ -67,7 +69,7 @@ plt.yticks(fontsize=16)
 
 plt.subplot(122)
 plt.title(r'prior sample (OU in time)',fontsize=20)
-plt.plot(t0,w_pri[:,::20,20]/np.max(np.abs(w_pri)),linewidth=3)
+plt.plot(t0,w_pri[:,20,20]/np.max(np.abs(w_pri)),linewidth=3)
 plt.xlabel(r'$t$ (yr)',fontsize=20)
 plt.gca().yaxis.tick_right()
 plt.gca().yaxis.set_label_position("right")
