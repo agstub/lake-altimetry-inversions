@@ -8,20 +8,57 @@ import matplotlib.pyplot as plt
 import os
 import xarray as xr
 
-if os.path.isdir('../data')==False:
-    os.mkdir('../data')
 
-# # Subglacial Lake Mercer coordinates
-x0 = -292*1e3
-y0 = -500*1e3
-L0 = 20*1000
+# # Ninnis-1 coords
+# data_name = 'ninnis1'
+# x0 = 1225*1e3
+# y0 = -1701*1e3
+# L0 = 25*1000
 
-# # Subglacial Totten-2 coordinates
-# x0 = 1962.955*1e3
-# y0 = -734.348*1e3
+# # Byrd-2 coordinates ***
+data_name = 'byrd2'
+x0 = 563.393*1e3
+y0 = -855.949*1e3
+L0 = 35*1000
+
+# # Byrd-1 (meh)
+# data_name = 'byrd1'
+# x0 = 511.724*1e3
+# y0 = -828.616*1e3
+# L0 = 20*1000
+
+# # Slessor-2 (meh)
+# data_name = 'slessor2'
+# x0 = -405.627*1e3
+# y0 = 1026.433*1e3
+# L0 = 20*1000
+
+# Cook-E2 coordinates ***
+# data_name = 'cookee2'
+# x0 = 772*1e3
+# y0 = -1718*1e3
+# L0 = 20*1000
+
+# # Academy-12 (meh)
+# data_name = 'academy12'
+# x0 = -330.676*1e3
+# y0 = 330.676*1e3
+# L0 = 20*1000
+
+# # Mercer coordinates
+# data_name = 'mercer'
+# x0 = -292*1e3
+# y0 = -500*1e3
+# L0 = 20*1000
+
+# # Totten-2 coordinates
+# data_name = 'totten2'
+# x0 = 1970*1e3
+# y0 = -745*1e3
 # L0 = 40*1000
 
-# # Subglacial Lake Nimrod-2 coordinates
+# # Nimrod-2 coordinates
+# data_name = 'nimrod2'
 # x0 = 387.072*1e3
 # y0 = -478.062*1e3
 # L0 = 40*1000
@@ -159,11 +196,17 @@ inds_xy = np.ix_(inds_y,inds_x)
 H_mean = np.mean(H[inds_xy])
 beta_mean = np.mean(beta[inds_xy])
 
-np.save('../data/beta.npy',np.array([beta_mean]))
-np.save('../data/H.npy',np.array([H_mean]))
-np.save('../data/u.npy',np.array([0]))
-np.save('../data/h_obs.npy',dh_loc)
-np.save('../data/t.npy',(t_f-t_f[0])/365.0)
-np.save('../data/x.npy',(x_f-x_f.mean())/H_mean)
-np.save('../data/y.npy',(y_f-y_f.mean())/H_mean)
-np.save('../data/eta.npy',np.array([1e13]))             # viscosity?!
+
+r = 0
+
+if os.path.isdir('../'+data_name)==False:
+    os.mkdir('../'+data_name)
+
+np.save('../'+data_name+'/beta.npy',np.array([beta_mean]))
+np.save('../'+data_name+'/H.npy',np.array([H_mean]))
+np.save('../'+data_name+'/u.npy',np.array([0]))
+np.save('../'+data_name+'/h_obs.npy',dh_loc)
+np.save('../'+data_name+'/t.npy',(t_f-t_f[0])/365.0)
+np.save('../'+data_name+'/x.npy',(x_f-x_f.mean())/H_mean)
+np.save('../'+data_name+'/y.npy',(y_f-y_f.mean())/H_mean)
+np.save('../'+data_name+'/eta.npy',np.array([1e13]))             # viscosity?!

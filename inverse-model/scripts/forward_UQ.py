@@ -60,6 +60,10 @@ if os.path.isdir(uq_dir)==False:
     np.save(uq_dir+'/var_red.npy',var_red)
     np.save(uq_dir+'/err_mean.npy',err_mean)
     np.save(uq_dir+'/err_var.npy',err_var)
+    np.save(uq_dir+'/betad_dist.npy',betad_dist)
+    np.save(uq_dir+'/etad_dist.npy',etad_dist)
+
+
 
     ## PLOTTING-----------------------------------------------------------------
     # xy_str = H/1e3

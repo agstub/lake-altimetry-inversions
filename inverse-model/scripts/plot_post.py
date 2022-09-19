@@ -19,11 +19,21 @@ num = np.shape(sample)[-1]
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 # Define boundary for volume change integration !!!!
-xc = 0
-yc = 0
+# xc,yc = -1,-2           # Mercer
+# bdry = 0*x+1
+# bdry[np.sqrt((x-xc)**2+(y-yc)**2)>8] = 0
+# bdry = np.mean(bdry,axis=0)
+
+# xc,yc = 3,-1.5           # Totten-2
+# bdry = 0*x+1
+# bdry[np.sqrt((x-xc)**2+(y-yc)**2)>8] = 0
+# bdry = np.mean(bdry,axis=0)
+
+xc,yc = 1,-1           # Nimrod-2
 bdry = 0*x+1
-bdry[np.sqrt((x-xc)**2+(y-yc)**2)>8] = 0
+bdry[np.sqrt((x-xc)**2+(y-yc)**2)>9] = 0
 bdry = np.mean(bdry,axis=0)
+
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 
@@ -66,7 +76,9 @@ for i in range(Nt):
     fig = plt.figure(figsize=(12,12))
     plt.suptitle(r'$t=$'+format(t0[i],'.2f')+' yr',y=1.05,fontsize=28,bbox=dict(boxstyle='round', facecolor='w', alpha=0.5))
     plt.subplot(212)
-    plt.plot(t0[0:i],dV_samp[0:i,:]*(H**2)/1e9,color='k',linestyle='-',linewidth=1,alpha=0.1)
+
+    if num>2:
+        plt.plot(t0[0:i],dV_samp[0:i,:]*(H**2)/1e9,color='k',linestyle='-',linewidth=1,alpha=0.1)
 
     dV_mean = dV_map[0:i]*(H**2)/1e9
 
@@ -74,12 +86,11 @@ for i in range(Nt):
 
     if np.max(np.abs(dV_true))>0:
         plt.plot(t0[0:i],dV_true[0:i]*(H**2)/1e9,color='royalblue',linestyle='-.',linewidth=3,label=r'true sol.')
-
-    dV_high = (dV_map[0:i] + 3*dV_sigma[0:i] )*(H**2)/1e9
-    dV_low = (dV_map[0:i] - 3*dV_sigma[0:i] )*(H**2)/1e9
-    plt.plot(t0[0:i],10+(dV_samp[0:i,-1])*(H**2)/1e9,color='k',linestyle='-',linewidth=1,alpha=0.5,label='posterior sample')
-    plt.plot(t0[0:i],dV_high,color='forestgreen',linestyle='--',linewidth=1.5,label=r'$3\sigma$')
-    plt.plot(t0[0:i],dV_low,color='forestgreen',linestyle='--',linewidth=1.5)
+        dV_high = (dV_map[0:i] + 3*dV_sigma[0:i] )*(H**2)/1e9
+        dV_low = (dV_map[0:i] - 3*dV_sigma[0:i] )*(H**2)/1e9
+        plt.plot(t0[0:i],10+(dV_samp[0:i,-1])*(H**2)/1e9,color='k',linestyle='-',linewidth=1,alpha=0.5,label='posterior sample')
+        plt.plot(t0[0:i],dV_high,color='forestgreen',linestyle='--',linewidth=1.5,label=r'$3\sigma$')
+        plt.plot(t0[0:i],dV_low,color='forestgreen',linestyle='--',linewidth=1.5)
 
     dV_alt = dV_h[0:i]*(H**2)/1e9
     plt.plot(t0[0:i],dV_alt,color='crimson',linestyle='-.',linewidth=3,label=r'altimetry')
@@ -90,7 +101,10 @@ for i in range(Nt):
     plt.xlabel(r'$t$ (yr)',fontsize=20)
     plt.xticks(fontsize=16)
     plt.yticks(fontsize=16)
-    plt.legend(fontsize=20,ncol=4,bbox_to_anchor=(1.05,-0.15))
+    if num > 2:
+        plt.legend(fontsize=20,ncol=4,bbox_to_anchor=(1.05,-0.15))
+    else:
+        plt.legend(fontsize=20,ncol=2,bbox_to_anchor=(0.75,-0.15))
 
     plt.subplot(221)
     sc = np.around(np.max(np.abs(h_obs))/2.,decimals=0)*2
