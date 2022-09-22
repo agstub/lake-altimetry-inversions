@@ -14,9 +14,9 @@ from scipy.integrate import cumulative_trapezoid
 from kernel_fcns import conv
 from scipy.special import gamma
 
-kappa = 0.001
-tau = 0.1
-a = 10
+kappa = 0.0025
+tau = 1
+a = 5
 
 w_pri = np.zeros((Nt,Ny,Nx))
 

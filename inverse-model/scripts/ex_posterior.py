@@ -12,9 +12,9 @@ from params import data_dir
 # load synthetic elevation data (h_obs) and "true" basal vertical velocity (w_true)
 h_obs = np.load(data_dir+'/h_obs.npy')
 
-kappa = 0.001
+kappa = 0.0025
 tau = 0.1
-a = 10
+a = 5
 
 num = int(input('input number of posterior samples: '))                                                # num posterior samples
 

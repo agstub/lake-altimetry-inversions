@@ -3,19 +3,18 @@ sys.path.insert(0, '../source')
 from post_process import calc_dV_w,calc_dV_h
 import numpy as np
 import matplotlib.pyplot as plt
-from params import data_dir,H,t0,x0,y0,Nt,Nx,Ny,x,y,results_dir
+from params import data_dir,H,t0,x0,y0,Nt,Nx,Ny,x,y,results_dir,t,ind
 from error_model import noise_var
 
 if os.path.isdir(results_dir+'/post_pngs')==False:
     os.mkdir(results_dir+'/post_pngs')
 
-w_map = np.load(results_dir+'/w_map.npy')
-sample = np.load(results_dir+'/post_samples.npy')
+w_map = np.nan_to_num(np.load(results_dir+'/w_map.npy'))
+sample = np.nan_to_num(np.load(results_dir+'/post_samples.npy'))
 
 h_obs = np.load(data_dir+'/h_obs.npy')
 
 num = np.shape(sample)[-1]
-
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
 # Define boundary for volume change integration !!!!
@@ -29,7 +28,7 @@ num = np.shape(sample)[-1]
 # bdry[np.sqrt((x-xc)**2+(y-yc)**2)>8] = 0
 # bdry = np.mean(bdry,axis=0)
 
-xc,yc = 1,-1           # Nimrod-2
+xc,yc = -1,0           # Nimrod-2
 bdry = 0*x+1
 bdry[np.sqrt((x-xc)**2+(y-yc)**2)>9] = 0
 bdry = np.mean(bdry,axis=0)
@@ -67,10 +66,12 @@ xy_str = H/1e3
 xp = xy_str*x0
 yp = xy_str*y0
 
-dV_max = np.max(dV_samp*(H**2)/1e9)
-dV_min = np.min(dV_samp*(H**2)/1e9)
+dV_max = np.max(dV_map*(H**2)/1e9)+0.25
+dV_min = np.min(dV_map*(H**2)/1e9)-0.25
 
-for i in range(Nt):
+ind_0 = np.argmax(ind[:,0,0])
+
+for i in np.arange(ind_0,Nt-ind_0,1,dtype='int'):
     print('image '+str(i+1)+' out of '+str(Nt))
 
     fig = plt.figure(figsize=(12,12))
@@ -107,7 +108,7 @@ for i in range(Nt):
         plt.legend(fontsize=20,ncol=2,bbox_to_anchor=(0.75,-0.15))
 
     plt.subplot(221)
-    sc = np.around(np.max(np.abs(h_obs))/2.,decimals=0)*2
+    sc = np.around(np.max(bdry*np.abs(h_obs))/2.,decimals=0)*2
     p=plt.contourf(xp,yp,h_obs[i,:,:],cmap='coolwarm',levels=sc*np.arange(-1.0,1.05,0.2),extend='both')
     plt.contour(xp,yp,bdry,colors='k',linestyles='--',linewidths=2,levels=[1e-5])
 
@@ -126,7 +127,7 @@ for i in range(Nt):
     cbar.ax.xaxis.set_label_position('top')
 
     plt.subplot(222)
-    sc = np.around(np.max(np.abs(w_map))/5.,decimals=0)*5
+    sc = np.around(np.max(bdry*np.abs(w_map))/5.,decimals=0)*5
     p=plt.contourf(xp,yp,w_map[i,:,:],cmap='coolwarm',extend='both',levels=sc*np.arange(-1.0,1.05,0.2))
 
     plt.contour(xp,yp,bdry,colors='k',linestyles='--',linewidths=2,levels=[1e-5])

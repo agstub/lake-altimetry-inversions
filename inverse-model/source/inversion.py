@@ -5,7 +5,7 @@ from conj_grad import cg_solve,norm
 from operators import fwd,adj,Cpost_inv
 import numpy as np
 from kernel_fcns import fftd,ifftd
-from params import t,x,Nx,lamda0,beta0,results_dir
+from params import t,x,Nx,lamda0,beta0,results_dir,ind
 from kernel_fcns import Rg
 import os
 from localization import localize
@@ -20,7 +20,7 @@ def invert(h_obs,kappa,tau,a,lamda=lamda0,beta=beta0,num=1):
     b = adj(Cerr_inv(fftd(h_obs)-np.exp(-lamda*Rg(beta)*t)*fftd(h0)))
 
     # solve the normal equations with CG for the basal vertical velocity anomaly
-    w_map,sample = cg_solve(lambda X: Cpost_inv(X,kappa,tau,a),b,num)
+    w_map,sample = cg_solve(lambda X: Cpost_inv(X,kappa,tau,a)*ind,b*ind,num)
 
     # get the forward solution (elevation profile) associated with the inversion
     h_fwd = ifftd(fwd(w_map)).real+ifftd(np.exp(-lamda*Rg(beta)*t)*fftd(h0)).real
@@ -30,13 +30,12 @@ def invert(h_obs,kappa,tau,a,lamda=lamda0,beta=beta0,num=1):
 
     # subtract off-lake component in the inversion w_map
     # (data have off-lake component removed, so you have to remove this from the inversion too)
-    w_map = localize(w_map)
+    w_map = localize(np.nan_to_num(w_map))
 
     for l in range(num):
-        sample[:,:,:,l] = localize(sample[:,:,:,l])
+        sample[:,:,:,l] = localize(np.nan_to_num(sample[:,:,:,l]))
 
      # make a directory for the results
-
 
     if os.path.isdir(results_dir)==False:
         os.mkdir(results_dir)

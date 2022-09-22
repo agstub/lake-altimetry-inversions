@@ -1,7 +1,7 @@
 # this file contains a conjugate gradient method implementation that is used to solve
 # the normal equations that arise from the least-squares minimization problem
 
-from params import dx,dy,dt,cg_tol,max_cg_iter
+from params import dx,dy,dt,cg_tol,max_cg_iter,t
 from scipy.integrate import trapz
 import numpy as np
 
@@ -25,14 +25,14 @@ def cg_solve(A,b,num=0,tol = cg_tol,restart='on'):
 #
 #              A(X)  = b,           where...
 #
-# * A is a symmetric positive definite operator (function)
+# * A is a symmetric positive definite operator
 # * b = right-side vector
 
-    r0 = b                    # initial residual
-    p = r0                    # initial search direction
-    j = 1                     # iteration
-    r = r0                    # initialize residual
-    X = 0*p                   # initial guess
+    r0 = b                     # initial residual
+    p = r0                     # initial search direction
+    j = 1                      # iteration
+    r = r0                     # initialize residual
+    X = 0*p                    # initial guess
 
     if num>0:
         dims = list(np.shape(X))
@@ -61,7 +61,7 @@ def cg_solve(A,b,num=0,tol = cg_tol,restart='on'):
 
         alpha_c = rnorm0/d
 
-        X = X + alpha_c*p                     # update solution
+        X = X + alpha_c*p                      # update solution
 
         if num>0:
             Z = np.random.default_rng().normal(loc=0,scale=1,size=num)
@@ -76,9 +76,9 @@ def cg_solve(A,b,num=0,tol = cg_tol,restart='on'):
         if D0 > 0.5 and j>10 and restart=='on':
             print('CG restart...')
             beta_c = 0.0
-            r = b-A(X)
+            r = (b-A(X))
 
-        p = r + beta_c*p                     # update search direction
+        p = r  + beta_c*p                      # update search direction
         j += 1
 
         r0 = r

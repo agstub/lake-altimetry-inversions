@@ -56,7 +56,7 @@ uh0 = u/H                  # advection
 ub = u                     # background sliding speed (scaled)
 
 #---------------------- numerical parameters------------------------------------
-cg_tol = 1e-5               # stopping tolerance for conjugate gradient solver
+cg_tol = 1e-6               # stopping tolerance for conjugate gradient solver
 
 max_cg_iter =  100000       # maximum conjugate gradient iterations
 
@@ -76,6 +76,12 @@ t,y,x = np.meshgrid(t0,y0,x0,indexing='ij')
 
 # mesh grids for frequency domain
 t,ky,kx = np.meshgrid(t0,ky0,kx0,indexing='ij')
+
+# box function
+ind = 1 + 0*t
+ind[np.abs(t)>0.99*np.max(t)]=0
+ind[np.abs(t)<0.01*np.max(t)]=0
+
 
 # magnitude of the wavevector
 k = np.sqrt(kx**2+ky**2)

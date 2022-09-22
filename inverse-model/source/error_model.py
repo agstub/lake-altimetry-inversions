@@ -8,7 +8,7 @@ uq_dir = '../UQ'
 if os.path.isfile(uq_dir+'/var_red.npy')==True:
     model_var = np.load(uq_dir+'/var_red.npy')
 else:
-    model_var = 0
+    model_var = 0.1
 
 noise_var = 1e-3
 

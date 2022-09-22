@@ -10,55 +10,55 @@ import xarray as xr
 
 
 # # Ninnis-1 coords
-# data_name = 'ninnis1'
+# data_name = 'data_ninnis1'
 # x0 = 1225*1e3
 # y0 = -1701*1e3
 # L0 = 25*1000
 
-# # Byrd-2 coordinates ***
-data_name = 'byrd2'
+# Byrd-2 coordinates ***
+data_name = 'data_byrd2'
 x0 = 563.393*1e3
 y0 = -855.949*1e3
 L0 = 35*1000
 
 # # Byrd-1 (meh)
-# data_name = 'byrd1'
+# data_name = 'data_byrd1'
 # x0 = 511.724*1e3
 # y0 = -828.616*1e3
 # L0 = 20*1000
 
 # # Slessor-2 (meh)
-# data_name = 'slessor2'
+# data_name = 'data_slessor2'
 # x0 = -405.627*1e3
 # y0 = 1026.433*1e3
 # L0 = 20*1000
 
-# Cook-E2 coordinates ***
-# data_name = 'cookee2'
+# # Cook-E2 coordinates ***
+# data_name = 'data_cookee2'
 # x0 = 772*1e3
 # y0 = -1718*1e3
-# L0 = 20*1000
+# L0 = 30*1000
 
 # # Academy-12 (meh)
-# data_name = 'academy12'
+# data_name = 'data_academy12'
 # x0 = -330.676*1e3
 # y0 = 330.676*1e3
 # L0 = 20*1000
 
 # # Mercer coordinates
-# data_name = 'mercer'
+# data_name = 'data_mercer'
 # x0 = -292*1e3
 # y0 = -500*1e3
 # L0 = 20*1000
 
 # # Totten-2 coordinates
-# data_name = 'totten2'
+# data_name = 'data_totten2'
 # x0 = 1970*1e3
 # y0 = -745*1e3
 # L0 = 40*1000
 
 # # Nimrod-2 coordinates
-# data_name = 'nimrod2'
+# data_name = 'data_nimrod2'
 # x0 = 387.072*1e3
 # y0 = -478.062*1e3
 # L0 = 40*1000
@@ -169,9 +169,9 @@ dh_loc = localize(dh_f)
 far = np.mean(dh_f-dh_loc,axis=(1,2))
 
 
-plt.plot(t_f,far)
-plt.show()
-plt.close()
+# plt.plot(t_f,far)
+# plt.show()
+# plt.close()
 
 #---------------- thickness and drag estimates
 
@@ -196,17 +196,15 @@ inds_xy = np.ix_(inds_y,inds_x)
 H_mean = np.mean(H[inds_xy])
 beta_mean = np.mean(beta[inds_xy])
 
-
-r = 0
-
+# ----------------------------- SAVE DATA --------------------------------------
 if os.path.isdir('../'+data_name)==False:
     os.mkdir('../'+data_name)
 
 np.save('../'+data_name+'/beta.npy',np.array([beta_mean]))
 np.save('../'+data_name+'/H.npy',np.array([H_mean]))
 np.save('../'+data_name+'/u.npy',np.array([0]))
-np.save('../'+data_name+'/h_obs.npy',dh_loc)
-np.save('../'+data_name+'/t.npy',(t_f-t_f[0])/365.0)
-np.save('../'+data_name+'/x.npy',(x_f-x_f.mean())/H_mean)
-np.save('../'+data_name+'/y.npy',(y_f-y_f.mean())/H_mean)
+np.save('../'+data_name+'/h_obs.npy',dh_pad)
+np.save('../'+data_name+'/t.npy',(t_pad-t_f[0])/365.0)
+np.save('../'+data_name+'/x.npy',(x_pad-x_pad.mean())/H_mean)
+np.save('../'+data_name+'/y.npy',(y_pad-y_pad.mean())/H_mean)
 np.save('../'+data_name+'/eta.npy',np.array([1e13]))             # viscosity?!
