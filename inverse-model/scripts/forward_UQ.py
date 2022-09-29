@@ -13,9 +13,9 @@ from kernel_fcns import conv
 num = int(input('input number of samples to draw: '))                                                    # number of samples
 
 # prior parameters
-kappa = 0.001
+kappa = 0.0025
 tau = 0.1
-a = 10
+a = 5
 
 w_pri = np.zeros((Nt,Ny,Nx,num))
 
@@ -26,8 +26,8 @@ for i in range(num):
     w_pri[...,i] = conv(np.exp(-a*t),X/tau)
 
 
-etad_dist = 10**np.random.default_rng().normal(loc=np.log10(eta_d),scale=1.0/3.0,size=num)
-betad_dist = 10**np.random.default_rng().normal(loc=np.log10(beta_d),scale=1.0/3.0,size=num)
+etad_dist = np.exp(np.random.default_rng().normal(loc=np.log(eta_d),scale=0.821,size=num))
+betad_dist = np.exp(np.random.default_rng().normal(loc=np.log(beta_d),scale=0.821,size=num))
 
 t_r = 2*etad_dist/(rho_i*g*H)     # viscous relaxation time
 

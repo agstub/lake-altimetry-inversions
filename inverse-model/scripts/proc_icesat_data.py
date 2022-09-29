@@ -15,11 +15,11 @@ import xarray as xr
 # y0 = -1701*1e3
 # L0 = 25*1000
 
-# Byrd-2 coordinates ***
-data_name = 'data_byrd2'
-x0 = 563.393*1e3
-y0 = -855.949*1e3
-L0 = 35*1000
+# # Byrd-2 coordinates ***
+# data_name = 'data_byrd2'
+# x0 = 563.393*1e3
+# y0 = -855.949*1e3
+# L0 = 35*1000
 
 # # Byrd-1 (meh)
 # data_name = 'data_byrd1'
@@ -33,11 +33,11 @@ L0 = 35*1000
 # y0 = 1026.433*1e3
 # L0 = 20*1000
 
-# # Cook-E2 coordinates ***
-# data_name = 'data_cookee2'
-# x0 = 772*1e3
-# y0 = -1718*1e3
-# L0 = 30*1000
+# Cook-E2 coordinates ***
+data_name = 'data_cooke2'
+x0 = 772*1e3
+y0 = -1718*1e3
+L0 = 25*1000
 
 # # Academy-12 (meh)
 # data_name = 'data_academy12'
@@ -161,7 +161,8 @@ t,y,x = np.meshgrid(t_f,y_f,x_f,indexing='ij')
 def localize(f):
     f_far = np.copy(f)
     f_far[np.sqrt((x-x.mean())**2+(y-y.mean())**2)<0.8*np.sqrt((x-x.mean())**2+(y-y.mean())**2).max()] = 0
-    f_far = f_far.sum(axis=(1,2))/(f_far != 0).sum(axis=(1,2))
+    F = (f_far != 0).sum(axis=(1,2))+1e-10
+    f_far = f_far.sum(axis=(1,2))/F
     f_loc = f- np.multiply.outer(f_far,np.ones(np.shape(f[0,:,:])))
     return f_loc
 
@@ -203,8 +204,12 @@ if os.path.isdir('../'+data_name)==False:
 np.save('../'+data_name+'/beta.npy',np.array([beta_mean]))
 np.save('../'+data_name+'/H.npy',np.array([H_mean]))
 np.save('../'+data_name+'/u.npy',np.array([0]))
-np.save('../'+data_name+'/h_obs.npy',dh_pad)
-np.save('../'+data_name+'/t.npy',(t_pad-t_f[0])/365.0)
-np.save('../'+data_name+'/x.npy',(x_pad-x_pad.mean())/H_mean)
-np.save('../'+data_name+'/y.npy',(y_pad-y_pad.mean())/H_mean)
+np.save('../'+data_name+'/h_obs.npy',dh_loc)
+np.save('../'+data_name+'/t.npy',(t_f-t_f[0])/365.0)
+np.save('../'+data_name+'/x.npy',(x_f-x_f.mean())/H_mean)
+np.save('../'+data_name+'/y.npy',(y_f-y_f.mean())/H_mean)
 np.save('../'+data_name+'/eta.npy',np.array([1e13]))             # viscosity?!
+
+
+np.save('../'+data_name+'/x_d.npy',x_d/1e3)
+np.save('../'+data_name+'/y_d.npy',y_d/1e3)
