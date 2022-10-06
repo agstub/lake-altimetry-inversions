@@ -1,19 +1,15 @@
 # define noise covariance operator
 import os
 import numpy as np
-from params import data_name
+from params import data_dir
+from kernel_fcns import conv,xcor,fftd,ifftd
+from prior import Cpri_inv
+from conj_grad import cg_solve
 
-uq_dir = '../UQ'
-
-if os.path.isfile(uq_dir+'/var_red.npy')==True:
-    model_var = np.load(uq_dir+'/var_red.npy')
-else:
-    model_var = 0.1
-
+model_var = 1e-1
 noise_var = 1e-3
-
-var = model_var + noise_var
 
 def Cerr_inv(f):
     # identity operator divided by variance
-    return f/var
+    X = f/(noise_var + model_var)
+    return X

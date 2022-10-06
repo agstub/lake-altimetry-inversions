@@ -3,7 +3,7 @@ sys.path.insert(0, '../source')
 import os
 
 from conj_grad import cg_solve
-from params import x,x0,y0,eta_d,beta_d,t_sc,rho_i,g,H,lamda0,beta0,Nt,Ny,Nx,dt,t,t0,data_name
+from params import x,x0,y0,eta_d,beta_d,t_sc,rho_i,g,H,lamda0,beta0,Nt,Ny,Nx,dt,t,t0,data_dir
 from prior import Cpri_inv,A
 import numpy as np
 import matplotlib.pyplot as plt
@@ -22,7 +22,7 @@ w_pri = np.zeros((Nt,Ny,Nx,num))
 for i in range(num):
     print('\n prior sample '+str(i+1)+' out of '+str(num))
     f = np.random.default_rng().normal(size=np.shape(x))
-    X, sample = cg_solve(lambda X: A(X,kappa=kappa),f,restart='off')
+    X, sample = cg_solve(lambda X: A(X,kappa=kappa),f)
     w_pri[...,i] = conv(np.exp(-a*t),X/tau)
 
 
@@ -44,7 +44,7 @@ err = np.zeros((Nt,Ny,Nx,num))
 
 for i in range(num):
     print('i = '+str(i))
-    err[...,i] = fwd_uq(w_pri[...,i],lamda0,beta0)-fwd_uq(w_pri[...,i],lamda_dist[i],beta_dist[i])
+    err[...,i] = fwd_uq(w_pri[...,i],lamda_dist[i],beta_dist[i])-fwd_uq(w_pri[...,i],lamda0,beta0)
     print('max err = '+str(np.max(np.abs(err[...,i]))))
     err_mean += err[...,i]/num
 
@@ -53,8 +53,7 @@ for i in range(num):
 
 var_red = np.multiply.outer(np.mean(err_var,axis=(1,2)),np.ones((Ny,Nx)))
 
-
-uq_dir = '../UQ'
+uq_dir = data_dir+'/UQ'
 if os.path.isdir(uq_dir)==False:
     os.mkdir(uq_dir)
     np.save(uq_dir+'/var_red.npy',var_red)

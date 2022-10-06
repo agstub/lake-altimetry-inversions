@@ -3,7 +3,7 @@ sys.path.insert(0, '../source')
 from post_process import calc_dV_w,calc_dV_h,calc_bdry_w
 import numpy as np
 import matplotlib.pyplot as plt
-from params import data_dir,H,t0,x0,y0,Nt,Nx,Ny,x,y,results_dir,t,ind
+from params import data_dir,H,t0,x0,y0,Nt,Nx,Ny,x,y,results_dir,t,ind,lake_name
 from error_model import noise_var
 from matplotlib.transforms import Bbox
 from load_lakes import gdf
@@ -21,8 +21,7 @@ y_d = np.load(data_dir+'/y_d.npy')
 
 
 num = np.shape(sample)[-1]
-
-outline = gdf.loc[gdf['name']=='Cook_E2']
+outline = gdf.loc[gdf['name']==lake_name]
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -53,7 +52,6 @@ else:
 # calculate volume change time series:
 dV_map = calc_dV_w(w_map,alt_bdry)           # volume change from inversion
 
-
 dV_h = calc_dV_h(h_obs,alt_bdry)
 
 dV_samp = np.zeros((Nt,num))
@@ -65,9 +63,6 @@ for l in range(num):
 ### sample variance of volume change estimate
 dV_var = np.sum((1./(num-1.))*(dV_map - dV_samp.T)**2,axis=0)
 dV_sigma = np.sqrt(dV_var)
-
-### sample variance:
-#w_var = np.sum((1./(num-1.))*(w_map - np.transpose(sample,axes=(-1,0,1,2)))**2,axis=0)
 
 # plot everything
 
@@ -155,9 +150,3 @@ for i in np.arange(ind_0,Nt-ind_0,1,dtype='int'):
     cbar.ax.xaxis.set_label_position('top')
     plt.savefig(results_dir+'/post_pngs/'+str(i),bbox_inches=Bbox([[0.15,-0.25],[11.8,13]]))
     plt.close()
-
-
-
-plt.plot(dV_alt[5:51]/dV_mean[5:51])
-plt.show()
-plt.close()

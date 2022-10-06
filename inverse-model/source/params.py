@@ -6,9 +6,14 @@ import sys
 # SET DATA DIRECTORY
 
 
-data_name = input('input lake name: ')
-data_dir = '../data_'+data_name
-results_dir = '../results_'+data_name
+lake_name = input('input lake name: ')
+data_dir = '../data_'+lake_name
+results_dir = '../results_'+lake_name
+
+# default prior params
+kappa0 = 0.0025
+tau0 = 0.1
+a0 = 5
 
 #----------------------import space and time arrays-----------------------------
 
@@ -68,8 +73,8 @@ ky0 =  fftfreq(Ny,dy)
 # set zero frequency to small number because some of the integral kernels
 # have removable singularities at the zero frequency
 
-kx0[0] = 1e-15
-ky0[0] = 1e-15
+kx0[0] = 1e-20
+ky0[0] = 1e-20
 
 # mesh grids for physical space domain
 t,y,x = np.meshgrid(t0,y0,x0,indexing='ij')

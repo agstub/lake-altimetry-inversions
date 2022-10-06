@@ -20,7 +20,7 @@ def norm(a):
 
 #------------------------------------------------------------------------------
 
-def cg_solve(A,b,num=0,tol = cg_tol,restart='on'):
+def cg_solve(A,b,num=0,tol = cg_tol,restart='off'):
 # conjugate gradient method for solving the normal equations
 #
 #              A(X)  = b,           where...

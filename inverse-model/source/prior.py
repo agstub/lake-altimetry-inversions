@@ -1,6 +1,6 @@
 # this file contains the inverse prior covariance operator
 
-from params import k,x,y,dt,t
+from params import k,x,y,dt,t,kappa0,tau0,a0
 from kernel_fcns import ifftd,fftd
 import numpy as np
 
@@ -28,7 +28,7 @@ def Qt_a(f,a):
     # adjoint square root of temporal component of precision operator
     return -dfdt(f)+a*f
 
-def Cpri_inv(f,kappa,tau,a):
+def Cpri_inv(f,kappa=kappa0,tau=tau0,a=a0):
     # inverse of prior covariance operator: C^-1 = Qt* Qs* Qs Qt
     # where: Qs = spatial component of square-root precision operator
     #        Qt = temporal component of square-root precision operator

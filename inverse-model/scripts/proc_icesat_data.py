@@ -7,61 +7,42 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 import xarray as xr
+from load_lakes import gdf
 
-
-# # Ninnis-1 coords
-# data_name = 'data_ninnis1'
-# x0 = 1225*1e3
-# y0 = -1701*1e3
-# L0 = 25*1000
-
-# # Byrd-2 coordinates ***
-# data_name = 'data_byrd2'
+# # Byrd-2 coordinates
+# data_name = 'data_Byrd_2'
 # x0 = 563.393*1e3
 # y0 = -855.949*1e3
 # L0 = 35*1000
+# outline = gdf.loc[gdf['name']=='Byrd_2']
 
-# # Byrd-1 (meh)
-# data_name = 'data_byrd1'
-# x0 = 511.724*1e3
-# y0 = -828.616*1e3
-# L0 = 20*1000
-
-# # Slessor-2 (meh)
-# data_name = 'data_slessor2'
+# # Slessor-2
+# data_name = 'data_Slessor_23'
 # x0 = -405.627*1e3
 # y0 = 1026.433*1e3
 # L0 = 20*1000
+# outline = gdf.loc[gdf['name']=='Slessor_23']
 
-# Cook-E2 coordinates ***
-data_name = 'data_cooke2'
-x0 = 772*1e3
-y0 = -1718*1e3
-L0 = 25*1000
+# # Cook-E2
+# data_name = 'data_Cook_E2'
+# x0 = 772*1e3
+# y0 = -1718*1e3
+# L0 = 25*1000
+# outline = gdf.loc[gdf['name']=='Cook_E2']
 
-# # Academy-12 (meh)
-# data_name = 'data_academy12'
-# x0 = -330.676*1e3
-# y0 = 330.676*1e3
+# # Mac1
+# data_name = 'data_Mac1'
+# x0 = -623.497*1e3
+# y0 = -898.538*1e3
 # L0 = 20*1000
+# outline = gdf.loc[gdf['name']=='Mac1']
 
-# # Mercer coordinates
-# data_name = 'data_mercer'
+# # Mercer
+# data_name = 'data_MercerSubglacialLake'
 # x0 = -292*1e3
 # y0 = -500*1e3
 # L0 = 20*1000
-
-# # Totten-2 coordinates
-# data_name = 'data_totten2'
-# x0 = 1970*1e3
-# y0 = -745*1e3
-# L0 = 40*1000
-
-# # Nimrod-2 coordinates
-# data_name = 'data_nimrod2'
-# x0 = 387.072*1e3
-# y0 = -478.062*1e3
-# L0 = 40*1000
+# outline = gdf.loc[gdf['name']=='MercerSubglacialLake']
 
 x_min = x0-L0
 x_max = x0+L0
@@ -95,11 +76,13 @@ ny = np.size(inds_y)
 
 inds_xy = np.ix_(inds_y,inds_x)
 dh_sub = np.zeros((nt,ny,nx))
+sigma_sub = np.zeros((nt,ny,nx))
 # put elevation change maps into 3D array with time being the first index
 for i in range(nt):
     dh0 = dh[i,:,:]
+    sigma0 = sigma[i,:,:]
     dh_sub[i,:,:] = dh0[inds_xy]
-
+    sigma_sub[i,:,:] = sigma0[inds_xy]
 
 #--------------------------PLOTTING-------------------------------
 
@@ -120,6 +103,7 @@ for i in range(np.size(t)):
     plt.figure(figsize=(8,6))
     plt.title(r'$t=$ '+'{:.2f}'.format(t[i])+' d',fontsize=24)
     p = plt.contourf(X_sub/1e3,Y_sub/1e3,dh_sub[i,:,:],levels=levels,cmap='coolwarm',extend='both')
+    outline.plot(edgecolor='k',facecolor='none',ax=plt.gca(),linewidth=3)
     plt.xlabel(r'$x$ (km)',fontsize=20)
     plt.ylabel(r'$y$ (km)',fontsize=20)
     cbar = plt.colorbar(p)
@@ -211,5 +195,5 @@ np.save('../'+data_name+'/y.npy',(y_f-y_f.mean())/H_mean)
 np.save('../'+data_name+'/eta.npy',np.array([1e13]))             # viscosity?!
 
 
-np.save('../'+data_name+'/x_d.npy',x_d/1e3)
-np.save('../'+data_name+'/y_d.npy',y_d/1e3)
+np.save('../'+data_name+'/x_d.npy',x_f/1e3)
+np.save('../'+data_name+'/y_d.npy',y_f/1e3)
