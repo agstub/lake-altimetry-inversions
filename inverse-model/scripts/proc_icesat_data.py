@@ -20,7 +20,7 @@ from load_lakes import gdf
 # data_name = 'data_Slessor_23'
 # x0 = -405.627*1e3
 # y0 = 1026.433*1e3
-# L0 = 20*1000
+# L0 = 25*1000
 # outline = gdf.loc[gdf['name']=='Slessor_23']
 
 # # Cook-E2
@@ -30,12 +30,12 @@ from load_lakes import gdf
 # L0 = 25*1000
 # outline = gdf.loc[gdf['name']=='Cook_E2']
 
-# # Mac1
-# data_name = 'data_Mac1'
-# x0 = -623.497*1e3
-# y0 = -898.538*1e3
-# L0 = 20*1000
-# outline = gdf.loc[gdf['name']=='Mac1']
+# Mac1
+data_name = 'data_Mac1'
+x0 = -623.497*1e3
+y0 = -898.538*1e3
+L0 = 20*1000
+outline = gdf.loc[gdf['name']=='Mac1']
 
 # # Mercer
 # data_name = 'data_MercerSubglacialLake'
@@ -187,7 +187,6 @@ if os.path.isdir('../'+data_name)==False:
 
 np.save('../'+data_name+'/beta.npy',np.array([beta_mean]))
 np.save('../'+data_name+'/H.npy',np.array([H_mean]))
-np.save('../'+data_name+'/u.npy',np.array([0]))
 np.save('../'+data_name+'/h_obs.npy',dh_loc)
 np.save('../'+data_name+'/t.npy',(t_f-t_f[0])/365.0)
 np.save('../'+data_name+'/x.npy',(x_f-x_f.mean())/H_mean)

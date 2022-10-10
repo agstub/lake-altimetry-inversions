@@ -1,5 +1,4 @@
-# example script running the inversion on some synthetic data
-# and plotting the results (MAP point)
+# example script running the inversion
 
 import sys
 sys.path.insert(0, '../source')
@@ -18,5 +17,5 @@ a = 5
 
 num = int(input('input number of posterior samples: '))                                                # num posterior samples
 
-w_map,sample,h_fwd,mis = invert(h_obs,kappa=kappa,tau=tau,a=a,num=num)    # good for beta = 1e9
+w_map,sample,h_fwd,mis,w_lamda = invert(h_obs,kappa=kappa,tau=tau,a=a,num=num)    # good for beta = 1e9
 print('rel. misfit norm = '+str(mis))

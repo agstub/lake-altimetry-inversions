@@ -25,7 +25,6 @@ y0 = np.load(data_dir+'/y.npy')       # y array (m)
 H = np.load(data_dir+'/H.npy').mean()       # ice thickness (m)
 beta_d = np.load(data_dir+'/beta.npy').mean() # basal drag coeff (Pa s/m)
 eta_d = np.load(data_dir+'/eta.npy').mean()     # Newtonian ice viscosity (Pa s)
-u = np.load(data_dir+'/u.npy').mean()     # mean surface velocity (Pa s)
 
 #-------------------------------------------------------------------------------
 
@@ -56,9 +55,6 @@ lamda0 = t_sc/t_r           # process timescale relative to
 
 beta0 = beta_d*H/(2*eta_d) # drag coefficient relative to ice viscosity and thickness
 
-uh0 = u/H                  # advection
-
-ub = u                     # background sliding speed (scaled)
 
 #---------------------- numerical parameters------------------------------------
 cg_tol = 1e-6               # stopping tolerance for conjugate gradient solver

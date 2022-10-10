@@ -41,5 +41,5 @@ def Cpri_inv(f,kappa=kappa0,tau=tau0,a=a0):
     # the process looks more like a Brownian motion.
 
     ## OR return tau*f == white noise prior.... faster convergence?!?!?
-    # return tau*f
+    #return 50*tau*f
     return tau*Qt_a(Qs2(Qt(f,a),kappa),a)

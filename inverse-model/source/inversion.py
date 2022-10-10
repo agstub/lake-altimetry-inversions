@@ -2,7 +2,7 @@
 # vector of the normal equations and calls the conjugate-gradient solver
 
 from conj_grad import cg_solve,norm
-from operators import fwd,adj,Cpost_inv
+from operators import fwd,adj,Cpost_inv,adj_fwd_l,adj_l
 import numpy as np
 from kernel_fcns import fftd,ifftd
 from params import t,x,Nx,lamda0,beta0,results_dir,ind
@@ -21,6 +21,13 @@ def invert(h_obs,kappa,tau,a,lamda=lamda0,beta=beta0,num=1):
 
     # solve the normal equations with CG for the basal vertical velocity anomaly
     w_map,sample = cg_solve(lambda X: Cpost_inv(X,kappa,tau,a)*ind,b*ind,num)
+
+    # compute sensitivity with respect to lamda parameter (surface decay rate)
+    b_l = adj_l(Cerr_inv(fftd(h_obs)-np.exp(-lamda*Rg(beta)*t)*fftd(h0)))
+    b_l += adj(Cerr_inv(Rg(beta)*t*np.exp(-lamda*Rg(beta)*t)*fftd(h0)))
+
+    rhs = -(adj_fwd_l(w_map)-b_l)
+    w_lamda,sample = cg_solve(lambda X: Cpost_inv(X,kappa,tau,a)*ind,rhs*ind,num)
 
     # get the forward solution (elevation profile) associated with the inversion
     h_fwd = ifftd(fwd(w_map)).real+ifftd(np.exp(-lamda*Rg(beta)*t)*fftd(h0)).real
@@ -44,5 +51,7 @@ def invert(h_obs,kappa,tau,a,lamda=lamda0,beta=beta0,num=1):
     np.save(results_dir+'/w_map.npy',w_map)
     np.save(results_dir+'/post_samples.npy',sample)
     np.save(results_dir+'/h_fwd.npy',h_fwd)
+    np.save(results_dir+'/w_lamda.npy',w_lamda)
 
-    return w_map,sample,h_fwd,mis
+
+    return w_map,sample,h_fwd,mis,w_lamda

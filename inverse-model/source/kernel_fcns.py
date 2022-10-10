@@ -1,7 +1,7 @@
 # this file contains the integral kernel functions that are used for applying the
 # forward and adjoint operators
 import numpy as np
-from params import beta0,k,kx,lamda0,t,dt,Nt,uh0,ub
+from params import beta0,k,kx,lamda0,t,dt,Nt
 from scipy.signal import fftconvolve
 from scipy.fft import ifft2,fft2
 
@@ -47,9 +47,8 @@ def Tw(beta=beta0):
 
 def ker(lamda=lamda0,beta=beta0):
     # kernel for w_b forward problem
-    K_0 = np.exp(-(1j*(2*np.pi*kx)*uh0+lamda*Rg(beta))*t)
+    K_0 = np.exp(-(lamda*Rg(beta))*t)
     K = K_0*Tw(beta)
-
     return K
 
 ker0 = ker(lamda0,beta0)

@@ -18,9 +18,8 @@ if os.path.isdir('../data_synth')==False:
 # define the scalar parameters in the problem
 # in practice we might use means of some of these fields around the lake
 H = np.array([2000])          # ice thickness over the lake
-beta = np.array([5e10])        # basal drag coeff. near the lake
+beta = np.array([1e10])        # basal drag coeff. near the lake
 eta = np.array([1e13])        # viscosity near the lake
-u = np.array([0])             # background flow speed near the lake
 
 # define coordinate arrays
 t0 = np.linspace(0,3,100)                     # time
@@ -31,10 +30,11 @@ y0 = np.linspace(-30,30,101)*1000/H.mean()    # y coordinate
 np.save('../data_synth/t.npy',t0)
 np.save('../data_synth/x.npy',x0)
 np.save('../data_synth/y.npy',y0)
+np.save('../data_synth/x_d.npy',x0*H.mean()/1e3)
+np.save('../data_synth/y_d.npy',y0*H.mean()/1e3)
 np.save('../data_synth/eta.npy',eta)
 np.save('../data_synth/beta.npy',beta)
 np.save('../data_synth/H.npy',H)
-np.save('../data_synth/u.npy',u)
 
 
 # import some functions to produce the synthetic elevation anomaly

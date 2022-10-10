@@ -92,6 +92,6 @@ def cg_solve(A,b,num=0,tol = cg_tol,restart='off'):
     if num>0:
         sample = np.multiply.outer(X,np.ones(num)) + Y
     else:
-        sample = None
+        sample = 0*X
 
     return X,sample
