@@ -34,13 +34,13 @@ resultsname = 'results'
 
 wb = np.load('data_nonlinear/w_true.npy')           # Lower surface
 h_obs = np.load('data_nonlinear/h.npy')         # Upper surface
-dV = np.load('data_nonlinear/dV.npy')           # Upper surface
+dV = np.load('data_nonlinear/dV_true.npy')           # Upper surface
 
 
 # Create array for plotting
 H = np.load('data_nonlinear/H.npy').mean()      # thickness
-x = np.load('data_nonlinear/x.npy')             # x-coordinate array
-y = np.load('data_nonlinear/y.npy')             # x-coordinate array
+x = np.load('data_nonlinear/x_d.npy')             # x-coordinate array
+y = np.load('data_nonlinear/y_d.npy')             # x-coordinate array
 t = np.load('data_nonlinear/t.npy')
 
 # Load relevant files
@@ -55,13 +55,15 @@ X = np.loadtxt(resultsname+'/r')             # x-coordinate array
 t_f = np.loadtxt(resultsname+'/t')
 
 
+dV_max = np.max(dV*(H**2)/1e9)+0.1
+dV_min = np.min(dV*(H**2)/1e9)-0.1
 
 for i in range(np.size(t)):
 
     j = np.argmin(np.abs(t_f/3.154e7-t[i]))
     print('image '+str(i)+' out of '+str(np.size(t)))
 
-    plt.figure(figsize=(12,12))
+    plt.figure(figsize=(8,12))
 
 #-------------------------------------------------------------------------------
     plt.subplot(311)
@@ -90,36 +92,30 @@ for i in range(np.size(t)):
     plt.plot(-X[(s[:,j]-bed(X)>1e-3*tol)]/1000,s[:,j][(s[:,j]-bed(X)>1e-3*tol)],'o',color='crimson',markersize=1,label=r'$s>\beta$')
 
 
-    plt.annotate(r'air',xy=(-35,20.5),fontsize=16)
-    plt.annotate(r'ice',xy=(-35,5),fontsize=16)
-    plt.annotate(r'bed',xy=(-35,1.5),fontsize=16)
-    plt.annotate(r'water',xy=(-3,-3.5),fontsize=16)
-
-
     # Label axes and save png:
     plt.xlabel(r'$r$ (km)',fontsize=20)
     plt.yticks([])
     plt.xticks(fontsize=16)
     plt.xlim(-0.5*Lngth/1000,0.5*Lngth/1000)
-    plt.ylim(np.min(bed(X))-2,26)
+    plt.ylim(np.min(bed(X))-2,36)
 
 
 #-------------------------------------------------------------------------------
 
     plt.subplot(312)
-    plt.plot(t[0:i],dV[0:i]*(H**2)/1e9,color='forestgreen',linewidth=3)
-    plt.plot([t[i]],[dV[i]*(H**2)/1e9],color='forestgreen',marker='o',markersize=10)
+    plt.plot(t[0:i],dV[0:i]*(H**2)/1e9,color='k',linewidth=3)
+    plt.plot([t[i]],[dV[i]*(H**2)/1e9],color='k',marker='o',markersize=10)
     #plt.plot(t_f[0:j]/3.154e7,(Vol(t_f[0:j])-Vol(0))/1e9,color='k',linestyle='--',linewidth=3)
     plt.ylabel(r'$\Delta V$ (km$^3$)',fontsize=20)
     plt.xlim(0,t[-1])
-    plt.ylim(-0.2,0.2)
+    plt.ylim(dV_min,dV_max)
     plt.xlabel(r'$t$ (yr)',fontsize=20)
     plt.xticks(fontsize=16)
     plt.yticks(fontsize=16)
 
 
     plt.subplot(325)
-    p1 = plt.contourf(x,y,h_obs[i,:,:].T,cmap='coolwarm',levels=np.arange(-0.5,0.55,0.05),extend='both')
+    p1 = plt.contourf(x,y,h_obs[i,:,:].T,cmap='coolwarm',levels=np.linspace(-0.5,0.5,6),extend='both')
     plt.ylabel(r'$y$ (km)',fontsize=20)
     plt.xlabel(r'$x$ (km)',fontsize=20)
     plt.yticks(fontsize=16)
@@ -133,7 +129,7 @@ for i in range(np.size(t)):
 
 
     plt.subplot(326)
-    p2 = plt.contourf(x,y,wb[i,:,:].T,cmap='coolwarm',extend='both',levels=np.arange(-5,5.5,0.5))
+    p2 = plt.contourf(x,y,wb[i,:,:].T,cmap='coolwarm',extend='both',levels=np.linspace(-5,5,6))
     plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.2f'))
     # Label axes and save png:
     plt.xlabel(r'$x$ (km)',fontsize=20)

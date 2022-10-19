@@ -1,34 +1,15 @@
-# this file contains the inverse prior covariance operator
+# this defines the regularization
 
-from params import k,x,y,dt,t,kappa0,tau0,a0
+from params import k,x,y,dt,t
 from kernel_fcns import ifftd,fftd
 import numpy as np
 
 def lap(f):
-    # Laplacian computed via Fourier transform
-    return -ifftd((k**2)*fftd(f)).real
+    # Negative Laplacian computed via Fourier transform
+    return ifftd((k**2)*fftd(f)).real
 
-def A(f,kappa):
-    # elliptic operator
-    R = kappa*f-lap(f)
-    return R
 
-def dfdt(f):
-    return np.gradient(f,dt,axis=0)
-
-def Qs2(f,kappa):
-    # spatial component of precision operator
-    return A(A(f,kappa),kappa)
-
-def Qt(f,a):
-    # square root of temporal component of precision operator
-    return dfdt(f)+a*f
-
-def Qt_a(f,a):
-    # adjoint square root of temporal component of precision operator
-    return -dfdt(f)+a*f
-
-def Cpri_inv(f,kappa=kappa0,tau=tau0,a=a0):
+def reg(f,eps):
     # inverse of prior covariance operator: C^-1 = Qt* Qs* Qs Qt
     # where: Qs = spatial component of square-root precision operator
     #        Qt = temporal component of square-root precision operator
@@ -41,5 +22,6 @@ def Cpri_inv(f,kappa=kappa0,tau=tau0,a=a0):
     # the process looks more like a Brownian motion.
 
     ## OR return tau*f == white noise prior.... faster convergence?!?!?
-    #return 50*tau*f
-    return tau*Qt_a(Qs2(Qt(f,a),kappa),a)
+    #return eps*f #eps = 3
+    return eps*lap(f) #
+    #return 10*tau*Qt_a(Qs2(Qt(f,a),kappa),a)

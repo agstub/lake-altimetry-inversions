@@ -2,7 +2,7 @@ import sys
 sys.path.insert(0, './source')
 import numpy as np
 from scipy.interpolate import interp2d,interp1d
-from params import t_final,Lngth,Hght,nt
+from params import t_final,Lngth,Hght,nt,nx
 from geometry import bed
 import matplotlib.pyplot as plt
 import os
@@ -38,7 +38,7 @@ dV_int = interp1d(t, dV)
 
 
 nx_d = 101
-nt_d = 200
+nt_d = 100
 
 x_d = np.linspace(-r[-1],r[-1],nx_d)
 y_d = np.linspace(-r[-1],r[-1],nx_d)
@@ -55,14 +55,19 @@ for l in range(np.size(t_d)):
             h_d[l,i,j] = h_int(np.sqrt(X_d[l,i,j]**2 + Y_d[l,i,j]**2),T_d[l,i,j])
             wb_d[l,i,j] = wb_int(np.sqrt(X_d[l,i,j]**2 + Y_d[l,i,j]**2),T_d[l,i,j])
 
+noise_h = np.random.normal(size=np.shape(h_d),scale=np.sqrt(1e-3))
+
+h_d += noise_h
 
 dV_d = dV_int(t_d)
 
 
 # save numpy files for use in inversion
-np.save('./data_nonlinear/dV.npy',dV_d)
+np.save('./data_nonlinear/dV_true.npy',dV_d)
 np.save('./data_nonlinear/w_true.npy',wb_d)
-np.save('./data_nonlinear/h.npy',h_d)
+np.save('./data_nonlinear/h_obs.npy',h_d)
+np.save('./data_nonlinear/x_d.npy',x_d*H/1000.0)
+np.save('./data_nonlinear/y_d.npy',x_d*H/1000.0)
 np.save('./data_nonlinear/x.npy',x_d)
 np.save('./data_nonlinear/y.npy',x_d)
 np.save('./data_nonlinear/t.npy',t_d)
@@ -70,39 +75,3 @@ np.save('./data_nonlinear/H.npy',np.array([H]))
 np.save('./data_nonlinear/u.npy',np.array([0.0]))
 np.save('./data_nonlinear/beta.npy',beta)
 np.save('./data_nonlinear/eta.npy',eta)
-
-
-# # PLOT time series of mean viscosity and basal drag
-# #
-# plt.figure(figsize=(6,10))
-# plt.subplot(311)
-# plt.plot(t,(eta-eta[0])/eta[0],color='royalblue',linestyle='none',marker='o',markersize=5)
-# plt.ylabel(r'$\bar{\eta}\,/\,\bar{\eta_0} -1$',fontsize=20)
-# plt.yticks(fontsize=16)
-# plt.gca().xaxis.set_ticklabels([])
-# plt.ylim(-0.15,0.15)
-# plt.xticks(fontsize=16)
-# plt.yticks(fontsize=16)
-#
-# plt.subplot(312)
-# plt.plot(t,(u-u[0])/u[0],color='royalblue',marker='o',linestyle='none',markersize=5)
-# plt.ylabel(r'$\bar{u}\,/\,\bar{u}_0-1$',fontsize=20)
-# plt.yticks(fontsize=16)
-# plt.gca().xaxis.set_ticklabels([])
-# plt.ylim(-0.15,0.15)
-# # plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.2f'))
-# plt.xticks(fontsize=16)
-# plt.yticks(fontsize=16)
-#
-# plt.subplot(313)
-# plt.plot(t,(beta-beta[0])/beta[0],color='royalblue',marker='o',linestyle='none',markersize=5)
-# plt.ylabel(r'$\bar{\beta}\,/\,\bar{\beta}_0 - 1$',fontsize=20)
-# # plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.2f'))
-# # Label axes and save png:
-# plt.xlabel(r'$t$ (yr)',fontsize=20)
-# plt.ylim(-0.15,0.15)
-# plt.xticks(fontsize=16)
-# plt.yticks(fontsize=16)
-# plt.tight_layout()
-# plt.savefig('refs')
-# plt.close()

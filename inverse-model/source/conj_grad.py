@@ -20,7 +20,7 @@ def norm(a):
 
 #------------------------------------------------------------------------------
 
-def cg_solve(A,b,num=0,tol = cg_tol,restart='off'):
+def cg_solve(A,b,tol = cg_tol):
 # conjugate gradient method for solving the normal equations
 #
 #              A(X)  = b,           where...
@@ -33,12 +33,6 @@ def cg_solve(A,b,num=0,tol = cg_tol,restart='off'):
     j = 1                      # iteration
     r = r0                     # initialize residual
     X = 0*p                    # initial guess
-
-    if num>0:
-        dims = list(np.shape(X))
-        dims.append(num)
-        dims = tuple(dims)
-        Y = np.zeros(dims)
 
     rnorm0 = prod(r,r)    # (squared) norm of the residual: previous iteration
     rnorm1 = rnorm0       # (squared) norm of the residual: current iteration
@@ -63,20 +57,11 @@ def cg_solve(A,b,num=0,tol = cg_tol,restart='off'):
 
         X = X + alpha_c*p                      # update solution
 
-        if num>0:
-            Z = np.random.default_rng().normal(loc=0,scale=1,size=num)
-            Y = Y + np.multiply.outer(p,Z)/np.sqrt(d)
-
         r = r - alpha_c*Ap                    # update residual
         rnorm1 = prod(r,r)
         beta_c = rnorm1/rnorm0
 
         D0 = np.abs(prod(r0,r))/prod(r,r)
-
-        if D0 > 0.5 and j>10 and restart=='on':
-            print('CG restart...')
-            beta_c = 0.0
-            r = (b-A(X))
 
         p = r  + beta_c*p                      # update search direction
         j += 1
@@ -89,9 +74,4 @@ def cg_solve(A,b,num=0,tol = cg_tol,restart='off'):
     if j<max_cg_iter:
         print('\n...CG converged!')
 
-    if num>0:
-        sample = np.multiply.outer(X,np.ones(num)) + Y
-    else:
-        sample = 0*X
-
-    return X,sample
+    return X

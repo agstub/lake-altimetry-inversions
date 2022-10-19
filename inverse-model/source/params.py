@@ -10,10 +10,6 @@ lake_name = input('input lake name: ')
 data_dir = '../data_'+lake_name
 results_dir = '../results_'+lake_name
 
-# default prior params
-kappa0 = 0.0025
-tau0 = 0.1
-a0 = 5
 
 #----------------------import space and time arrays-----------------------------
 
@@ -77,12 +73,6 @@ t,y,x = np.meshgrid(t0,y0,x0,indexing='ij')
 
 # mesh grids for frequency domain
 t,ky,kx = np.meshgrid(t0,ky0,kx0,indexing='ij')
-
-# box function
-ind = 1 + 0*t
-ind[np.abs(t)>0.99*np.max(t)]=0
-ind[np.abs(t)<0.01*np.max(t)]=0
-
 
 # magnitude of the wavevector
 k = np.sqrt(kx**2+ky**2)
