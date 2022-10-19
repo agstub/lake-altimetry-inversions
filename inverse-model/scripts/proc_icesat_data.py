@@ -6,7 +6,6 @@ import netCDF4 as nc
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-import xarray as xr
 from load_lakes import gdf
 
 # # Byrd-2 coordinates
@@ -31,18 +30,18 @@ from load_lakes import gdf
 # outline = gdf.loc[gdf['name']=='Cook_E2']
 
 # Mac1
-data_name = 'data_Mac1'
-x0 = -623.497*1e3
-y0 = -898.538*1e3
-L0 = 20*1000
-outline = gdf.loc[gdf['name']=='Mac1']
+# data_name = 'data_Mac1'
+# x0 = -623.497*1e3
+# y0 = -898.538*1e3
+# L0 = 20*1000
+# outline = gdf.loc[gdf['name']=='Mac1']
 
 # # Mercer
-# data_name = 'data_MercerSubglacialLake'
-# x0 = -292*1e3
-# y0 = -500*1e3
-# L0 = 20*1000
-# outline = gdf.loc[gdf['name']=='MercerSubglacialLake']
+data_name = 'data_MercerSubglacialLake'
+x0 = -292*1e3
+y0 = -500*1e3
+L0 = 20*1000
+outline = gdf.loc[gdf['name']=='MercerSubglacialLake']
 
 x_min = x0-L0
 x_max = x0+L0
@@ -151,21 +150,19 @@ def localize(f):
     return f_loc
 
 dh_loc = localize(dh_f)
-far = np.mean(dh_f-dh_loc,axis=(1,2))
 
 
-# plt.plot(t_f,far)
-# plt.show()
-# plt.close()
+#---------------- thickness and drag estimates ---------------------------------
 
-#---------------- thickness and drag estimates
+fn = '../../../WAVI/WAVI_5km_Initial.nc'
+ds = nc.Dataset(fn)
 
-H_beta = xr.open_zarr('../../../thickness/data/H_beta.zarr',consolidated=False)
-H_beta.load()
 
-x, y = np.array(H_beta.x),np.array(H_beta.y)                # horizontal map coordinates
-beta = H_beta.beta.data                               # (dimensional) basal sliding coefficient (Pa s / m)
-H = H_beta.thickness.data                           # ice thickness (m)
+x = ds['x'][:]                                   # m
+y = ds['y'][:]                                   # m
+H = ds['thickness'][:]                           # ice thickness (m)
+beta = ds['Beta2'][:]*3.154e7                    # convert to Pa s/m
+eta = ds['depth_averaged_viscosity'][:]*3.154e7  # convert to Pa s
 
 ind_x = np.arange(0,np.size(x),1)
 ind_y = np.arange(0,np.size(y),1)
@@ -180,19 +177,48 @@ inds_xy = np.ix_(inds_y,inds_x)
 
 H_mean = np.mean(H[inds_xy])
 beta_mean = np.mean(beta[inds_xy])
+eta_mean = np.mean(eta[inds_xy])
+
+#------------------------ surface velocity -------------------------------------
+fn = '../../../measures/antarctica_ice_velocity_450m_v2.nc'
+ds = nc.Dataset(fn)
+x = ds['x'][:]                  # m
+y = ds['y'][:]                  # m
+u = ds['VX'][:]                 # m/yr
+v = ds['VY'][:]                 # m/yr
+
+
+ind_x = np.arange(0,np.size(x),1)
+ind_y = np.arange(0,np.size(y),1)
+
+x_sub = x[(x>=x_min)&(x<=x_max)]
+y_sub = y[(y>=y_min)&(y<=y_max)]
+
+inds_x = ind_x[(x>=x_min)&(x<=x_max)]
+inds_y = ind_y[(y>=y_min)&(y<=y_max)]
+
+inds_xy = np.ix_(inds_y,inds_x)
+
+u0 = u[inds_xy]
+v0 = v[inds_xy]
+
+u_mean = np.mean(u0)
+v_mean = np.mean(v0)
 
 # ----------------------------- SAVE DATA --------------------------------------
 if os.path.isdir('../'+data_name)==False:
     os.mkdir('../'+data_name)
 
-np.save('../'+data_name+'/beta.npy',np.array([beta_mean]))
-np.save('../'+data_name+'/H.npy',np.array([H_mean]))
-np.save('../'+data_name+'/h_obs.npy',dh_loc)
-np.save('../'+data_name+'/t.npy',(t_f-t_f[0])/365.0)
-np.save('../'+data_name+'/x.npy',(x_f-x_f.mean())/H_mean)
-np.save('../'+data_name+'/y.npy',(y_f-y_f.mean())/H_mean)
-np.save('../'+data_name+'/eta.npy',np.array([1e13]))             # viscosity?!
+np.save('../'+data_name+'/eta.npy',np.array([eta_mean]))    # viscosity: Pa s
+np.save('../'+data_name+'/beta.npy',np.array([beta_mean]))  # basal drag: Pa s / m
+np.save('../'+data_name+'/H.npy',np.array([H_mean]))        # thickness: m
+np.save('../'+data_name+'/h_obs.npy',dh_loc)                # elevation anomaly: m
+np.save('../'+data_name+'/t.npy',(t_f-t_f[0])/365.0)        # time: yr
+np.save('../'+data_name+'/u.npy',np.array([u_mean]))        # vel x: m/yr
+np.save('../'+data_name+'/v.npy',np.array([v_mean]))        # vel y: m/yr
 
+np.save('../'+data_name+'/x.npy',(x_f-x_f.mean())/H_mean)   # x coord (scaled)
+np.save('../'+data_name+'/y.npy',(y_f-y_f.mean())/H_mean)   # y coord (scaled)
 
-np.save('../'+data_name+'/x_d.npy',x_f/1e3)
-np.save('../'+data_name+'/y_d.npy',y_f/1e3)
+np.save('../'+data_name+'/x_d.npy',x_f/1e3)     # x coord. for plotting results
+np.save('../'+data_name+'/y_d.npy',y_f/1e3)     # y coord. for plotting results
