@@ -10,18 +10,6 @@ def lap(f):
 
 
 def reg(f,eps):
-    # inverse of prior covariance operator: C^-1 = Qt* Qs* Qs Qt
-    # where: Qs = spatial component of square-root precision operator
-    #        Qt = temporal component of square-root precision operator
-    #        * = adjoint (note Qs* = Qs)
-    #
-    # this covariance is Matern in space (i.e. spatially correlated / smooth-ish)
-    # and follows an Ornstein-Uhlenbeck process in time (i.e. basically a random
-    # walk that continually returns to the mean). For large values of the parameter
-    # "a", the prior looks like white noise in time. For smaller values of "a",
-    # the process looks more like a Brownian motion.
-
-    ## OR return tau*f == white noise prior.... faster convergence?!?!?
-    #return eps*f #eps = 3
-    return eps*lap(f) #
-    #return 10*tau*Qt_a(Qs2(Qt(f,a),kappa),a)
+    # regularization
+    # return eps*f     # alternative "L2" regularization
+    return eps*lap(f) # "H1" gradient/smoothness regularization
