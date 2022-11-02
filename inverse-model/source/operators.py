@@ -6,14 +6,13 @@
 #       (composition of forward and adjoint operators plus regularization terms)
 #
 # To avoid redundant applications of the fftd/ifftd in the inversion for computational efficiency:
-# * the forward operator takes physical-space fields as input and return Fourier-space fields
-# * the adjoint operato takes Fourier-space fields as input and physical-space fields
+# * the forward operator takes physical-space fields as input and return frequency-space fields
+# * the adjoint operator takes freqeuncy-space fields as input and physical-space fields
 #-------------------------------------------------------------------------------
 
 
 import numpy as np
-from kernel_fcns import ker,ker0,conv,xcor,Rg
-from params import t,k,kx,ky,dx,Nx,lamda0,beta0
+from kernel_fcns import ker0,conv,xcor
 from kernel_fcns import ifftd,fftd
 from regularization import reg
 

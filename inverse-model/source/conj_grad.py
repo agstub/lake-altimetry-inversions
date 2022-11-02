@@ -63,6 +63,11 @@ def cg_solve(A,b,tol = cg_tol):
 
         D0 = np.abs(prod(r0,r))/prod(r,r)
 
+        if D0 > 0.5 and j>10:
+            print('CG restart...')
+            beta_c = 0.0
+            r = b-A(X)
+
         p = r  + beta_c*p                      # update search direction
         j += 1
 
@@ -72,6 +77,6 @@ def cg_solve(A,b,tol = cg_tol):
             print('\n...CG terminated because maximum iterations reached.')
             break
     if j<max_cg_iter:
-        print('\n...CG converged!')
+        print('\n...CG converged!\n')
 
     return X

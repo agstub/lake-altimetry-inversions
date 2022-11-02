@@ -4,13 +4,10 @@ import numpy as np
 
 def calc_dV_w(w,w_bdry):
     # calculate water volume change estimate from inversion
-    w_copy = np.copy(w)*w_bdry
-    dV = cumulative_trapezoid(trapezoid(trapezoid(w_copy,dx=dy,axis=-1),dx=dx,axis=-1),dx=dt,initial=0)
+    dV = cumulative_trapezoid(trapezoid(trapezoid(w*w_bdry,dx=dy,axis=-1),dx=dx,axis=-1),dx=dt,initial=0)
     return dV
 
 def calc_dV_h(h,h_bdry):
     # calculate water volume change estimate from inversion
-    h_copy = np.copy(h)*h_bdry
-    h0 = h_copy[0,:,:] + 0*h_copy
-    dV = trapezoid(trapezoid(h_copy-h0,dx=dy,axis=-1),dx=dx,axis=-1)
+    dV = trapezoid(trapezoid(h*h_bdry,dx=dy,axis=-1),dx=dx,axis=-1)
     return dV

@@ -1,4 +1,4 @@
-# FROM REPO: https://github.com/mrsiegfried/Siegfried2021-GRL 
+# FROM REPO: https://github.com/mrsiegfried/Siegfried2021-GRL
 # Just a bit of code to run through the HDF5 file and load into a
 # geopandas geodataframe.
 #
@@ -6,7 +6,7 @@
 # Modified 6/8/21 by M. Siegfried (siegfried@mines.edu)
 
 # import packages
-from shapely.geometry import asPolygon, MultiPolygon
+from shapely.geometry import Polygon, MultiPolygon
 from pyproj import Geod, CRS, Transformer # for calculating areas
 
 import h5py
@@ -40,7 +40,7 @@ for lake in h5f.keys():
     # A single lake with multiple polygons is NaN broken---need to identify and
     # load as a MultiPolygon. Otherwise it's easy (just load as polygon)
     if np.isnan(outlines_xy)[:,0].sum() == 0:
-        geometry = asPolygon(outlines_xy)
+        geometry = Polygon(outlines_xy)
         lon, lat = xy_to_ll.transform(outlines_xy[:,0], outlines_xy[:,1])
         this_area = abs(geod.polygon_area_perimeter(lon,lat)[0])/1e6
     else:
@@ -50,7 +50,7 @@ for lake in h5f.keys():
 
         # grab outline of first lake before getting into the loop
         this_outline = outlines_xy[0:idx[0],:]
-        pgons = [asPolygon(this_outline)] # put the first polygon in a list
+        pgons = [Polygon(this_outline)] # put the first polygon in a list
         lon,lat = xy_to_ll.transform(this_outline[:,0], this_outline[:,1])
         this_area += abs(geod.polygon_area_perimeter(lon,lat)[0])/1e6 # add its area
         for i in np.arange(0,len(idx)):
@@ -59,7 +59,7 @@ for lake in h5f.keys():
             else:
                 this_outline = outlines_xy[idx[i]+1:idx[i+1]]
 
-            pgons.append(asPolygon(this_outline))
+            pgons.append(Polygon(this_outline))
             lon,lat = xy_to_ll.transform(this_outline[:,0], this_outline[:,1])
             this_area += abs(geod.polygon_area_perimeter(lon,lat)[0])/1e6
         geometry = MultiPolygon(pgons)

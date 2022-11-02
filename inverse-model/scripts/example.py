@@ -7,11 +7,17 @@ from inversion import invert
 import numpy as np
 import os
 from params import data_dir
+from plot_results import plot_movie, plot_snap
 
-# load synthetic elevation data (h_obs) and "true" basal vertical velocity (w_true)
+# load elevation data (h_obs)
 h_obs = np.load(data_dir+'/h_obs.npy')
 
-eps = 1e-3*50
+eps = 1e0
 
-w_map,h_fwd,mis = invert(h_obs,eps=eps)    # good for beta = 1e9
-print('rel. misfit norm = '+str(mis))
+t_ref = 0*1.25 # t_ref = 1.25 good for SLM?
+
+w_map,h_fwd,mis = invert(h_obs,eps=eps,t_ref=t_ref)
+
+#plot_movie()
+
+plot_snap(74)

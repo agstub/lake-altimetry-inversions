@@ -17,12 +17,12 @@ if os.path.isdir('../data_synth')==False:
 
 # define the scalar parameters in the problem
 # in practice we might use means of some of these fields around the lake
-H = np.array([2000])          # ice thickness over the lake
-beta = np.array([1e10])        # basal drag coeff. near the lake
-eta = np.array([1e13])        # viscosity near the lake
+H = np.array([2500])          # ice thickness over the lake
+beta = np.array([1e11])        # basal drag coeff. near the lake
+eta = np.array([1e15])        # viscosity near the lake
 
 # define coordinate arrays
-t0 = np.linspace(0,3,100)                     # time
+t0 = np.linspace(0,10,100)                     # time
 x0 = np.linspace(-30,30,101)*1000/H.mean()    # x coordinate
 y0 = np.linspace(-30,30,101)*1000/H.mean()    # y coordinate
 
@@ -35,7 +35,8 @@ np.save('../data_synth/y_d.npy',y0*H.mean()/1e3)
 np.save('../data_synth/eta.npy',eta)
 np.save('../data_synth/beta.npy',beta)
 np.save('../data_synth/H.npy',H)
-
+np.save('../data_synth/u.npy',np.array([0.0]))
+np.save('../data_synth/v.npy',np.array([0.0]))
 
 # import some functions to produce the synthetic elevation anomaly
 from params import t,x,y,Nt,Nx,Ny
@@ -43,11 +44,10 @@ from operators import fwd
 from localization import localize
 from kernel_fcns import ifftd
 from conj_grad import norm
-from error_model import noise_var
 
 # set basal vertical velocity anomaly to an oscillating gaussian
 sigma = (10*1000.0/H)/3.0
-w_true = 10*np.exp(-0.5*(sigma**(-2))*(x**2+y**2))*np.sin(4*np.pi*t/np.max(t))
+w_true = 10*np.exp(-0.5*(sigma**(-2))*(x**2+y**2))*np.sin(2*np.pi*t/np.max(t))
 
 # produce synthetic elevation anomaly by applying the forward operator
 # (returns fft of elevation), inverse fourier-transforming the results,
@@ -55,7 +55,7 @@ w_true = 10*np.exp(-0.5*(sigma**(-2))*(x**2+y**2))*np.sin(4*np.pi*t/np.max(t))
 h = ifftd(fwd(w_true)).real
 
 # add some noise
-noise_h = np.random.normal(size=(Nt,Nx,Ny),scale=np.sqrt(noise_var))
+noise_h = np.random.normal(size=(Nt,Nx,Ny),scale=np.sqrt(1e-3))
 h_obs = h + noise_h
 h_obs = localize(h_obs)
 

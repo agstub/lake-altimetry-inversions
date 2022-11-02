@@ -1,7 +1,7 @@
 # this file contains the integral kernel functions that are used for applying the
 # forward and adjoint operators
 import numpy as np
-from params import beta0,k,kx,lamda0,t,dt,Nt
+from params import beta0,k,kx,ky,lamda0,t,dt,Nt,u0,v0
 from scipy.signal import fftconvolve
 from scipy.fft import ifft2,fft2
 
@@ -23,7 +23,7 @@ def ifftd(f):
     return C
 
 #------------------------Functions in kernel------------------------------------
-def Rg(beta=beta0):
+def Rg(beta=beta0,k=k):
     # Ice surface relaxation function for grounded ice
     n = 2*np.pi*k           # used to convert to SciPy's Fourier Transform definition
     g = beta/n
@@ -33,7 +33,7 @@ def Rg(beta=beta0):
 
     return R1/D
 
-def Tw(beta=beta0):
+def Tw(beta=beta0,k=k):
     # Basal velocity transfer function
     n = 2*np.pi*k           # used to convert to SciPy's Fourier Transform definition
     g = beta/n
@@ -47,7 +47,7 @@ def Tw(beta=beta0):
 
 def ker(lamda=lamda0,beta=beta0):
     # kernel for w_b forward problem
-    K_0 = np.exp(-(lamda*Rg(beta))*t)
+    K_0 = np.exp(-(1j*kx*u0 + 1j*ky*v0+lamda*Rg(beta))*t)
     K = K_0*Tw(beta)
     return K
 

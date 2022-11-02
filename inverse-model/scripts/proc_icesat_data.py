@@ -8,41 +8,16 @@ import matplotlib.pyplot as plt
 import os
 from load_lakes import gdf
 
-# # Byrd-2 coordinates
-# data_name = 'data_Byrd_2'
-# x0 = 563.393*1e3
-# y0 = -855.949*1e3
-# L0 = 35*1000
-# outline = gdf.loc[gdf['name']=='Byrd_2']
+# Select lake from Siegfried and Fricker (2018) inventory
+lake_name = 'Mac1'
+outline = gdf.loc[gdf['name']==lake_name]
+data_name = 'data_'+lake_name
+if os.path.isdir('../'+data_name)==False:
+    os.mkdir('../'+data_name)
 
-# # Slessor-2
-# data_name = 'data_Slessor_23'
-# x0 = -405.627*1e3
-# y0 = 1026.433*1e3
-# L0 = 25*1000
-# outline = gdf.loc[gdf['name']=='Slessor_23']
-
-# # Cook-E2
-# data_name = 'data_Cook_E2'
-# x0 = 772*1e3
-# y0 = -1718*1e3
-# L0 = 25*1000
-# outline = gdf.loc[gdf['name']=='Cook_E2']
-
-# Mac1
-# data_name = 'data_Mac1'
-# x0 = -623.497*1e3
-# y0 = -898.538*1e3
-# L0 = 20*1000
-# outline = gdf.loc[gdf['name']=='Mac1']
-
-# # Mercer
-data_name = 'data_MercerSubglacialLake'
-x0 = -292*1e3
-y0 = -500*1e3
-L0 = 20*1000
-outline = gdf.loc[gdf['name']=='MercerSubglacialLake']
-
+x0 = float(outline.centroid.x)*1e3
+y0 = float(outline.centroid.y)*1e3
+L0 = 30*1000
 x_min = x0-L0
 x_max = x0+L0
 y_min = y0-L0
@@ -54,7 +29,6 @@ ds = nc.Dataset(fn)
 dsh = ds['delta_h']
 
 dh = dsh['delta_h'][:]        # elevation change (m)
-sigma = dsh['delta_h_sigma'][:]
 x = dsh['x'][:]               # x coordinate array (m)
 y = dsh['y'][:]               # y coordinate array (m)
 t = dsh['time'][:]            # t coordinate array (d)
@@ -75,13 +49,11 @@ ny = np.size(inds_y)
 
 inds_xy = np.ix_(inds_y,inds_x)
 dh_sub = np.zeros((nt,ny,nx))
-sigma_sub = np.zeros((nt,ny,nx))
+
 # put elevation change maps into 3D array with time being the first index
 for i in range(nt):
     dh0 = dh[i,:,:]
-    sigma0 = sigma[i,:,:]
     dh_sub[i,:,:] = dh0[inds_xy]
-    sigma_sub[i,:,:] = sigma0[inds_xy]
 
 #--------------------------PLOTTING-------------------------------
 
@@ -89,8 +61,8 @@ levels=np.arange(-1,1.1,0.1)*np.max(np.abs(dh_sub))
 
 # plot png at each time step
 
-if os.path.isdir('../data_pngs')==False:
-    os.mkdir('../data_pngs')
+if os.path.isdir('../'+data_name+'/data_pngs')==False:
+    os.mkdir('../'+data_name+'/data_pngs')
 
 X_sub,Y_sub = np.meshgrid(x_sub,y_sub)
 
@@ -111,7 +83,7 @@ for i in range(np.size(t)):
     plt.xticks(fontsize=16)
     plt.yticks(fontsize=16)
     plt.tight_layout()
-    plt.savefig('../data_pngs/dh_'+str(i))
+    plt.savefig('../'+data_name+'/data_pngs/dh_'+str(i))
     plt.close()
 
 ##------------------------------------------------------------------------------
@@ -156,8 +128,6 @@ dh_loc = localize(dh_f)
 
 fn = '../../../WAVI/WAVI_5km_Initial.nc'
 ds = nc.Dataset(fn)
-
-
 x = ds['x'][:]                                   # m
 y = ds['y'][:]                                   # m
 H = ds['thickness'][:]                           # ice thickness (m)
@@ -206,9 +176,6 @@ u_mean = np.mean(u0)
 v_mean = np.mean(v0)
 
 # ----------------------------- SAVE DATA --------------------------------------
-if os.path.isdir('../'+data_name)==False:
-    os.mkdir('../'+data_name)
-
 np.save('../'+data_name+'/eta.npy',np.array([eta_mean]))    # viscosity: Pa s
 np.save('../'+data_name+'/beta.npy',np.array([beta_mean]))  # basal drag: Pa s / m
 np.save('../'+data_name+'/H.npy',np.array([H_mean]))        # thickness: m
