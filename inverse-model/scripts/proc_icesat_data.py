@@ -1,3 +1,54 @@
+#-------------------------------------------------------------------------------
+# This script preprocesses the ICESat-2 data for use in the inversion
+#
+# OVERVIEW
+# The main choices are specifying:
+# (I) lake_name (str): name of lake from the inventory:
+#
+#   Siegfried, M. R., & Fricker, H. A. (2018). Thirteen years of subglacial lake
+#   activity in Antarctica from multi-mission satellite altimetry. Annals of
+#   Glaciology, 59(76pt1), 42-55.
+#
+# (II) L0 (float):  half-length(/half-width) of horizontal domain (a box) surrounding
+#                   the subglacial lake that was selected in the first step
+#
+# *There is also a function below ("localize") that removes the off-lake component
+#  of the elevation change at each timestep
+#
+#
+# DATA REQUIREMENTS:
+# The following data are needed to run the script as-is:
+# 1. ICESat-2 ATL15 (1 km resolution):
+#    *website: https://nsidc.org/data/atl15/versions/2
+#    *filename: ATL15_AA_0311_01km_001_01.nc
+#
+# 2. WAVI model output (for basal drag, ice thickness, viscosity )
+#    *website: https://ramadda.data.bas.ac.uk/repository/entry/show?entryid=5f0ac285-cca3-4a0e-bcbc-d921734395ab
+#    *filename: WAVI_5km_Initial.nc
+#    *reference:
+#       Arthern, R. J., Hindmarsh, R. C., & Williams, C. R. (2015). Flow speed within
+#       the Antarctic ice sheet and its controls inferred from satellite observations.
+#       Journal of Geophysical Research: Earth Surface, 120(7), 1171-1188.
+#
+# 3. MEaSUREs Antarctic Ice Velocity (V2)
+#    *webiste: https://nsidc.org/data/nsidc-0484/versions/2
+#    *filename: antarctica_ice_velocity_450m_v2.nc
+#    *reference:
+#        Rignot, E., J. Mouginot, and B. Scheuchl. 2011. Ice Flow of the Antarctic
+#        Ice Sheet. Science. 333. DOI: 10.1126/science.1208336.
+#
+# 4. Antarctic Subglacial Lake inventory
+#    *website: https://github.com/mrsiegfried/Siegfried2021-GRL
+#    *filename: SiegfriedFricker2018-outlines.h5
+#    *references:
+#       Siegfried, M. R., & Fricker, H. A. (2018). Thirteen years of subglacial
+#       lake activity in Antarctica from multi-mission satellite altimetry.
+#       Annals of Glaciology, 59(76pt1), 42-55.
+#
+#       Siegfried, M. R., & Fricker, H. A. (2021). Illuminating active
+#       subglacial lake processes with ICESat‐2 laser altimetry. Geophysical
+#       Research Letters, 48(14), e2020GL091089.
+#-------------------------------------------------------------------------------
 import sys
 sys.path.insert(0, '../source')
 
@@ -8,21 +59,24 @@ import matplotlib.pyplot as plt
 import os
 from load_lakes import gdf
 
-# Select lake from Siegfried and Fricker (2018) inventory
+# STEP (I): Select lake from Siegfried and Fricker (2018) inventory
 lake_name = 'Mac1'
 outline = gdf.loc[gdf['name']==lake_name]
 data_name = 'data_'+lake_name
 if os.path.isdir('../'+data_name)==False:
     os.mkdir('../'+data_name)
-
 x0 = float(outline.centroid.x)*1e3
 y0 = float(outline.centroid.y)*1e3
+
+# STEP (II): Select half-width L0 of box surrounding lake
 L0 = 30*1000
 x_min = x0-L0
 x_max = x0+L0
 y_min = y0-L0
 y_max = y0+L0
 
+#-------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
 # import the data
 fn = '../../../ICESat-2/ATL15/ATL15_AA_0311_01km_001_01.nc'
 ds = nc.Dataset(fn)

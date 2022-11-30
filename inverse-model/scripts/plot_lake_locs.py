@@ -1,3 +1,6 @@
+# This script plots some locations of subglacial lakes on top of the
+# ICESat-2 ATL15 data map
+
 import sys
 sys.path.insert(0, '../source')
 

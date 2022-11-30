@@ -1,3 +1,6 @@
+# This file contains two functions for plotting the inversion results:
+# plot_movie() plots the results at each timestep
+# plot_snapshot(j) plots the results at timestep j
 import sys,os
 sys.path.insert(0, '../source')
 from post_process import calc_dV_w,calc_dV_h
@@ -9,8 +12,6 @@ from shapely.geometry import Point
 
 if lake_name != 'synth' and lake_name != 'nonlinear':
     from load_lakes import gdf
-
-
 
 def plot_movie():
     if os.path.isdir(results_dir+'/results_pngs')==False:
@@ -92,7 +93,7 @@ def plot_movie():
             plt.legend(fontsize=20,ncol=3,bbox_to_anchor=(0.95,-0.15))
 
         plt.subplot(221)
-        p=plt.contourf(xp,yp,h_obs[i,:,:],cmap='coolwarm',extend='both',levels=3*np.linspace(-1,1,6))
+        p=plt.contourf(xp,yp,h_obs[i,:,:],cmap='coolwarm',extend='both',levels=5*np.linspace(-1,1,6))
 
         if lake_name != 'synth' and lake_name != 'nonlinear':
             outline.plot(edgecolor='k',facecolor='none',ax=plt.gca(),linewidth=3)
@@ -114,7 +115,7 @@ def plot_movie():
         cbar.ax.xaxis.set_label_position('top')
 
         plt.subplot(222)
-        p=plt.contourf(xp,yp,w_inv[i,:,:],cmap='coolwarm',levels=3*np.linspace(-1,1,6),extend='both')
+        p=plt.contourf(xp,yp,w_inv[i,:,:],cmap='coolwarm',levels=5*np.linspace(-1,1,6),extend='both')
 
         if lake_name != 'synth' and lake_name != 'nonlinear':
             outline.plot(edgecolor='k',facecolor='none',ax=plt.gca(),linewidth=3)
@@ -176,6 +177,9 @@ def plot_snap(i0=-1):
 
     dV_h = calc_dV_h(h_obs,alt_bdry)
     dV_h -= dV_h[0]
+
+    dV_err = np.max(np.abs(dV_h - dV_inv))*(H**2)/1e9
+    print('max |dV_inv - dV_h| = '+str(dV_err)+' km^3')
 
     # plot everything
 

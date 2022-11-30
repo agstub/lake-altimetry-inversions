@@ -18,13 +18,13 @@ if os.path.isdir('../data_synth')==False:
 # define the scalar parameters in the problem
 # in practice we might use means of some of these fields around the lake
 H = np.array([2500])          # ice thickness over the lake
-beta = np.array([1e11])        # basal drag coeff. near the lake
+beta = np.array([1e11])       # basal drag coeff. near the lake
 eta = np.array([1e15])        # viscosity near the lake
 
 # define coordinate arrays
 t0 = np.linspace(0,10,100)                     # time
-x0 = np.linspace(-30,30,101)*1000/H.mean()    # x coordinate
-y0 = np.linspace(-30,30,101)*1000/H.mean()    # y coordinate
+x0 = np.linspace(-30,30,101)*1000/H.mean()     # x coordinate
+y0 = np.linspace(-30,30,101)*1000/H.mean()     # y coordinate
 
 # save everything so far in the data directory
 np.save('../data_synth/t.npy',t0)

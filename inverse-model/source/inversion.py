@@ -5,7 +5,7 @@ from conj_grad import cg_solve,norm
 from operators import fwd,adj,A
 import numpy as np
 from kernel_fcns import fftd,ifftd
-from params import t,t0,x,Nx,lamda0,beta0,results_dir
+from params import t,t0,x,kx,ky,Nx,lamda0,beta0,results_dir,u0,v0
 from kernel_fcns import Rg
 import os
 from localization import localize
@@ -21,13 +21,13 @@ def invert(h_obs,eps,t_ref=0):
     print('Solving normal equations with CG....\n')
     # extract initial elevation profile (goes on RHS of normal equations "b")
     h0 = h_obs[0,:,:] + 0*h_obs
-    b = adj(fftd(h_obs)-np.exp(-lamda0*Rg()*t)*fftd(h0))
+    b = adj(fftd(h_obs)-np.exp(-(1j*kx*u0 + 1j*ky*v0+lamda0*Rg())*t)*fftd(h0))
 
     # solve the normal equations with CG for the basal vertical velocity anomaly
     w_inv = cg_solve(lambda X: A(X,eps),b)
 
     # get the forward solution (elevation profile) associated with the inversion
-    h_fwd = ifftd(fwd(w_inv)).real+ifftd(np.exp(-lamda0*Rg()*t)*fftd(h0)).real
+    h_fwd = ifftd(fwd(w_inv)).real+ifftd(np.exp(-(1j*kx*u0 + 1j*ky*v0+lamda0*Rg())*t)*fftd(h0)).real
 
     # calculate the misfit between the observed and modelled elevation
     mis = norm(h_fwd-h_obs)
