@@ -1,9 +1,9 @@
 # lake-altimetry-inversions
-Author: Aaron Stubblefield (Dartmouth College).
+Author: Aaron Stubblefield (Dartmouth College)
 
 # Overview
-This program inverts for basal velocity anomaly "w"given the observed surface
-elevation change data "h_obs" as input by solving a least-squares optimization problem
+This program inverts for a basal velocity anomaly "w_inv" given the observed surface
+elevation change data "h_obs" as input by solving a least-squares optimization problem.
 
 The main model assumptions are (1) Newtonian viscous ice flow, (2) a linear
 basal sliding law, and (3) that all fields are small perturbations of a simple
@@ -16,17 +16,24 @@ As of this commit, this code runs with the latest SciPy (https://www.scipy.org/)
 release. Plotting relies on Matplotlib (https://matplotlib.org/).
 
 # Required data
-The following data are needed to run the script as-is with ICESat-2 ATL15 data.
+The following data are needed to run the code with ICESat-2 ATL15 data.
+
 (Note: you can run the inversion with synthetic data without this data--see description below)
+
 1. ICESat-2 ATL15 (1 km resolution):
+
    *website: https://nsidc.org/data/atl15/versions/2
+
    *filename: ATL15_AA_0311_01km_001_01.nc
 
 2. WAVI model output (for basal drag, ice thickness, viscosity )
+
    *website: https://ramadda.data.bas.ac.uk/repository/entry/show?entryid=5f0ac285-cca3-4a0e-bcbc-d921734395ab
+
    *filename: WAVI_5km_Initial.nc
+
    *reference:
-      Arthern, R. J., Hindmarsh, R. C., & Williams, C. R. (2015). Flow speed within
+      >Arthern, R. J., Hindmarsh, R. C., & Williams, C. R. (2015). Flow speed within
       the Antarctic ice sheet and its controls inferred from satellite observations.
       Journal of Geophysical Research: Earth Surface, 120(7), 1171-1188.
 
@@ -38,14 +45,18 @@ The following data are needed to run the script as-is with ICESat-2 ATL15 data.
        Ice Sheet. Science. 333. DOI: 10.1126/science.1208336.
 
 4. Antarctic Subglacial Lake inventory
+
    *website: https://github.com/mrsiegfried/Siegfried2021-GRL
+
    *filename: SiegfriedFricker2018-outlines.h5
+
    *references:
-      Siegfried, M. R., & Fricker, H. A. (2018). Thirteen years of subglacial
+
+   >   Siegfried, M. R., & Fricker, H. A. (2018). Thirteen years of subglacial
       lake activity in Antarctica from multi-mission satellite altimetry.
       Annals of Glaciology, 59(76pt1), 42-55.
 
-      Siegfried, M. R., & Fricker, H. A. (2021). Illuminating active
+   >   Siegfried, M. R., & Fricker, H. A. (2021). Illuminating active
       subglacial lake processes with ICESat‐2 laser altimetry. Geophysical
       Research Letters, 48(14), e2020GL091089.
 
@@ -117,5 +128,7 @@ Finally, run **run_example.py** and enter the lake name
 when prompted.
 
 To see a list of the lake names in the inventory run the python script in IPython:
+```
   from load_lakes import gdf
   gdf['name'].to_list()
+```
