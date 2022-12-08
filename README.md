@@ -18,12 +18,14 @@ operations. The model and numerical method are described in a forthcoming manusc
 
 # Dependencies
 As of this commit, this code runs with the latest SciPy (https://www.scipy.org/)
-release. Plotting relies on Matplotlib (https://matplotlib.org/).
+release.
+
+Plotting relies on Matplotlib (https://matplotlib.org/).
 
 # Required data
 The following data are needed to run the code with ICESat-2 ATL15 data.
 
-(Note: you can run the inversion with synthetic data without this data--see description below)
+(Note: you can run the inversion with synthetic data without downloading this data--see description below)
 
 1. ICESat-2 ATL15 (1 km resolution):
 
@@ -71,31 +73,28 @@ The following data are needed to run the code with ICESat-2 ATL15 data.
 # Contents
 The inversion code is in the *inverse-model* directory.
 ## Source files
-The model is organized in several python files in the *inverse-model/source* directory as follows.
+The inversion code is organized in several python files in the *inverse-model/source* directory as follows.
 
-1. **main.py** is the main file that calls the inverse problem solver and then
-plots the solution.
-
-2. **inversion.py** is the inverse problem solver: this defines the normal equations
+1. **inversion.py** is the inverse problem solver: this defines the normal equations
 and calls the conjugate gradient solver.
 
-3. **conj_grad.py** defines the conjugate gradient method that is used to solve
+2. **conj_grad.py** defines the conjugate gradient method that is used to solve
 the normal equations.
 
-4. **operators.py** defines the forward and adjoint operators that appear in the
+3. **operators.py** defines the forward and adjoint operators that appear in the
 normal equations.
 
-5. **kernel_fcns.py** defines the relaxation and transfer functions that the forward and adjoint operators depend on.
+4. **kernel_fcns.py** defines the relaxation and transfer functions that the forward and adjoint operators depend on.
 
-6. **regularizations.py** defines the regularization.
+5. **regularizations.py** defines the regularization.
 
-7. **params.py** defines all of the model options and parameters.
+6. **params.py** defines all of the model options and parameters.
 
 There are two auxiliary functions as well:
 
-8. **localization.py** defines a function that remove the off-lake component from fields when necessary.
+7. **localization.py** defines a function that remove the off-lake component from fields when necessary.
 
-9. **post_process.py** defines functions to estimate the water-volume change
+8. **post_process.py** defines functions to estimate the water-volume change
 from the elevation change and inversion.
 
 ## Scripts
@@ -111,7 +110,7 @@ auxiliary parameters (ice thickness, viscosity, basal drag coefficient, flow spe
 3. **run_example.py** is a short script that runs the inversion solver and plots
 the results.
 
-Plotting can  be modified in the **plot_results.py** scripts.
+Plotting can  be modified in the **plot_results.py** script.
 
 ## Miscellaneous
 There is also some FEniCS (https://fenicsproject.org/) code in the *misc* directory
@@ -136,8 +135,10 @@ To invert the synthetic data, run **run_example.py** and enter the lake name
 ## ICESat-2 data
 First, make sure that you have all of the data sets outlined above and that
 the correct paths to the data sets are set in **proc_icesat_data.py**.  
+
 Then, set the lake name ('lake_name') is **proc_icesat_data.py** from
 the inventory and run the program (this will take some time).
+
 Finally, run **run_example.py** and enter the lake name
 when prompted.
 
