@@ -41,7 +41,7 @@ The following data are needed to run the code with ICESat-2 ATL15 data.
    *webiste: https://nsidc.org/data/nsidc-0484/versions/2
    *filename: antarctica_ice_velocity_450m_v2.nc
    *reference:
-       Rignot, E., J. Mouginot, and B. Scheuchl. 2011. Ice Flow of the Antarctic
+      > Rignot, E., J. Mouginot, and B. Scheuchl. 2011. Ice Flow of the Antarctic
        Ice Sheet. Science. 333. DOI: 10.1126/science.1208336.
 
 4. Antarctic Subglacial Lake inventory
