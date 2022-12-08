@@ -2,13 +2,18 @@
 Author: Aaron Stubblefield (Dartmouth College)
 
 # Overview
-This program inverts for a basal velocity anomaly "w_inv" given the observed surface
+This program inverts for a basal vertical velocity anomaly "w_inv" given the observed surface
 elevation change data "h_obs" as input by solving a least-squares optimization problem.
 
+The motivation is that the basal vertical velocity anomaly is associated with
+subglacial lake activity that produces the elevation anomaly. Once we invert
+for the basal vertical velocity anomaly, we can try to estimate the subglacial
+water-volume change or the areal extent of the lake.
+
 The main model assumptions are (1) Newtonian viscous ice flow, (2) a linear
-basal sliding law, and (3) that all fields are small perturbations of a simple
-reference flow state. These assumptions allow for efficient solution of the forward
-model: 2D (map-plane) Fourier transforms and convolution in time are the main
+basal sliding law, and (3) that all fields are small perturbations from a simple
+reference flow state. These assumptions allow for efficient solution of the problem:
+2D (map-plane) Fourier transforms and convolution in time are the main
 operations. The model and numerical method are described in a forthcoming manuscript.
 
 # Dependencies
@@ -38,8 +43,11 @@ The following data are needed to run the code with ICESat-2 ATL15 data.
       Journal of Geophysical Research: Earth Surface, 120(7), 1171-1188.
 
 3. MEaSUREs Antarctic Ice Velocity (V2)
+
    *webiste: https://nsidc.org/data/nsidc-0484/versions/2
+
    *filename: antarctica_ice_velocity_450m_v2.nc
+
    *reference:
       > Rignot, E., J. Mouginot, and B. Scheuchl. 2011. Ice Flow of the Antarctic
        Ice Sheet. Science. 333. DOI: 10.1126/science.1208336.
@@ -104,6 +112,12 @@ auxiliary parameters (ice thickness, viscosity, basal drag coefficient, flow spe
 the results.
 
 Plotting can  be modified in the **plot_results.py** scripts.
+
+## Miscellaneous
+There is also some FEniCS (https://fenicsproject.org/) code in the *misc* directory
+for producing synthetic data with a fully nonlinear finite element model. See the repository
+agstub/grounding-line-methods for a description. The version herein assumes
+radial symmetry with respect to the horizontal coordinates.
 
 # Running the model
 When running the inversion, the data and auxiliary parameters are stored in a directory
