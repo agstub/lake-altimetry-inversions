@@ -13,7 +13,7 @@ from shapely.geometry import Point
 if lake_name != 'synth' and lake_name != 'nonlinear':
     from load_lakes import gdf
 
-def plot_movie():
+def plot_movie(t_ref):
     if os.path.isdir(results_dir+'/results_pngs')==False:
         os.mkdir(results_dir+'/results_pngs')
 
@@ -24,7 +24,11 @@ def plot_movie():
     y_d = np.load(data_dir+'/y_d.npy')
     xp,yp = np.meshgrid(x_d,y_d)
 
-    h_obs -= h_obs[0,:,:]
+    i0 = np.argmin(np.abs(t0-t_ref))
+    h_ref = h_obs[i0,:,:] + 0*h_obs
+    h_obs -= h_ref
+
+    h_obs -= h_obs[i0,:,:]
 
     if lake_name != 'synth' and lake_name != 'nonlinear':
         outline = gdf.loc[gdf['name']==lake_name]
@@ -137,11 +141,7 @@ def plot_movie():
         plt.savefig(results_dir+'/results_pngs/'+str(i),bbox_inches=Bbox([[0.15,-0.25],[11.8,13]]))
         plt.close()
 
-
-
-
-
-def plot_snap(i0=-1):
+def plot_snap(t_ref=0,i0=-1):
     if os.path.isdir(results_dir+'/results_pngs')==False:
         os.mkdir(results_dir+'/results_pngs')
 

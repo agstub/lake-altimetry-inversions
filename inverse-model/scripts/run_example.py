@@ -20,12 +20,12 @@ h_obs = np.load(data_dir+'/h_obs.npy')
 eps = 1e0
 
 # set reference time to define elevation anomaly
-t_ref = 0 # t_ref = 1.25 good for SLM?
+t_ref = 0*1.25 # t_ref = 1.25 good for SLM?
 
 # solve for the basal vertical velocity inversion
 w_map,h_fwd,mis = invert(h_obs,eps=eps,t_ref=t_ref)
 
 # plot the results
-plot_movie()    # plot a movie
+plot_movie(t_ref)    # plot a movie
 
-plot_snap(74)   # plot snapshot at specified timestep
+plot_snap(t_ref,74)   # plot snapshot at specified timestep
