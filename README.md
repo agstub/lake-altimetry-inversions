@@ -138,12 +138,11 @@ the correct paths to the data sets are set in **proc_icesat_data.py**.
 
 Then, set the lake name ('lake_name') is **proc_icesat_data.py** from
 the inventory and run the program (this will take some time).
-
-Finally, run **run_example.py** and enter the lake name
-when prompted.
-
 To see a list of the lake names in the inventory run the python script in IPython:
 ```
   from load_lakes import gdf
   gdf['name'].to_list()
 ```
+
+Finally, run **run_example.py** and enter the lake name
+when prompted.
