@@ -31,7 +31,7 @@ The following data are needed to run the code with ICESat-2 ATL15 data.
 
    *website: https://nsidc.org/data/atl15/versions/2
 
-   *filename: ATL15_AA_0311_01km_001_01.nc
+   *filename: ATL15_AA_0314_01km_002_02.nc
 
 2. WAVI model output (for basal drag, ice thickness, viscosity )
 
