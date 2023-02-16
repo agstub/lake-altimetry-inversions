@@ -20,7 +20,7 @@
 # The following data are needed to run the script as-is:
 # 1. ICESat-2 ATL15 (1 km resolution):
 #    *website: https://nsidc.org/data/atl15/versions/2
-#    *filename: ATL15_AA_0311_01km_001_01.nc
+#    *filename: ATL15_AA_0314_01km_002_02.nc
 #
 # 2. WAVI model output (for basal drag, ice thickness, viscosity )
 #    *website: https://ramadda.data.bas.ac.uk/repository/entry/show?entryid=5f0ac285-cca3-4a0e-bcbc-d921734395ab
@@ -30,12 +30,13 @@
 #       the Antarctic ice sheet and its controls inferred from satellite observations.
 #       Journal of Geophysical Research: Earth Surface, 120(7), 1171-1188.
 #
-# 3. MEaSUREs Antarctic Ice Velocity (V2)
-#    *webiste: https://nsidc.org/data/nsidc-0484/versions/2
-#    *filename: antarctica_ice_velocity_450m_v2.nc
+# 3. MEaSUREs Phase-Based Antarctica Ice Velocity Map, Version 1 (NSIDC-0754)
+#    *webiste: https://nsidc.org/data/nsidc-0754/versions/1
+#    *filename: antarctica_ice_vel_phase_map_v01.nc
 #    *reference:
-#        Rignot, E., J. Mouginot, and B. Scheuchl. 2011. Ice Flow of the Antarctic
-#        Ice Sheet. Science. 333. DOI: 10.1126/science.1208336.
+#        Mouginot, J., E. Rignot, and B. Scheuchl. (2019). MEaSUREs Phase-Based Antarctica 
+#        Ice Velocity Map, Version 1 [Data Set]. Boulder, Colorado USA. NASA National Snow 
+#        and Ice Data Center Distributed Active Archive Center. https://doi.org/10.5067/PZ3NJ5RXRH10.
 #
 # 4. Antarctic Subglacial Lake inventory
 #    *website: https://github.com/mrsiegfried/Siegfried2021-GRL
@@ -77,8 +78,8 @@ y_max = y0+L0
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-# import the data
-fn = '../../../ICESat-2/ATL15/ATL15_AA_0311_01km_001_01.nc'
+# load the ATL15 data
+fn = '../../../ICESat-2/ATL15/ATL15_AA_0314_01km_002_02.nc'
 ds = nc.Dataset(fn)
 dsh = ds['delta_h']
 
@@ -204,7 +205,7 @@ beta_mean = np.mean(beta[inds_xy])
 eta_mean = np.mean(eta[inds_xy])
 
 #------------------------ surface velocity -------------------------------------
-fn = '../../../measures/antarctica_ice_velocity_450m_v2.nc'
+fn = '../../../measures/antarctica_ice_vel_phase_map_v01.nc'
 ds = nc.Dataset(fn)
 x = ds['x'][:]                  # m
 y = ds['y'][:]                  # m

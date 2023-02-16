@@ -44,15 +44,14 @@ The following data are needed to run the code with ICESat-2 ATL15 data.
       the Antarctic ice sheet and its controls inferred from satellite observations.
       Journal of Geophysical Research: Earth Surface, 120(7), 1171-1188.
 
-3. MEaSUREs Antarctic Ice Velocity (V2)
+3. MEaSUREs Phase-Based Antarctica Ice Velocity Map, Version 1 (NSIDC-0754)
 
-   *webiste: https://nsidc.org/data/nsidc-0484/versions/2
+   *webiste: https://nsidc.org/data/nsidc-0754/versions/1
 
-   *filename: antarctica_ice_velocity_450m_v2.nc
+   *filename: antarctica_ice_vel_phase_map_v01.nc
 
    *reference:
-      > Rignot, E., J. Mouginot, and B. Scheuchl. 2011. Ice Flow of the Antarctic
-       Ice Sheet. Science. 333. DOI: 10.1126/science.1208336.
+      > Mouginot, J., E. Rignot, and B. Scheuchl. (2019). MEaSUREs Phase-Based Antarctica Ice Velocity Map, Version 1 [Data Set]. Boulder, Colorado USA. NASA National Snow and Ice Data Center Distributed Active Archive Center. https://doi.org/10.5067/PZ3NJ5RXRH10. 
 
 4. Antarctic Subglacial Lake inventory
 
