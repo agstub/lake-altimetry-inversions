@@ -8,7 +8,7 @@ from params import *
 def print_params():
     print('auxiliary model parameters:')
     print('H = '+str(H/1e3)+' km')
-    print('beta = '+'{:.2e}'.format(beta_d)+' Pa s/m')
+    print('beta = '+'{:.2e}'.format(beta_d)+' Pa s m^-1')
     print('eta = '+'{:.2e}'.format(eta_d)+' Pa s')
-    print('u = '+str(u_d)+' m/yr')
-    print('v = '+str(v_d)+' m/yr')
+    print('u = '+str(u_d)+' m yr^-1')
+    print('v = '+str(v_d)+' m yr^-1')

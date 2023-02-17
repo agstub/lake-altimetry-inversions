@@ -33,7 +33,7 @@ The following data are needed to run the code with ICESat-2 ATL15 data.
 
    *filename: ATL15_AA_0314_01km_002_02.nc
 
-2. WAVI model output (for basal drag, ice thickness, viscosity )
+2. WAVI model output (for basal drag and ice viscosity )
 
    *website: https://ramadda.data.bas.ac.uk/repository/entry/show?entryid=5f0ac285-cca3-4a0e-bcbc-d921734395ab
 
@@ -48,7 +48,7 @@ The following data are needed to run the code with ICESat-2 ATL15 data.
 
    *webiste: https://nsidc.org/data/nsidc-0754/versions/1
 
-   *filename: antarctica_ice_vel_phase_map_v01.nc
+   *filename: antarctic_ice_vel_phase_map_v01.nc
 
    *reference:
       > Mouginot, J., E. Rignot, and B. Scheuchl. (2019). MEaSUREs Phase-Based Antarctica Ice Velocity Map, Version 1 [Data Set]. Boulder, Colorado USA. NASA National Snow and Ice Data Center Distributed Active Archive Center. https://doi.org/10.5067/PZ3NJ5RXRH10. 
@@ -68,6 +68,18 @@ The following data are needed to run the code with ICESat-2 ATL15 data.
    >   Siegfried, M. R., & Fricker, H. A. (2021). Illuminating active
       subglacial lake processes with ICESat‐2 laser altimetry. Geophysical
       Research Letters, 48(14), e2020GL091089.
+
+5. MEaSUREs BedMachine Antarctica, Version 3 (NSIDC-0756)
+   *website: https://nsidc.org/data/nsidc-0756/versions/3
+
+   *filename: BedMachineAntarctica-v3.nc
+
+   *reference:
+   
+   > Morlighem, M. (2022). MEaSUREs BedMachine Antarctica, Version 3 [Data Set]. Boulder, Colorado USA. NASA National Snow and Ice Data Center Distributed Active Archive Center. https://doi.org/10.5067/FPSU0V1MWUB6. Date Accessed 02-17-2023.
+
+
+
 
 # Contents
 The inversion code is in the *inverse-model* directory.
@@ -115,7 +127,7 @@ Plotting can  be modified in the **plot_results.py** script.
 There is also some FEniCS (https://fenicsproject.org/) code in the *misc* directory
 for producing synthetic data with a fully nonlinear finite element model. See the repository
 agstub/grounding-line-methods for a description. The version herein assumes
-radial symmetry with respect to the horizontal coordinates.
+radial symmetry.
 
 # Running the model
 When running the inversion, the data and auxiliary parameters are stored in a directory
