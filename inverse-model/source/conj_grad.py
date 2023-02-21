@@ -46,7 +46,7 @@ def cg_solve(A,b,tol = cg_tol):
 
     while np.sqrt(rnorm1)/r00 > tol:
         if j%10 == 0:
-            print("CG iter. "+str(j)+': rel. residual norm = '+"{:.2e}".format(np.sqrt(rnorm1)/r00)+',  tol = '+"{:.2e}".format(tol))
+            print("CG iter. "+str(j)+': rel. residual norm = '+"{:.2e}".format(np.sqrt(rnorm1)/r00)+',  tol = '+"{:.2e}".format(tol)+' \r',end='')
 
         rnorm0 = prod(r,r)
 
@@ -64,7 +64,6 @@ def cg_solve(A,b,tol = cg_tol):
         D0 = np.abs(prod(r0,r))/prod(r,r)
 
         if D0 > 0.5 and j>10:
-            print('CG restart...')
             beta_c = 0.0
             r = b-A(X)
 

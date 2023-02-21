@@ -3,10 +3,9 @@
 import numpy as np
 from scipy.fft import fftfreq
 import sys
+from metavars import lake_name
 # SET DATA DIRECTORY
 
-
-lake_name = input('input lake name: ')
 data_dir = '../data_'+lake_name
 results_dir = '../results_'+lake_name
 

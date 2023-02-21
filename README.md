@@ -78,7 +78,8 @@ The following data are needed to run the code with ICESat-2 ATL15 data.
    
    > Morlighem, M. (2022). MEaSUREs BedMachine Antarctica, Version 3 [Data Set]. Boulder, Colorado USA. NASA National Snow and Ice Data Center Distributed Active Archive Center. https://doi.org/10.5067/FPSU0V1MWUB6. Date Accessed 02-17-2023.
 
-
+# Running the inversion
+Follow the example in the Inversion notebook in the *notebooks* directory.
 
 
 # Contents
@@ -123,37 +124,13 @@ the results.
 
 Plotting can  be modified in the **plot_results.py** script.
 
+## Notebooks
+1. **Inversion.ipynb** demonstrates how to select the subglacial lake, pre-process the data, run the inversion, and plot the results.
+
+2. **PlotMap.ipynb** plots a map of Antarctic ATL15 data with zoom-ins on some of our favorite subglacial lakes.
+
 ## Miscellaneous
 There is also some FEniCS (https://fenicsproject.org/) code in the *misc* directory
 for producing synthetic data with a fully nonlinear finite element model. See the repository
 agstub/grounding-line-methods for a description. The version herein assumes
 radial symmetry.
-
-# Running the model
-When running the inversion, the data and auxiliary parameters are stored in a directory
-called *data_lakename* and the results are stored in a directory called
-*results_lakename*.
-
-## Synthetic data
-First run **make_synth_data.py** to create the synthetic data and enter the
-lake name "synth" when prompted. This just supplies a given basal vertical
-velocity anomaly (and some auxiliary parameters) to the linearized model
-and adds some noise to the resulting elevation-change anomaly.
-
-To invert the synthetic data, run **run_example.py** and enter the lake name
-"synth" when prompted.
-
-## ICESat-2 data
-First, make sure that you have all of the data sets outlined above and that
-the correct paths to the data sets are set in **proc_icesat_data.py**.  
-
-Then, set the lake name ('lake_name') in **proc_icesat_data.py** to one of the options in
-the inventory and run the program (this will take some time).
-To see a list of the lake names in the inventory run the python script:
-```
-  from load_lakes import gdf
-  gdf['name'].to_list()
-```
-
-Finally, run **run_example.py** and enter the lake name
-when prompted.
