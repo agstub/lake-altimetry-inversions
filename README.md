@@ -27,7 +27,7 @@ The following data are needed to run the code with ICESat-2 ATL15 data.
 
 (Note: you can run the inversion with synthetic data without downloading this data--see description below)
 
-1. ICESat-2 ATL15 (1 km resolution):
+1. ICESat-2 ATL15, Version 2 (1 km resolution):
 
    *website: https://nsidc.org/data/atl15/versions/2
 

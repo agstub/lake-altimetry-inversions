@@ -58,7 +58,10 @@ def make_data():
     # add some noise
     noise_h = np.random.normal(size=(Nt,Nx,Ny),scale=np.sqrt(1e-3))
     h_obs = h + noise_h
-    h_obs = localize(h_obs)
+    h_loc = localize(h_obs)
+    off_lake = h_obs - h_loc
+    off_lake = off_lake[:,0,0]
 
-    np.save('../data_synth/h_obs.npy',h_obs)
+    np.save('../data_synth/h_obs.npy',h_loc)
+    np.save('../data_synth/off_lake.npy',off_lake)
     np.save('../data_synth/w_true.npy',w_true)

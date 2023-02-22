@@ -21,6 +21,7 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
     w_inv = np.load(results_dir+'/w_inv.npy')
 
     h_obs = np.load(data_dir+'/h_obs.npy')
+    off_lake = np.load(data_dir+'/off_lake.npy')
     x_d = np.load(data_dir+'/x_d.npy')
     y_d = np.load(data_dir+'/y_d.npy')
     xp,yp = np.meshgrid(x_d,y_d)
@@ -70,8 +71,7 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
         fig = plt.figure(figsize=(12,12))
         plt.suptitle(r'(a) data and inversion at $t=$'+format(t0[i],'.1f')+' yr',y=1.04,x=0.4,fontsize=26,bbox=dict(boxstyle='round', facecolor='w', alpha=1))
         plt.subplot(212)
-        plt.title(r'(b) volume change time series', fontsize=26,bbox=dict(boxstyle='round', facecolor='w', alpha=1),y=0.91,x=0.3075)
-
+       
         if len(timesteps)>1:
             j = i
         else:
@@ -94,11 +94,10 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
 
         plt.plot(t0[0:j],dV_alt,color='indianred',linewidth=5,label=label)
         plt.plot(t0[0:j],dV_invs,color='royalblue',linewidth=4,label=r'inversion ($\Delta V_\mathrm{inv}$)')
-
         plt.plot([t0[-1],t0[-1]],[lower,upper],'k-',linewidth=4,clip_on=False)
         plt.plot([t0[-1]],[lower],'k-',marker='v',linewidth=5,markersize=8,clip_on=False)
         plt.plot([t0[-1]],[upper],'k-',marker='^',linewidth=5,markersize=8,clip_on=False)
-        plt.annotate(xy=(1.01*t0[-1],mid),text='{:.0f}'.format(err_pct)+'% of \n$\max\,|\Delta V_\mathrm{alt}|$',fontsize=20, annotation_clip=False,
+        plt.annotate(xy=(1.01*t0[-1],mid),text='{:.0f}'.format(err_pct)+'% of \n$\max\,|\Delta V_\mathrm{alt}|$',fontsize=16, annotation_clip=False,
         verticalalignment='center') 
 
 
@@ -107,7 +106,7 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
 
         plt.ylabel(r'$\Delta V$ (km$^3$)',fontsize=20)
         plt.xlim(0,t0.max())
-        plt.ylim(dV_min-0.1,dV_max+0.1)
+        plt.ylim(dV_min-0.1,0.9*dV_max+0.1)
         plt.xlabel(r'$t$ (yr)',fontsize=20)
         plt.xticks(fontsize=14)
         plt.yticks(fontsize=14)
@@ -115,15 +114,31 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
         if lake_name != 'synth' and lake_name != 'nonlinear':
             plt.legend(fontsize=20,ncol=2,bbox_to_anchor=(0.875,-0.15))
         else:
-            plt.legend(fontsize=20,ncol=3,bbox_to_anchor=(0.95,-0.15))
+            plt.legend(fontsize=20,ncol=3,bbox_to_anchor=(1.04,-0.15))
+
+
+        ax2 = plt.gca().twinx()
+        o_min = np.floor(np.min(off_lake)/0.25)*0.25
+        o_max = np.ceil(np.max(off_lake)/0.25)*0.25
+        ticks = np.arange(o_min,o_max+0.25,0.25)
+        ax2.plot(t0[0:j],off_lake[0:j],'--',color='forestgreen',linewidth=3,alpha=0.5)
+        ax2.set_yticks(ticks,fontsize=14,color='forestgreen')
+        ax2.tick_params(axis='both', which='major', labelsize=14,color='forestgreen',labelcolor='forestgreen')
+        ax2.set_ylim(o_min,o_max+5)
+        ax2.yaxis.tick_right()
+        ax2.yaxis.set_label_position("right")
+        ax2.set_ylabel(r'$\Delta h_\mathrm{off}$ (m)',fontsize=14,loc='bottom',color='forestgreen')
+
+        plt.title(r'(b) volume change time series', fontsize=26,bbox=dict(boxstyle='round', facecolor='w', alpha=1),y=0.91,x=0.3075)
+
 
         plt.subplot(221)
         p=plt.contourf(xp,yp,h_obs[i,:,:],cmap='PuOr_r',extend='both',levels=h_lim*np.linspace(-1,1,6))
 
         if lake_name != 'synth' and lake_name != 'nonlinear':
-            outline.plot(edgecolor='k',facecolor='none',ax=plt.gca(),linewidth=3)
+            outline.plot(edgecolor='gray',facecolor='none',ax=plt.gca(),linewidth=4)
         else:
-           circle = plt.Circle((0, 0), rad, color='k',fill=False,linewidth=3)
+           circle = plt.Circle((0, 0), rad, color='gray',fill=False,linewidth=4)
            plt.gca().add_patch(circle)
 
         speed = np.sqrt(u_d**2+v_d**2)
@@ -141,7 +156,7 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
        
         plt.arrow(x0,y0,du,dv,width=0.5,fc='k',ec='k',clip_on=False)
 
-        plt.annotate(xy=(x_d.min()+6,y_d.max()-4),text=r'$\bar{u}$',fontsize=20)
+        plt.annotate(xy=(x_d.min()+6,y_d.max()-4),text=r'$\bar{\mathbf{u}}$',fontsize=20)
 
         plt.ylabel(r'$y$ (km)',fontsize=20)
         plt.xlabel(r'$x$ (km)',fontsize=20)
@@ -161,9 +176,9 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
         p=plt.contourf(xp,yp,w_inv[i,:,:],cmap='PuOr_r',levels=w_lim*np.linspace(-1,1,6),extend='both')
 
         if lake_name != 'synth' and lake_name != 'nonlinear':
-            outline.plot(edgecolor='k',facecolor='none',ax=plt.gca(),linewidth=3)
+            outline.plot(edgecolor='gray',facecolor='none',ax=plt.gca(),linewidth=4)
         else:
-           circle = plt.Circle((0, 0), rad, color='k',fill=False,linewidth=3)
+           circle = plt.Circle((0, 0), rad, color='gray',fill=False,linewidth=4)
            plt.gca().add_patch(circle)
 
         plt.xlabel(r'$x$ (km)',fontsize=20)
@@ -182,8 +197,8 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
         cbar.ax.xaxis.set_ticks_position('top')
         cbar.ax.xaxis.set_label_position('top')
         if len(timesteps)>1:
-            plt.savefig(results_dir+'/movie/'+str(i),bbox_inches=Bbox([[0.15,-0.25],[11.8,13]]))
+            plt.savefig(results_dir+'/movie/'+str(i),bbox_inches=Bbox([[0.15,-0.25],[12.5,13]]))
         elif len(timesteps)==1:    
-            plt.savefig(results_dir+'/'+lake_name+'_snap',bbox_inches=Bbox([[0.15,-0.25],[11.8,13]]))
+            plt.savefig(results_dir+'/'+lake_name+'_snap',bbox_inches=Bbox([[0.15,-0.25],[12.5,13]]))
             plt.show()
         plt.close()

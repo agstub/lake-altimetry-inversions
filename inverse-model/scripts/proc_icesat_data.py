@@ -147,6 +147,8 @@ def proc_data(lake_name,paths):
 
     dh_loc = localize(dh_f)
 
+    off_lake = dh_f-dh_loc
+    off_lake = off_lake[:,0,0]
 
     #---------------- viscosity and drag estimates ---------------------------------
 
@@ -223,6 +225,7 @@ def proc_data(lake_name,paths):
     np.save('../'+data_name+'/beta.npy',np.array([beta_mean]))  # basal drag: Pa s / m
     np.save('../'+data_name+'/H.npy',np.array([H_mean]))        # thickness: m
     np.save('../'+data_name+'/h_obs.npy',dh_loc)                # elevation anomaly: m
+    np.save('../'+data_name+'/off_lake.npy',off_lake)           # off-lake timeseries: m
     np.save('../'+data_name+'/t.npy',(t_f-t_f[0])/365.0)        # time: yr
     np.save('../'+data_name+'/u.npy',np.array([u_mean]))        # vel x: m/yr
     np.save('../'+data_name+'/v.npy',np.array([v_mean]))        # vel y: m/yr
