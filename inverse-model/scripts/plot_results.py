@@ -7,7 +7,7 @@ sys.path.insert(0, '../source')
 from post_process import calc_dV_w,calc_dV_h
 import numpy as np
 import matplotlib.pyplot as plt
-from params import data_dir,H,t0,x0,y0,Nt,Nx,Ny,x,y,results_dir,t,lake_name
+from params import data_dir,H,t0,x0,y0,Nt,Nx,Ny,x,y,results_dir,t,lake_name,u_d,v_d
 from matplotlib.transforms import Bbox
 from shapely.geometry import Point
 
@@ -61,6 +61,9 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
     dV_max = np.max(np.array([np.max(dV_inv),np.max(dV_h)]))*(H**2)/1e9+np.sqrt(np.var(dV_inv))*(H**2)/1e9
     dV_min = np.min(np.array([np.min(dV_inv),np.min(dV_h)]))*(H**2)/1e9-np.sqrt(np.var(dV_inv))*(H**2)/1e9
 
+    err_pct = 100*np.max(np.abs(dV_h-dV_inv))/np.max(np.abs(dV_h))
+    err_vol = np.max(np.abs(dV_h-dV_inv))
+
     for i in timesteps:
         print('Saving image '+str(timesteps.index(i)+1)+' out of '+str(np.size(timesteps))+' \r',end='')
 
@@ -74,18 +77,30 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
         else:
             j = None    
 
-        dV_mean = dV_inv[0:j]*(H**2)/1e9
+        dV_invs = dV_inv[0:j]*(H**2)/1e9
         dV_alt = dV_h[0:j]*(H**2)/1e9
 
         if lake_name != 'synth' and lake_name != 'nonlinear':
-            label = r'ICESat-2'
+            label = r'ICESat-2 ($\Delta V_\mathrm{alt}$)'
             dV_t = 0*dV_true[0:j]
         else:
-            label = r'altimetry'
+            label = r'altimetry ($\Delta V_\mathrm{alt}$)'
             dV_t = dV_true[0:j]*(H**2)/1e9
 
-        plt.plot(t0[0:j],dV_alt,color='seagreen',linewidth=4,linestyle='-.',label=label)
-        plt.plot(t0[0:j],dV_mean,color='indigo',linewidth=4,label=r'inversion')
+        lower = np.min([dV_invs[-1],dV_alt[-1] ])
+        upper = np.max([dV_invs[-1],dV_alt[-1] ])
+
+        mid = 0.5*(lower+upper)
+
+        plt.plot(t0[0:j],dV_alt,color='indianred',linewidth=5,label=label)
+        plt.plot(t0[0:j],dV_invs,color='royalblue',linewidth=4,label=r'inversion ($\Delta V_\mathrm{inv}$)')
+
+        plt.plot([t0[-1],t0[-1]],[lower,upper],'k-',linewidth=4,clip_on=False)
+        plt.plot([t0[-1]],[lower],'k-',marker='v',linewidth=5,markersize=8,clip_on=False)
+        plt.plot([t0[-1]],[upper],'k-',marker='^',linewidth=5,markersize=8,clip_on=False)
+        plt.annotate(xy=(1.01*t0[-1],mid),text='{:.0f}'.format(err_pct)+'% of \n$\max\,|\Delta V_\mathrm{alt}|$',fontsize=20, annotation_clip=False,
+        verticalalignment='center') 
+
 
         if lake_name == 'synth' or lake_name == 'nonlinear':
             plt.plot(t0[0:j],dV_t,color='k',linestyle=':',linewidth=8,label=r'true solution')
@@ -98,18 +113,35 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
         plt.yticks(fontsize=14)
 
         if lake_name != 'synth' and lake_name != 'nonlinear':
-            plt.legend(fontsize=20,ncol=2,bbox_to_anchor=(0.75,-0.15))
+            plt.legend(fontsize=20,ncol=2,bbox_to_anchor=(0.875,-0.15))
         else:
             plt.legend(fontsize=20,ncol=3,bbox_to_anchor=(0.95,-0.15))
 
         plt.subplot(221)
-        p=plt.contourf(xp,yp,h_obs[i,:,:],cmap='PuOr',extend='both',levels=h_lim*np.linspace(-1,1,6))
+        p=plt.contourf(xp,yp,h_obs[i,:,:],cmap='PuOr_r',extend='both',levels=h_lim*np.linspace(-1,1,6))
 
         if lake_name != 'synth' and lake_name != 'nonlinear':
-            outline.plot(edgecolor='dodgerblue',facecolor='none',ax=plt.gca(),linewidth=3)
+            outline.plot(edgecolor='k',facecolor='none',ax=plt.gca(),linewidth=3)
         else:
-           circle = plt.Circle((0, 0), rad, color='dodgerblue',fill=False,linewidth=3)
+           circle = plt.Circle((0, 0), rad, color='k',fill=False,linewidth=3)
            plt.gca().add_patch(circle)
+
+        speed = np.sqrt(u_d**2+v_d**2)
+        du = 5*u_d/speed
+        dv = 5*v_d/speed
+
+        if du >= 0:
+            x0 = x_d.min() + 5
+        else:
+            x0 = x_d.min() + 7.5    
+        if dv > 0 :
+            y0 = y_d.max() - 7.5
+        else:
+            y0 = y_d.max() - 5     
+       
+        plt.arrow(x0,y0,du,dv,width=0.5,fc='k',ec='k',clip_on=False)
+
+        plt.annotate(xy=(x_d.min()+6,y_d.max()-4),text=r'$\bar{u}$',fontsize=20)
 
         plt.ylabel(r'$y$ (km)',fontsize=20)
         plt.xlabel(r'$x$ (km)',fontsize=20)
@@ -126,12 +158,12 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
         cbar.ax.xaxis.set_label_position('top')
 
         plt.subplot(222)
-        p=plt.contourf(xp,yp,w_inv[i,:,:],cmap='PuOr',levels=w_lim*np.linspace(-1,1,6),extend='both')
+        p=plt.contourf(xp,yp,w_inv[i,:,:],cmap='PuOr_r',levels=w_lim*np.linspace(-1,1,6),extend='both')
 
         if lake_name != 'synth' and lake_name != 'nonlinear':
-            outline.plot(edgecolor='dodgerblue',facecolor='none',ax=plt.gca(),linewidth=3)
+            outline.plot(edgecolor='k',facecolor='none',ax=plt.gca(),linewidth=3)
         else:
-           circle = plt.Circle((0, 0), rad, color='dodgerblue',fill=False,linewidth=3)
+           circle = plt.Circle((0, 0), rad, color='k',fill=False,linewidth=3)
            plt.gca().add_patch(circle)
 
         plt.xlabel(r'$x$ (km)',fontsize=20)

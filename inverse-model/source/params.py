@@ -20,8 +20,8 @@ y0 = np.load(data_dir+'/y.npy')       # y array (m)
 H = np.load(data_dir+'/H.npy').mean()       # ice thickness (m)
 beta_d = np.load(data_dir+'/beta.npy').mean() # basal drag coeff (Pa s/m)
 eta_d = np.load(data_dir+'/eta.npy').mean()     # Newtonian ice viscosity (Pa s)
-u_d = np.load(data_dir+'/u.npy').mean()     # Newtonian ice viscosity (Pa s)
-v_d = np.load(data_dir+'/v.npy').mean()     # Newtonian ice viscosity (Pa s)
+u_d = np.load(data_dir+'/u.npy').mean()     # horizontal x ice velocity (m / yr)
+v_d = np.load(data_dir+'/v.npy').mean()     # horizontal y ice velocity (m / yr)
 
 #-------------------------------------------------------------------------------
 
