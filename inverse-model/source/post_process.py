@@ -10,4 +10,5 @@ def calc_dV_w(w,w_bdry):
 def calc_dV_h(h,h_bdry):
     # calculate water volume change estimate from inversion
     dV = trapezoid(trapezoid(h*h_bdry,dx=dy,axis=-1),dx=dx,axis=-1)
+    dV -= dV[0]
     return dV

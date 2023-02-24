@@ -7,7 +7,7 @@ sys.path.insert(0, '../source')
 from post_process import calc_dV_w,calc_dV_h
 import numpy as np
 import matplotlib.pyplot as plt
-from params import data_dir,H,t0,x0,y0,Nt,Nx,Ny,x,y,results_dir,t,lake_name,u_d,v_d
+from params import data_dir,H,t0,x0,y0,Nt,Nx,Ny,x,y,results_dir,t,lake_name,u_d,v_d,t_r
 from matplotlib.transforms import Bbox
 from shapely.geometry import Point
 
@@ -29,8 +29,6 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
     i0 = np.argmin(np.abs(t0-t_ref))
     h_ref = h_obs[i0,:,:] + 0*h_obs
     h_obs -= h_ref
-
-    h_obs -= h_obs[i0,:,:]
 
     if lake_name != 'synth' and lake_name != 'nonlinear':
         outline = gdf.loc[gdf['name']==lake_name]
@@ -54,9 +52,8 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
     # calculate volume change time series:
     dV_inv = calc_dV_w(w_inv,alt_bdry)           # volume change from inversion
 
-    dV_h = calc_dV_h(h_obs,alt_bdry)
-    dV_h -= dV_h[0]
-
+    dV_h = calc_dV_h(h_obs,alt_bdry)             # surface-based volume change
+   
     # plot everything
 
     dV_max = np.max(np.array([np.max(dV_inv),np.max(dV_h)]))*(H**2)/1e9+np.sqrt(np.var(dV_inv))*(H**2)/1e9
@@ -75,7 +72,7 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
         if len(timesteps)>1:
             j = i
         else:
-            j = None    
+            j = -1    
 
         dV_invs = dV_inv[0:j]*(H**2)/1e9
         dV_alt = dV_h[0:j]*(H**2)/1e9
@@ -87,22 +84,29 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
             label = r'altimetry ($\Delta V_\mathrm{alt}$)'
             dV_t = dV_true[0:j]*(H**2)/1e9
 
-        lower = np.min([dV_invs[-1],dV_alt[-1] ])
-        upper = np.max([dV_invs[-1],dV_alt[-1] ])
-
-        mid = 0.5*(lower+upper)
+        if j>1 or j == -1:
+            lower = np.min([dV_invs[-1],dV_alt[-1] ])
+            upper = np.max([dV_invs[-1],dV_alt[-1] ])
+            mid = 0.5*(lower+upper)
 
         plt.plot(t0[0:j],dV_alt,color='indianred',linewidth=5,label=label)
         plt.plot(t0[0:j],dV_invs,color='royalblue',linewidth=4,label=r'inversion ($\Delta V_\mathrm{inv}$)')
-        plt.plot([t0[-1],t0[-1]],[lower,upper],'k-',linewidth=4,clip_on=False)
-        plt.plot([t0[-1]],[lower],'k-',marker='v',linewidth=5,markersize=8,clip_on=False)
-        plt.plot([t0[-1]],[upper],'k-',marker='^',linewidth=5,markersize=8,clip_on=False)
-        plt.annotate(xy=(1.01*t0[-1],mid),text='{:.0f}'.format(err_pct)+'% of \n$\max\,|\Delta V_\mathrm{alt}|$',fontsize=16, annotation_clip=False,
-        verticalalignment='center') 
+        if j>1 or j==-1:
+            err_pct = 100*np.max(np.abs(dV_alt-dV_invs))/np.max(np.abs(dV_alt))
+            plt.plot([t0[-1],t0[-1]],[lower,upper],'k-',linewidth=4,clip_on=False)
+            plt.plot([t0[-1]],[lower],'k-',marker='v',linewidth=5,markersize=8,clip_on=False)
+            plt.plot([t0[-1]],[upper],'k-',marker='^',linewidth=5,markersize=8,clip_on=False)
+            if t0[i] > t_r/3.154e7 or j==-1:
+                plt.annotate(xy=(1.01*t0[-1],mid),text='{:.0f}'.format(err_pct)+'% of \n$\max\,|\Delta V_\mathrm{alt}|$',fontsize=16, annotation_clip=False, verticalalignment='center') 
 
 
         if lake_name == 'synth' or lake_name == 'nonlinear':
             plt.plot(t0[0:j],dV_t,color='k',linestyle=':',linewidth=8,label=r'true solution')
+
+
+        # add viscous relaxation timescale
+        plt.axvline(x=t_r/3.154e7,color='k',linestyle='--',linewidth=1,alpha=0.75)
+        plt.annotate(xy=(t_r/3.154e7,0.0),text=r'$t_\mathrm{relax}$',fontsize=14)
 
         plt.ylabel(r'$\Delta V$ (km$^3$)',fontsize=20)
         plt.xlim(0,t0.max())
@@ -118,9 +122,9 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
 
 
         ax2 = plt.gca().twinx()
-        o_min = np.floor(np.min(off_lake)/0.25)*0.25
-        o_max = np.ceil(np.max(off_lake)/0.25)*0.25
-        ticks = np.arange(o_min,o_max+0.25,0.25)
+        o_min = np.floor(np.min(off_lake)/0.5)*0.5
+        o_max = np.ceil(np.max(off_lake)/0.5)*0.5
+        ticks = np.arange(o_min-0.5,o_max+0.5,0.5)
         ax2.plot(t0[0:j],off_lake[0:j],'--',color='forestgreen',linewidth=3,alpha=0.5)
         ax2.set_yticks(ticks,fontsize=14,color='forestgreen')
         ax2.tick_params(axis='both', which='major', labelsize=14,color='forestgreen',labelcolor='forestgreen')
@@ -141,7 +145,7 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
            circle = plt.Circle((0, 0), rad, color='gray',fill=False,linewidth=4)
            plt.gca().add_patch(circle)
 
-        speed = np.sqrt(u_d**2+v_d**2)
+        speed = np.sqrt(u_d**2+v_d**2)+1e-30
         du = 5*u_d/speed
         dv = 5*v_d/speed
 
@@ -154,9 +158,12 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
         else:
             y0 = y_d.max() - 5     
        
-        plt.arrow(x0,y0,du,dv,width=0.5,fc='k',ec='k',clip_on=False)
+        if speed > 1e-12:
+            plt.arrow(x0,y0,du,dv,width=0.5,fc='k',ec='k',clip_on=False)
+            plt.annotate(xy=(x_d.min()+6,y_d.max()-4),text=r'$\bar{\mathbf{u}}$',fontsize=20)
+        else:
+            plt.annotate(xy=(x_d.min()+2,y_d.max()-6),text=r'$\bar{\mathbf{u}}=\mathbf{0}$',fontsize=20)
 
-        plt.annotate(xy=(x_d.min()+6,y_d.max()-4),text=r'$\bar{\mathbf{u}}$',fontsize=20)
 
         plt.ylabel(r'$y$ (km)',fontsize=20)
         plt.xlabel(r'$x$ (km)',fontsize=20)
@@ -167,7 +174,7 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
         plt.gca().set_aspect('equal', 'box')
         cbar_ax = fig.add_axes([0.13, 0.9, 0.35, 0.02])
         cbar = fig.colorbar(p,orientation='horizontal',cax=cbar_ax)
-        cbar.set_label(r'$\Delta h$ (m)',fontsize=24,labelpad=15)
+        cbar.set_label(r'$\Delta h_\mathrm{a}$ (m)',fontsize=24,labelpad=15)
         cbar.ax.tick_params(labelsize=16)
         cbar.ax.xaxis.set_ticks_position('top')
         cbar.ax.xaxis.set_label_position('top')
@@ -192,7 +199,7 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
         plt.gca().set_aspect('equal', 'box')
         cbar_ax = fig.add_axes([0.55, 0.9, 0.35, 0.02])
         cbar = fig.colorbar(p,orientation='horizontal',cax=cbar_ax)
-        cbar.set_label(r'$w_b$ (m/yr)',fontsize=24,labelpad=15)
+        cbar.set_label(r'$w_\mathrm{b}$ (m/yr)',fontsize=24,labelpad=15)
         cbar.ax.tick_params(labelsize=16)
         cbar.ax.xaxis.set_ticks_position('top')
         cbar.ax.xaxis.set_label_position('top')

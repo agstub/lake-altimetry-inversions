@@ -14,8 +14,8 @@ results_dir = '../results_'+lake_name
 
 # arrays from the data directory
 t0 = np.load(data_dir+'/t.npy')       # time array (yr)
-x0 = np.load(data_dir+'/x.npy')       # x array (m)
-y0 = np.load(data_dir+'/y.npy')       # y array (m)
+x0 = np.load(data_dir+'/x.npy')       # x array (scaled by H)
+y0 = np.load(data_dir+'/y.npy')       # y array (scaled  by H)
 
 H = np.load(data_dir+'/H.npy').mean()       # ice thickness (m)
 beta_d = np.load(data_dir+'/beta.npy').mean() # basal drag coeff (Pa s/m)

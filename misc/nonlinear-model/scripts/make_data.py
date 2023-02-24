@@ -1,7 +1,7 @@
 import sys
 sys.path.insert(0, './source')
 import numpy as np
-from scipy.interpolate import interp2d,interp1d
+from scipy.interpolate import RectBivariateSpline,interp1d
 from params import t_final,Lngth,Hght,nt,nx
 from geometry import bed
 import matplotlib.pyplot as plt
@@ -32,8 +32,8 @@ beta = np.loadtxt('./results/beta_mean')
 u = np.loadtxt('./results/u_mean')              # saved in m/yr
 
 
-h_int = interp2d(r, t, h.T)
-wb_int = interp2d(r, t, wb.T)
+h_int = RectBivariateSpline(r, t, h)
+wb_int = RectBivariateSpline(r, t, wb)
 dV_int = interp1d(t, dV)
 
 
@@ -65,7 +65,7 @@ dV_d = dV_int(t_d)
 # save numpy files for use in inversion
 np.save('./data_nonlinear/dV_true.npy',dV_d)
 np.save('./data_nonlinear/w_true.npy',wb_d)
-np.save('./data_nonlinear/h_obs.npy',h_d)
+np.save('./data_nonlinear/h_nloc.npy',h_d)
 np.save('./data_nonlinear/x_d.npy',x_d*H/1000.0)
 np.save('./data_nonlinear/y_d.npy',x_d*H/1000.0)
 np.save('./data_nonlinear/x.npy',x_d)
@@ -73,5 +73,6 @@ np.save('./data_nonlinear/y.npy',x_d)
 np.save('./data_nonlinear/t.npy',t_d)
 np.save('./data_nonlinear/H.npy',np.array([H]))
 np.save('./data_nonlinear/u.npy',np.array([0.0]))
+np.save('./data_nonlinear/v.npy',np.array([0.0]))
 np.save('./data_nonlinear/beta.npy',beta)
 np.save('./data_nonlinear/eta.npy',eta)
