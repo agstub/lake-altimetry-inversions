@@ -33,12 +33,12 @@ if os.path.isdir('pngs')==False:
 resultsname = 'results'
 
 wb = np.load('data_nonlinear/w_true.npy')           # Lower surface
-h_obs = np.load('data_nonlinear/h.npy')         # Upper surface
-dV = np.load('data_nonlinear/dV_true.npy')           # Upper surface
+h_obs = np.load('data_nonlinear/h_nloc.npy')        # Upper surface contour
+dV = np.load('data_nonlinear/dV_true.npy')          # Volume change
 
 
 # Create array for plotting
-H = np.load('data_nonlinear/H.npy').mean()      # thickness
+H = np.load('data_nonlinear/H.npy').mean()        # thickness
 x = np.load('data_nonlinear/x_d.npy')             # x-coordinate array
 y = np.load('data_nonlinear/y_d.npy')             # x-coordinate array
 t = np.load('data_nonlinear/t.npy')
@@ -46,13 +46,13 @@ t = np.load('data_nonlinear/t.npy')
 # Load relevant files
 resultsname = 'results'
 
-s = np.loadtxt(resultsname+'/s')             # Lower surface
-h = np.loadtxt(resultsname+'/h')             # Upper surface
+s = np.loadtxt(resultsname+'/s')             # Lower surface radial
+h = np.loadtxt(resultsname+'/h')             # Upper surface radial
 
 
 # Create array for plotting
 X = np.loadtxt(resultsname+'/r')             # x-coordinate array
-t_f = np.loadtxt(resultsname+'/t')
+t_f = np.loadtxt(resultsname+'/t')           # t-coordinate array
 
 
 dV_max = np.max(dV*(H**2)/1e9)+0.1

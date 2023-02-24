@@ -35,7 +35,7 @@ C = 1e6                            # sliding law friction coefficient (Pa s/m)^1
 
 # numerical parameters
 eps_p = 1.0e-14                    # penalty method parameter for unilateral condition
-eps_v = (2*1e13/B)**(1/(rm2/2.0))  # flow law regularization parameter
+eps_v = (2*1e14/B)**(1/(rm2/2.0))  # flow law regularization parameter
 eps_b = (1e4)**(1/((rm2/2.0)))     # sliding law regularization parameter
 
 quad_degree = 16                   # quadrature degree for weak forms
