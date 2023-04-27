@@ -115,7 +115,7 @@ for i in range(np.size(t)):
 
 
     plt.subplot(325)
-    p1 = plt.contourf(x,y,h_obs[i,:,:].T,cmap='coolwarm',levels=np.linspace(-0.5,0.5,6),extend='both')
+    p1 = plt.contourf(x,y,h_obs[i,:,:].T,cmap='PuOr_r',levels=np.linspace(-1,1,6),extend='both')
     plt.ylabel(r'$y$ (km)',fontsize=20)
     plt.xlabel(r'$x$ (km)',fontsize=20)
     plt.yticks(fontsize=16)
@@ -129,7 +129,7 @@ for i in range(np.size(t)):
 
 
     plt.subplot(326)
-    p2 = plt.contourf(x,y,wb[i,:,:].T,cmap='coolwarm',extend='both',levels=np.linspace(-5,5,6))
+    p2 = plt.contourf(x,y,wb[i,:,:].T,cmap='PuOr_r',extend='both',levels=np.linspace(-1,1,6))
     plt.gca().yaxis.set_major_formatter(mpl.ticker.FormatStrFormatter('%.2f'))
     # Label axes and save png:
     plt.xlabel(r'$x$ (km)',fontsize=20)

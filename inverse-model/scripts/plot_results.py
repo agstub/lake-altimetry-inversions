@@ -26,6 +26,7 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
     y_d = np.load(data_dir+'/y_d.npy')
     xp,yp = np.meshgrid(x_d,y_d)
 
+    # define anomaly relative to reference time
     i0 = np.argmin(np.abs(t0-t_ref))
     h_ref = h_obs[i0,:,:] + 0*h_obs
     h_obs -= h_ref
@@ -60,7 +61,11 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
     dV_min = np.min(np.array([np.min(dV_inv),np.min(dV_h)]))*(H**2)/1e9-np.sqrt(np.var(dV_inv))*(H**2)/1e9
 
     err_pct = 100*np.max(np.abs(dV_h-dV_inv))/np.max(np.abs(dV_h))
-    err_vol = np.max(np.abs(dV_h-dV_inv))
+    err_vol = np.max(np.abs(dV_h-dV_inv))*(H**2)/1e9
+
+    print('maximum discrepancy = '+str(err_vol)+' km^3')
+    print('err pct = '+str(err_pct)+'\%')
+
 
     for i in timesteps:
         print('Saving image '+str(timesteps.index(i)+1)+' out of '+str(np.size(timesteps))+' \r',end='')
@@ -106,7 +111,7 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
 
         # add viscous relaxation timescale
         plt.axvline(x=t_r/3.154e7,color='k',linestyle='--',linewidth=1,alpha=0.75)
-        plt.annotate(xy=(t_r/3.154e7,0.0),text=r'$t_\mathrm{relax}$',fontsize=14)
+        plt.annotate(xy=(t_r/3.154e7,-0.3),text=r'$t_\mathrm{relax}$',fontsize=14)
 
         plt.ylabel(r'$\Delta V$ (km$^3$)',fontsize=20)
         plt.xlim(0,t0.max())
@@ -120,15 +125,17 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
         else:
             plt.legend(fontsize=20,ncol=3,bbox_to_anchor=(1.04,-0.15))
 
-
+        # plot off-lake component
         ax2 = plt.gca().twinx()
-        o_min = np.floor(np.min(off_lake)/0.5)*0.5
-        o_max = np.ceil(np.max(off_lake)/0.5)*0.5
-        ticks = np.arange(o_min-0.5,o_max+0.5,0.5)
+        dd = 0.1 # spacing for ticks
+        disp = 2 # displacement so ticks appear near bottom of plot
+        o_min = np.floor(np.min(off_lake)/dd)*dd
+        o_max = np.ceil(np.max(off_lake)/dd)*dd
+        ticks = np.arange(o_min-dd,o_max+dd,dd)
         ax2.plot(t0[0:j],off_lake[0:j],'--',color='forestgreen',linewidth=3,alpha=0.5)
-        ax2.set_yticks(ticks,fontsize=14,color='forestgreen')
+        plt.yticks(ticks,fontsize=14,color='forestgreen')
         ax2.tick_params(axis='both', which='major', labelsize=14,color='forestgreen',labelcolor='forestgreen')
-        ax2.set_ylim(o_min,o_max+5)
+        ax2.set_ylim(o_min,o_max+disp)
         ax2.yaxis.tick_right()
         ax2.yaxis.set_label_position("right")
         ax2.set_ylabel(r'$\Delta h_\mathrm{off}$ (m)',fontsize=14,loc='bottom',color='forestgreen')

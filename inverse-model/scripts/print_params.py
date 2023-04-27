@@ -12,3 +12,4 @@ def print_params():
     print('eta = '+'{:.2e}'.format(eta_d)+' Pa s')
     print('u = '+str(u_d)+' m yr^-1')
     print('v = '+str(v_d)+' m yr^-1')
+    print('relaxation time = '+str(t_r/3.154e7)+' yr')
