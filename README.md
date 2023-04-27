@@ -119,8 +119,7 @@ the data, and plotting the results. The main scripts are:
 a given lake location (from the inventory listed above), and also obtains some
 auxiliary parameters (ice thickness, viscosity, basal drag coefficient, flow speed).
 
-3. **run_example.py** is a short script that runs the inversion solver and plots
-the results.
+3. **plot_results.py** is a plotting script for visualizing the inversion results.
 
 Plotting can  be modified in the **plot_results.py** script.
 
