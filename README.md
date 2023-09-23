@@ -1,6 +1,9 @@
 # lake-altimetry-inversions
 Author: Aaron Stubblefield (Dartmouth College)
 
+[![DOI](https://zenodo.org/badge/458303967.svg)](https://zenodo.org/badge/latestdoi/458303967)
+
+
 # Overview
 This program inverts for a basal vertical velocity anomaly "w_inv" given the observed surface
 elevation change data "h_obs" as input by solving a least-squares optimization problem.
