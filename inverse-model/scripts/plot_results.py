@@ -37,7 +37,7 @@ def plot(t_ref,timesteps=range(Nt),h_lim=5,w_lim=5):
         for i in range(x_d.size):
             for j in range(y_d.size):
                 point = Point(x_d[i],y_d[j])
-                alt_bdry[i,j] = outline.contains(point)
+                alt_bdry[j,i] = outline.contains(point)
     else:
         xc,yc = 0,0
         alt_bdry = 0*xp+1
